@@ -1,0 +1,25 @@
+model_coeffs:
+- -4.67237
+- -0.38379
+- -1.0252
+- -3.1193
+- 1.28265
+- 0.88066
+- -0.17549
+- -0.50606
+- 0.7375
+- 0.97831
+- 0.30529
+
+spec_names:
+- intercept
+- min_agebin2
+- min_agebin3
+- min_agebin4
+- income_bin1
+- income_bin2
+- income_bin4
+- income_bin5
+- top_edu_bin2
+- top_edu_bin3
+- fam_work2

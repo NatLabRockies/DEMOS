@@ -1,0 +1,51 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_job_spaces
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: jobs
+  constrained_choices: true
+  fitted_parameters:
+  - 0.32095128297805786
+  - -0.1488378494977951
+  - 0.5677555203437805
+  - 0.7143391966819763
+  - -0.41110959649086
+  - -0.09313799440860748
+  - -0.0009427908807992935
+  - -0.32699742913246155
+  - -0.5500341057777405
+  - 0.04413233697414398
+  - 0.06768146902322769
+  - 0.003477387595921755
+  - 6.160094738006592
+  - 0.8423867225646973
+  - 1.1679357290267944
+  - -0.767030656337738
+  - -2.277242422103882
+  - 0.9005725979804993
+  - 0.630369246006012
+  - 0.16938023269176483
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_total_units + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov_c + st_zones_income_6_hh_sum_10_min_sov_c
+    + st_zones_jobs_0_sum_5_min_sov_c + st_zones_jobs_1_sum_5_min_sov_c + st_zones_jobs_2_sum_5_min_sov_c
+    + st_zones_jobs_3_sum_5_min_sov_c + st_zones_jobs_4_sum_5_min_sov_c + st_zones_jobs_5_sum_5_min_sov_c
+    + st_zones_total_jobs_sum_20_min_sov_c - 1
+  name: elcm_48453_blocks_4_pf
+  out_alt_filters: (vacant_job_spaces > 0) & (county_id == "48453")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "48453") & (agg_sector=="4")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

@@ -1,0 +1,21 @@
+modelmanager_version: 0.2.dev9
+
+saved_object:
+    filters: null
+    fitted_parameters:
+    - -2.646509
+    - 1.1355277
+    - 1.2278748
+    model_expression: birth ~ hh_birth_agebin1 + hh_birth_agebin2 + 1
+    name: birth
+    out_column: birth
+    out_filters: null
+    out_tables: households
+    out_transform: null
+    out_value_false: 0
+    out_value_true: 1
+    tables: households
+    summary_table: null
+    tags: []
+    template: BinaryLogitStep
+    template_version: 0.2.dev9

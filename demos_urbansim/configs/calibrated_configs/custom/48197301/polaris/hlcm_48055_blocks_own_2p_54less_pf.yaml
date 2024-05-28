@@ -1,0 +1,57 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 0.8288049101829529
+  - 1.437796711921692
+  - 1.8380135297775269
+  - -0.14022226631641388
+  - -2.0262835025787354
+  - 1.5191679000854492
+  - 0.7393897771835327
+  - -2.1889469623565674
+  - -0.6019228100776672
+  - -0.75026535987854
+  - -1.2784497737884521
+  - -0.6810151934623718
+  - -1.852315902709961
+  - -2.659585475921631
+  - 0.42332372069358826
+  - 0.5608254671096802
+  - 0.6013208031654358
+  - 0.2418469786643982
+  - -0.17522497475147247
+  - 0.18089324235916138
+  - 0.18962062895298004
+  - 0.2277735471725464
+  - 0.2679920494556427
+  - 0.35320496559143066
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value_13_acs + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov_c + st_zones_income_6_hh_sum_10_min_sov_c
+    + st_zones_jobs_0_sum_5_min_sov_c + st_zones_jobs_1_sum_5_min_sov_c + st_zones_jobs_2_sum_5_min_sov_c
+    + st_zones_jobs_3_sum_5_min_sov_c + st_zones_jobs_4_sum_5_min_sov_c + st_zones_jobs_5_sum_5_min_sov_c
+    + st_zones_total_jobs_sum_20_min_sov_c + st_zones_total_units_sum_10_min_sov_c
+    - 1
+  name: hlcm_48055_blocks_own_2p_54less_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "48055")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "48055") & (hh_type==3)
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

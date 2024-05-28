@@ -1,0 +1,30 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  filters:
+  - age > 15
+  - student == 1
+  fitted_parameters:
+  - 1.1520000000000001
+  - 2.39
+  - 3.3390000000000004
+  - 0.37905
+  - 0.6264000000000001
+  - -1.32
+  - -0.8
+  - -1.2320000000000002
+  model_expression: stop ~ agebin2 + agebin3 + agebin4 + employbin1 + employbin2 +
+    marital1 + marital4 + 1
+  name: education
+  out_column: stop
+  out_filters:
+  - age > 15
+  - student == 1
+  out_tables: persons
+  out_transform: null
+  out_value_false: 0
+  out_value_true: 1
+  summary_table: null
+  tables: persons
+  tags: []
+  template: BinaryLogitStep
+  template_version: 0.2.dev9

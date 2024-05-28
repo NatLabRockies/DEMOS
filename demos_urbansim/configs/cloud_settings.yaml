@@ -1,0 +1,71 @@
+# Required. Python modules that contain orca registrations.  Omit the '.py'
+orca_modules:
+    - demos_urbansim.datasources
+    - demos_urbansim.variables
+    - demos_urbansim.models
+    - demos_urbansim.update_demos
+    - urbansim_hooks.block.hooks
+
+# Model manager module
+model_manager: True
+
+# Required. Links to data files that will be downloaded into ./data
+data_files:
+    -
+        storage: public
+        filename: model_data.h5
+
+#Optional. Name of the folder to read the configs for model steps
+model_manager_config:
+    calibrated: configs/calibrated_configs
+    uncalibrated: configs/estimated_configs
+
+
+# Optional. Orca steps that run prior to the simulation.
+orca_preprocessing_steps:
+
+# Optional. Simulation steps that will be executed for the first simulation year.
+orca_simulation_steps_first_year:
+
+# Required. Orca steps that run on each simulation year.
+# If orca_simulation_steps_first_year is present then these steps will not be
+# executed on first year but other listed on previously mentioned section.
+orca_simulation_steps:
+    - fatality
+
+# Optional. Orca steps that run after the simulation.
+orca_postprocessing_steps:
+
+# Orca injectables
+orca_injectables:
+    - model_type: block
+    - calibrated_folder: 'default'
+    - initial_run: False
+    - multi_level_lcms: True
+    - segmented_lcms: False
+    - local_simulation: False
+    - running_calibration_routine: False
+    - capacity_boost: 1
+
+output_storage:
+    stage:
+        provider: gcs
+        project: urbansim-cloud
+        bucket: urbansim-stage
+        path: results/demos_urbansim
+    prod:
+        provider: gcs
+        project: urbansim-cloud
+        bucket: urbansim_models
+        path: results/demos_urbansim
+
+model_description: National Block Model
+
+redis:
+    host: redis
+    port: 6379
+    sleep_time: 200000
+
+
+development_hooks: last_year
+

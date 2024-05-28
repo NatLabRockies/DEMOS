@@ -1,0 +1,406 @@
+spatial_output:
+  block:
+    root_csv_name: 06197001_block_layer_indicators
+    var_display:
+      bg_mean_age_of_head:
+        name: Mean age of household head (block group level)
+      density_hh:
+        name: Households per acre
+      density_jobs:
+        name: Jobs per acre
+      density_units:
+        name: Total units per acre
+      income_segment_1_hh:
+        name: Income segment 1 households
+      income_segment_6_hh:
+        name: Income segment 6 households
+      ln_total_hh:
+        name: Natural logarithm of total households
+      ln_total_jobs:
+        name: Natural logarithm of total jobs
+      ln_total_units:
+        name: Natural logarithm of total residential units
+      mean_hh_size:
+        name: Mean household size
+      mean_income:
+        name: Mean household annual income
+      ratio_households_to_units:
+        name: Residential occupancy rate
+      ratio_jobs_to_units:
+        name: Job-housing balance
+      sum_acres:
+        name: Total area (acres)
+      total_hh:
+        name: Total households
+      total_jobs:
+        name: Total jobs
+      total_units:
+        name: Total residential units
+      units_after_2000:
+        name: Units built after 2000
+      units_before_1930:
+        name: Units built before 1930
+      units_mf:
+        name: Multi-family units
+      units_own:
+        name: Owned units
+      units_rent:
+        name: Rented units
+      units_sf:
+        name: Single family units
+      zones_jobs_0_sum_10_min_sov:
+        name: 'Sov-based sum within 10min of: Agg sector 0 jobs (zones level)'
+      zones_jobs_0_sum_5_min_sov:
+        name: 'Sov-based sum within 5min of: Agg sector 0 jobs (zones level)'
+      zones_jobs_1_sum_10_min_sov:
+        name: 'Sov-based sum within 10min of: Agg sector 1 jobs (zones level)'
+      zones_jobs_1_sum_5_min_sov:
+        name: 'Sov-based sum within 5min of: Agg sector 1 jobs (zones level)'
+      zones_jobs_2_sum_10_min_sov:
+        name: 'Sov-based sum within 10min of: Agg sector 2 jobs (zones level)'
+      zones_jobs_2_sum_5_min_sov:
+        name: 'Sov-based sum within 5min of: Agg sector 2 jobs (zones level)'
+      zones_jobs_3_sum_10_min_sov:
+        name: 'Sov-based sum within 10min of: Agg sector 3 jobs (zones level)'
+      zones_jobs_3_sum_5_min_sov:
+        name: 'Sov-based sum within 5min of: Agg sector 3 jobs (zones level)'
+      zones_jobs_4_sum_10_min_sov:
+        name: 'Sov-based sum within 10min of: Agg sector 4 jobs (zones level)'
+      zones_jobs_4_sum_5_min_sov:
+        name: 'Sov-based sum within 5min of: Agg sector 4 jobs (zones level)'
+      zones_jobs_5_sum_10_min_sov:
+        name: 'Sov-based sum within 10min of: Agg sector 5 jobs (zones level)'
+      zones_jobs_5_sum_5_min_sov:
+        name: 'Sov-based sum within 5min of: Agg sector 5 jobs (zones level)'
+  blockgroup:
+    root_csv_name: 06197001_blockgroup_layer_indicators
+    var_display:
+      density_hh:
+        name: Households per acre
+      density_jobs:
+        name: Jobs per acre
+      density_units:
+        name: Total units per acre
+      income_segment_1_hh:
+        name: Income segment 1 households
+      income_segment_6_hh:
+        name: Income segment 6 households
+      ln_total_hh:
+        name: Natural logarithm of total households
+      ln_total_jobs:
+        name: Natural logarithm of total jobs
+      ln_total_units:
+        name: Natural logarithm of total residential units
+      mean_age_of_head:
+        name: Mean age of household head
+      mean_hh_size:
+        name: Mean household size
+      mean_income:
+        name: Mean household annual income
+      prop_jobs_0:
+        name: Proportion of agg sector 0 jobs
+      prop_jobs_1:
+        name: Proportion of agg sector 1 jobs
+      prop_jobs_2:
+        name: Proportion of agg sector 2 jobs
+      prop_jobs_3:
+        name: Proportion of agg sector 3 jobs
+      prop_jobs_4:
+        name: Proportion of agg sector 4 jobs
+      prop_jobs_5:
+        name: Proportion of agg sector 5 jobs
+      ratio_households_to_units:
+        name: Residential occupancy rate
+      ratio_jobs_to_units:
+        name: Job-housing balance
+      sum_acres:
+        name: Total area (acres)
+      total_hh:
+        name: Total households
+      total_jobs:
+        name: Total jobs
+      total_units:
+        name: Total residential units
+      units_mf_own:
+        name: Owned multi family residential units
+      units_mf_rent:
+        name: Rented multi family residential units
+      units_sf_own:
+        name: Owned single family residential units
+      units_sf_rent:
+        name: Rented single family residential units
+  tract:
+    root_csv_name: 06197001_tract_layer_indicators
+    var_display:
+      children:
+        name: Children
+      density_hh:
+        name: Households per acre
+      density_jobs:
+        name: Jobs per acre
+      density_units:
+        name: Total units per acre
+      hh_obs_growth_13_18:
+        name: Observed household growth 13-18
+      hh_own:
+        name: Owner households
+      hh_prop_obs_growth_13_18:
+        name: Observed % of household growth 13-18
+      hh_prop_obs_growth_13_18_nc:
+        name: Observed % of household growth 13-18 (unclipped)
+      hh_prop_obs_growth_18_19:
+        name: Observed % of household growth 18-19
+      hh_prop_sim_growth_13_18:
+        name: Simulated % of household growth 13-18
+      hh_prop_sim_growth_18_19:
+        name: Simulated % of household growth 18-19
+      hh_prop_sim_growth_year:
+        name: Simulated % of household growth
+      hh_rent:
+        name: Renter households
+      hh_sim_growth_13_18:
+        name: Simulated household growth 13-18
+      hh_sim_growth_year:
+        name: Simulated household growth
+      income_segment_1_hh:
+        name: Income segment 1 households
+      income_segment_6_hh:
+        name: Income segment 6 households
+      jobs_0:
+        name: Agg sector 0 jobs
+      jobs_1:
+        name: Agg sector 1 jobs
+      jobs_2:
+        name: Agg sector 2 jobs
+      jobs_3:
+        name: Agg sector 3 jobs
+      jobs_4:
+        name: Agg sector 4 jobs
+      jobs_5:
+        name: Agg sector 5 jobs
+      jobs_obs_growth_10_17:
+        name: Observed job growth 10-17
+      jobs_prop_obs_growth_10_17:
+        name: Observed % of job growth 10-17
+      jobs_prop_obs_growth_10_17_nc:
+        name: Observed % of job growth 10-17 (unclipped)
+      jobs_prop_obs_growth_17_18:
+        name: Observed % of job growth 17-18
+      jobs_prop_sim_growth_10_17:
+        name: Simulated % of job growth 10-17
+      jobs_prop_sim_growth_17_18:
+        name: Simulated % of job growth 17-18
+      jobs_prop_sim_growth_year:
+        name: Simulated % of job growth
+      jobs_sim_growth_10_17:
+        name: Simulated job growth 10-17
+      jobs_sim_growth_year:
+        name: Simulated job growth
+      ln_total_hh:
+        name: Natural logarithm of total households
+      ln_total_jobs:
+        name: Natural logarithm of total jobs
+      ln_total_units:
+        name: Natural logarithm of total residential units
+      mean_age_of_head:
+        name: Mean age of household head
+      mean_hh_size:
+        name: Mean household size
+      mean_income:
+        name: Mean household annual income
+      persons_65plus:
+        name: Persons 65plus
+      prop_hh_rent:
+        name: Proportion of renter households
+      prop_jobs_0:
+        name: Proportion of agg sector 0 jobs
+      prop_jobs_1:
+        name: Proportion of agg sector 1 jobs
+      prop_jobs_2:
+        name: Proportion of agg sector 2 jobs
+      prop_jobs_3:
+        name: Proportion of agg sector 3 jobs
+      prop_jobs_4:
+        name: Proportion of agg sector 4 jobs
+      prop_jobs_5:
+        name: Proportion of agg sector 5 jobs
+      prop_units_mf:
+        name: Proportion of multi-family residential_units
+      sum_acres:
+        name: Total area (acres)
+      total_hh:
+        name: Total households
+      total_jobs:
+        name: Total jobs
+      total_persons:
+        name: Total persons
+      total_units:
+        name: Total residential units
+      units_mf:
+        name: Multi-family units
+      units_mf_own:
+        name: Owned multi family residential units
+      units_mf_rent:
+        name: Rented multi family residential units
+      units_obs_growth_13_18:
+        name: Observed unit growth 13-18
+      units_prop_obs_growth_13_18:
+        name: Observed % of unit growth 13-18
+      units_prop_obs_growth_13_18_nc:
+        name: Observed % of unit growth 13-18 (unclipped)
+      units_prop_obs_growth_18_19:
+        name: Observed % of unit growth 18-19
+      units_prop_sim_growth_13_18:
+        name: Simulated % of unit growth 13-18
+      units_prop_sim_growth_18_19:
+        name: Simulated % of unit growth 18-19
+      units_prop_sim_growth_year:
+        name: Simulated % of unit growth
+      units_sf:
+        name: Single family units
+      units_sf_own:
+        name: Owned single family residential units
+      units_sf_rent:
+        name: Rented single family residential units
+      units_sim_growth_13_18:
+        name: Simulated unit growth 13-18
+      units_sim_growth_year:
+        name: Simulated unit growth
+      vacant_du_spaces:
+        name: Vacant spaces for new residential units
+      vacant_job_spaces:
+        name: Vacant job spaces
+      vacant_residential_units:
+        name: Vacant residential units
+download_output:
+  default_downloads:
+    block:
+      display_name: Blocks
+      root_csv_name: 06197001_block_download_indicators
+    blockgroup:
+      display_name: Blockgroups
+      root_csv_name: 06197001_blockgroup_download_indicators
+    tract:
+      display_name: Tracts
+      root_csv_name: 06197001_tract_download_indicators
+chart_output:
+- file_name: hh_sim_growth_year_by_county_id_pie_chart.json
+  title: Forecast year simulated household growth by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: jobs_sim_growth_year_by_county_id_pie_chart.json
+  title: Forecast year simulated job growth by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: units_sim_growth_year_by_county_id_pie_chart.json
+  title: Forecast year simulated unit growth by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: prop_hh_rent_by_county_id.json
+  title: Forecast year proportion of renter households by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: prop_units_mf_by_county_id.json
+  title: Forecast year proportion of multi-family residential_units by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: vacant_job_spaces_histogram.json
+  title: Forecast year count of tracts by vacant job spaces
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: vacant_residential_units_histogram.json
+  title: Forecast year count of tracts by vacant residential units
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: vacant_du_spaces_histogram.json
+  title: Forecast year count of tracts by vacant spaces for new residential units
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_vacant_job_spaces.json
+  title: Forecast year ten tracts with highest Vacant job spaces
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_vacant_residential_units.json
+  title: Forecast year ten tracts with highest Vacant residential units
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_vacant_du_spaces.json
+  title: Forecast year ten tracts with highest Vacant spaces for new residential units
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_total_jobs.json
+  title: Forecast year ten tracts with highest Total jobs
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_total_hh.json
+  title: Forecast year ten tracts with highest Total households
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_total_units.json
+  title: Forecast year ten tracts with highest Total residential units
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: prop_jobs_by_agg_sector_by_county_id.json
+  title: Forecast year proportion of jobs by agg_sector by county_id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: prop_households_by_tenure_by_county_id.json
+  title: Forecast year proportion of households by tenure by county_id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: prop_residential_units_by_building_type_id_by_county_id.json
+  title: Forecast year proportion of residential_units by building_type_id by county_id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: mean_age_of_head_by_county_id.json
+  title: Forecast year mean age of household head by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: mean_income_by_county_id.json
+  title: Forecast year mean household annual income by county id
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6
+- file_name: 10_tract_ids_with_max_mean_income.json
+  title: Forecast year ten tracts with highest Mean household annual income
+  chart_diagnostics:
+    chart_library: plotly
+    chart_library_version: 4.13.0
+    python_version: 3.6

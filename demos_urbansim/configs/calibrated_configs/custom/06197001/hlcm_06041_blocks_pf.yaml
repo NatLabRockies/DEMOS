@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 0.26175373792648315
+  - 0.30895671248435974
+  - -0.08763911575078964
+  - -0.0825541764497757
+  - 0.21452173590660095
+  - 0.3394189178943634
+  - 0.22928480803966522
+  - 0.2098059058189392
+  - -0.05686524882912636
+  - 0.6366590857505798
+  - -0.9407827258110046
+  - -0.0979342833161354
+  - 0.18682949244976044
+  - -0.1663326919078827
+  - 0.20125432312488556
+  - -1.0749411582946777
+  - 3.1515543460845947
+  - -0.4161645770072937
+  - -2.744929790496826
+  - 0.7379289269447327
+  - 3.167440176010132
+  - -5.309701919555664
+  - 0.0038529736921191216
+  - -2.6632156372070312
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value_13_acs + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: hlcm_06041_blocks_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "06041")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06041")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

@@ -1,0 +1,57 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 0.13815830647945404
+  - -0.016140088438987732
+  - 0.3128949701786041
+  - -0.05063780024647713
+  - -0.009560725651681423
+  - 0.004587705247104168
+  - 0.6214833855628967
+  - -0.16252467036247253
+  - 0.06611958891153336
+  - 0.6470538377761841
+  - -0.13009944558143616
+  - 0.04582800716161728
+  - -0.25126320123672485
+  - 0.1700085699558258
+  - 0.37246811389923096
+  - -0.3080042600631714
+  - -0.31644362211227417
+  - 0.6514468789100647
+  - 0.611012876033783
+  - -0.4709065556526184
+  - -0.13833250105381012
+  - -0.4675159752368927
+  - 0.3363380432128906
+  - -0.39664751291275024
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value_13_acs + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov_c + st_zones_income_6_hh_sum_10_min_sov_c
+    + st_zones_jobs_0_sum_5_min_sov_c + st_zones_jobs_1_sum_5_min_sov_c + st_zones_jobs_2_sum_5_min_sov_c
+    + st_zones_jobs_3_sum_5_min_sov_c + st_zones_jobs_4_sum_5_min_sov_c + st_zones_jobs_5_sum_5_min_sov_c
+    + st_zones_total_jobs_sum_20_min_sov_c + st_zones_total_units_sum_10_min_sov_c
+    - 1
+  name: hlcm_48453_blocks_own_1p_55plus_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "48453")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "48453") & (hh_type==2)
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

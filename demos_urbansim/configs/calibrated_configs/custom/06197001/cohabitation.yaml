@@ -1,0 +1,57 @@
+model_coeffs:
+  breakup:
+  - 4.0
+  - -0.712679
+  - -1.741183
+  - -3.350202
+  - 0.017679
+  - -0.903541
+  - 1.279662
+  - 0.825002
+  - -0.97325
+  - -0.490905
+  marriage:
+  - 2.0
+  - -1.532644
+  - -2.978962
+  - -5.814818
+  - 0.877079
+  - 0.797377
+  - -0.548978
+  - -0.388387
+  - 0.189224
+  - 0.752726
+onstraints:
+  breakup:
+  - 1
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  marriage:
+  - 1
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+  - 0
+spec_names:
+- intercept
+- avg_agebin2
+- avg_agebin3
+- avg_agebin4
+- top_edu_bin3
+- hd_race_wht
+- income_bin1
+- income_bin2
+- income_bin4
+- income_bin5

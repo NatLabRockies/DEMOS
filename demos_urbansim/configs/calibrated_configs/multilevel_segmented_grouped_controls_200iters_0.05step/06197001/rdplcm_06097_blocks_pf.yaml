@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_du_spaces
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: residential_units
+  constrained_choices: true
+  fitted_parameters:
+  - 0.2981444001197815
+  - 0.3153138756752014
+  - 0.2954501807689667
+  - 0.0008724173530936241
+  - 0.40202921628952026
+  - 0.6418632864952087
+  - 0.1289970427751541
+  - -0.3934818506240845
+  - 0.23868991434574127
+  - 0.7017349600791931
+  - -0.9369685053825378
+  - 0.25158828496932983
+  - 0.15812595188617706
+  - -0.3696193993091583
+  - 0.010037674568593502
+  - -0.034739185124635696
+  - -0.01985466666519642
+  - 0.6247819662094116
+  - -0.39449143409729004
+  - -0.01244485005736351
+  - -0.7701058983802795
+  - -0.09494823962450027
+  - 6.369002949213609e-05
+  - 0.5889197587966919
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: rdplcm_06097_blocks_pf
+  out_alt_filters: (vacant_du_spaces > 0) & (county_id == "06097")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06097")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

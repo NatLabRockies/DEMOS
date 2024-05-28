@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_du_spaces
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: residential_units
+  constrained_choices: true
+  fitted_parameters:
+  - 0.11807791143655777
+  - -0.02317645773291588
+  - 0.40000590682029724
+  - 0.009464726783335209
+  - 0.3631303012371063
+  - 0.5095536112785339
+  - 0.6199105381965637
+  - 0.26666057109832764
+  - 0.1151999905705452
+  - 0.48254549503326416
+  - -0.004930063150823116
+  - 0.013181780464947224
+  - 0.2713088393211365
+  - -0.10514520853757858
+  - -0.2811886966228485
+  - 0.9874055981636047
+  - -0.31929656863212585
+  - -2.017162799835205
+  - -0.021149763837456703
+  - -0.7507638335227966
+  - -1.0193266868591309
+  - 4.161855220794678
+  - 0.003806742839515209
+  - -0.6697701215744019
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: rdplcm_06081_blocks_pf
+  out_alt_filters: (vacant_du_spaces > 0) & (county_id == "06081")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06081")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

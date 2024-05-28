@@ -1,0 +1,30 @@
+modelmanager_version: 0.2.dev9
+
+saved_object:
+    filters: null
+    fitted_parameters:
+    - -10.062441  
+    - 0.08096282
+    - -0.9811151 
+    - 1.1447476 
+    - 1.2409725 
+    - -0.0427652 
+    - -0.3186152 
+    - -0.19991523
+    - 0.84870887
+    - 0.61437285
+    - 0.58782256
+    model_expression: dead ~ age + gender2 + employbin2 + employbin3
+        + edubin2 + edubin3 + race1 + marital2 + marital3 + marital4 + 1
+    name: mortality
+    out_column: null
+    out_filters: null
+    out_tables: null
+    out_transform: null
+    out_value_false: 0
+    out_value_true: 1
+    tables: persons
+    summary_table: null
+    tags: []
+    template: BinaryLogitStep
+    template_version: 0.2.dev9

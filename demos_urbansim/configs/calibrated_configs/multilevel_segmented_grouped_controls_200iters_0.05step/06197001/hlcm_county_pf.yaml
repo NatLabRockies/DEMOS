@@ -1,0 +1,30 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: counties
+  choice_column: lcm_county_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 0.04728998616337776
+  - -0.01811007410287857
+  - -0.22670307755470276
+  - 0.8438824415206909
+  max_iter: null
+  model_expression: st_mean_bg_median_value + st_total_hh + st_total_jobs + st_total_units
+    - 1
+  name: hlcm_county_pf
+  out_alt_filters: (vacant_residential_units > 0)
+  out_alternatives: null
+  out_chooser_filters: (lcm_county_id == "-1")
+  out_choosers: null
+  out_column: lcm_county_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

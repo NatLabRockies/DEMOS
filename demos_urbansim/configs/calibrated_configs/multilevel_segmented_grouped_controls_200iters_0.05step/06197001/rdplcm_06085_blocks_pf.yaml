@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_du_spaces
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: residential_units
+  constrained_choices: true
+  fitted_parameters:
+  - -0.193280428647995
+  - -0.08740099519491196
+  - -0.13240209221839905
+  - 0.0005910671316087246
+  - 0.0537976510822773
+  - -0.29656848311424255
+  - 1.5298938751220703
+  - 0.016879037022590637
+  - 0.07382433116436005
+  - 0.48576807975769043
+  - -0.0028126363176852465
+  - 0.16681574285030365
+  - -0.15775072574615479
+  - 0.08497059345245361
+  - -0.6047053933143616
+  - 0.06751608103513718
+  - 0.8110652565956116
+  - 0.5318659543991089
+  - 0.016130471602082253
+  - 2.7828614711761475
+  - -0.5978978276252747
+  - -2.7138876914978027
+  - 0.17631766200065613
+  - -0.15841324627399445
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: rdplcm_06085_blocks_pf
+  out_alt_filters: (vacant_du_spaces > 0) & (county_id == "06085")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06085")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

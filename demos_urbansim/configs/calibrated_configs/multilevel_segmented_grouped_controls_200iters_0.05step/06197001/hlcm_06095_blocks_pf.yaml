@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 0.15407522022724152
+  - -0.08935464918613434
+  - -0.03576425090432167
+  - -1.2904540300369263
+  - 0.19607530534267426
+  - 0.29935601353645325
+  - 0.6076943278312683
+  - -0.1346924751996994
+  - -0.3675345480442047
+  - 0.9989736080169678
+  - -0.6201790571212769
+  - 0.21744677424430847
+  - -0.15336062014102936
+  - 0.5578963756561279
+  - -0.7677648663520813
+  - 0.23116250336170197
+  - -0.27783870697021484
+  - -1.3850350379943848
+  - -2.019059419631958
+  - 1.540940523147583
+  - 0.6254980564117432
+  - 0.8493036031723022
+  - 0.4095149040222168
+  - 1.904543161392212
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: hlcm_06095_blocks_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "06095")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06095")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

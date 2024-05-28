@@ -1,0 +1,46 @@
+modelmanager_version: 0.2.dev9
+
+saved_object:
+    filters: relate in [2, 3, 4, 7, 9, 14]
+    fitted_parameters:
+    - -4.119773
+    - 2.733439
+    - 1.985171
+    - 3.153006
+    - 3.293671
+    - 0.112147
+    - 0.441959
+    - -0.395743
+    - 1.799122
+    - 1.811844
+    - 0.113299
+    - -0.451351
+    - -0.568088
+    - -0.609645
+    - -1.088079
+    - -0.706356
+    - -0.311117
+    - 0.558768
+    - -0.373571
+    - -0.676442
+    - -1.845335
+    - -0.913231
+    - -1.603243
+    - -1.863389
+    - -1.499502
+    - -0.888188
+    - -1.517554
+    - -1.374318
+    model_expression: kid_moves ~ agebin5_mo + agebin2_mo + agebin3_mo + agebin4_mo + gender2 + employbin2 + employbin3 + edubin2 + edubin3 + race_wht + race_asn + employ2_agebin5_mo + employ2_agebin2_mo + employ2_agebin3_mo + employ2_agebin4_mo + employ3_agebin5_mo + employ3_agebin2_mo + employ3_agebin3_mo + employ3_agebin4_mo + edu2_agebin5_mo + edu2_agebin2_mo + edu2_agebin3_mo + edu2_agebin4_mo + edu3_agebin5_mo + edu3_agebin2_mo + edu3_agebin3_mo + edu3_agebin4_mo + 1
+    name: kids_move
+    out_column: kid_moves
+    out_filters: relate in [2, 3, 4, 7, 9, 14]
+    out_tables: persons
+    out_transform: null
+    out_value_false: 0
+    out_value_true: 1
+    tables: persons
+    summary_table: null
+    tags: []
+    template: BinaryLogitStep
+    template_version: 0.2.dev9

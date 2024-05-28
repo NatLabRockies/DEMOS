@@ -1,0 +1,8 @@
+model_coeffs:
+- -3.30012
+- 0.9425
+- 0.83806
+spec_names:
+- intercept
+- use_agebin1
+- use_agebin2

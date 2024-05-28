@@ -1,0 +1,13 @@
+Metadata-Version: 1.1
+Name: DEMOS_URBANSIM
+Version: 0.1.dev
+Summary: Demographic Evolution Models
+Home-page: https://github.com/urbansim/DEMOS_URBANSIM
+Author: UrbanSim Inc.
+Author-email: info@urbansim.com
+License: UNKNOWN
+Description: # DEMOS
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3.6

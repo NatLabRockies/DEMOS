@@ -1,0 +1,30 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  filters: null
+  fitted_parameters:
+  - -4.0
+  - -0.38379
+  - -1.0252
+  - -3.1193
+  - 1.28265
+  - 0.88066
+  - -0.17549
+  - -0.50606
+  - 0.7375
+  - 0.97831
+  - 0.30529
+  model_expression: divorced ~ min_agebin2 + min_agebin3 + min_agebin4 + income_bin1
+    + income_bin2 + income_bin4 + income_bin5 + top_edu_bin2 + top_edu_bin3 + fam_work2
+    + 1
+  name: divorce
+  out_column: null
+  out_filters: null
+  out_tables: households
+  out_transform: null
+  out_value_false: 0
+  out_value_true: 1
+  summary_table: null
+  tables: households
+  tags: []
+  template: BinaryLogitStep
+  template_version: 0.2.dev9

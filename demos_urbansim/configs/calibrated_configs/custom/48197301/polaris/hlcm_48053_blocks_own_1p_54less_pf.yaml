@@ -1,0 +1,57 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 1.0906940698623657
+  - -0.3058229982852936
+  - -0.7188355922698975
+  - -0.017107542604207993
+  - 0.5792565941810608
+  - 1.3998640775680542
+  - 0.7569704651832581
+  - -1.058122158050537
+  - -0.3522234857082367
+  - 1.2869374752044678
+  - -0.04630842059850693
+  - -0.643839955329895
+  - -1.7483257055282593
+  - 1.5779192447662354
+  - 0.9738305807113647
+  - -0.4824158549308777
+  - 1.1729025840759277
+  - -0.46341460943222046
+  - -1.2159686088562012
+  - -0.11997448652982712
+  - -0.27596649527549744
+  - -0.33744871616363525
+  - 1.1923691034317017
+  - -0.6166793704032898
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value_13_acs + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov_c + st_zones_income_6_hh_sum_10_min_sov_c
+    + st_zones_jobs_0_sum_5_min_sov_c + st_zones_jobs_1_sum_5_min_sov_c + st_zones_jobs_2_sum_5_min_sov_c
+    + st_zones_jobs_3_sum_5_min_sov_c + st_zones_jobs_4_sum_5_min_sov_c + st_zones_jobs_5_sum_5_min_sov_c
+    + st_zones_total_jobs_sum_20_min_sov_c + st_zones_total_units_sum_10_min_sov_c
+    - 1
+  name: hlcm_48053_blocks_own_1p_54less_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "48053")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "48053") & (hh_type==1)
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

@@ -1,0 +1,91 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  fitted_parameters:
+    bike_ASC: -0.609199047088623
+    bus_ASC: -6.88083028793335
+    cbd_bus: 0.9059286019999695
+    cbd_train: 1.849277803450727
+    coef_c: -0.07207493916417451
+    coef_ivt: -0.7648711706381182
+    dest_employment_density_sh2: -0.3234063048354227
+    dest_employment_density_sh3: -0.2405995540854906
+    dest_employment_density_sov: -0.444549108338334
+    long_bike: -1.1239429316196128
+    long_walk: -0.9026137425889456
+    sh2_ASC: -1.3438174724578857
+    sh3_ASC: -1.7508423328399658
+    short_bike: -1.3757458448559552
+    short_walk: -1.8236679024083855
+    telecommute_ASC: -5.813110828399658
+    tnc_ASC: -5.344948768615723
+    train_ASC: -5.423836708068848
+    walk_ASC: 3.798496723175049
+  model_expression:
+    a_sov:
+      dest_employment_density: dest_employment_density_sov
+      tour_sov_in_vehicle_time: coef_ivt
+      tour_sov_operating_cost: coef_c
+    b_sh2:
+      ASC: sh2_ASC
+      dest_employment_density: dest_employment_density_sh2
+      tour_sov_in_vehicle_time: coef_ivt
+      tour_sov_operating_cost: coef_c
+    c_sh3:
+      ASC: sh3_ASC
+      dest_employment_density: dest_employment_density_sh3
+      tour_sov_in_vehicle_time: coef_ivt
+      tour_sov_operating_cost: coef_c
+    d_bus:
+      ASC: bus_ASC
+      dest_cbd: cbd_bus
+      tour_bus_fare: coef_c
+      tour_bus_in_vehicle_time: coef_ivt
+    e_train:
+      ASC: train_ASC
+      dest_cbd: cbd_train
+      tour_train_fare: coef_c
+      tour_train_in_vehicle_time: coef_ivt
+    f_walk:
+      ASC: walk_ASC
+      walk_time_beyond_2_of_a_miles: coef_ivt
+      walk_time_up_to_2_miles: coef_ivt
+    g_bike:
+      ASC: bike_ASC
+      bike_time_beyond_6_of_a_miles: coef_ivt
+      bike_time_up_to_6_miles: coef_ivt
+    h_tnc:
+      ASC: tnc_ASC
+      tour_sov_in_vehicle_time: coef_ivt
+      tour_tnc_cost: coef_c
+    i_telecommute:
+      ASC: telecommute_ASC
+  name: mode_choice_logsum
+  nest:
+    alternatives:
+      - alternatives:
+          - 1
+          - 2
+          - 3
+        coefficient: 1.25
+        name: motorized
+      - alternatives:
+          - 4
+          - 5
+        coefficient: 1.25
+        name: transit
+      - alternatives:
+          - 6
+          - 7
+        coefficient: 1.25
+        name: non_motorize
+      - alternatives:
+          - 8
+        coefficient: 1.0
+        name: tnc
+      - alternatives:
+          - 9
+        coefficient: 1.0
+        name: telecommute
+    coefficient: 1.0
+    name: root
+  template: null
