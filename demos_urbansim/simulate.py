@@ -1,7 +1,5 @@
 import argparse
-import grp
 import os
-import pwd
 
 import numpy as np
 import orca
