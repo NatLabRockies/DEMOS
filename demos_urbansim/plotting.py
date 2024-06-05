@@ -1,10 +1,7 @@
 """Plot average trips on weekdays by hour of day for dry and wet weather.
 """
-import sys
-import os
 import argparse
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns

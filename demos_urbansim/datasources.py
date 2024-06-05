@@ -8,9 +8,7 @@ import orca
 import pandas as pd
 import yaml
 from google.cloud import storage
-from urbansim_templates import modelmanager as mm
 from urbansim_templates.data import LoadTable
-from urbansim_templates.models import LargeMultinomialLogitStep, OLSRegressionStep
 
 print("importing datasources")
 

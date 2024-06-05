@@ -3,9 +3,7 @@ import os
 
 import numpy as np
 import orca
-import pandas as pd
 from urbansim_templates import modelmanager as mm
-from urbansim_templates.models import LargeMultinomialLogitStep, OLSRegressionStep
 
 
 def run(
