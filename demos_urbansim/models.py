@@ -4279,23 +4279,23 @@ if orca.get_injectable("running_calibration_routine") == False:
         mlcm_postprocessing = ["mlcm_postprocessing"]
         update_income = ["update_income"]
         steps_all_years = (
-            start_of_year_models
-            + demo_models
-            + work_models
+            #start_of_year_models
+            demo_models
+            # + work_models
             # + school_models
-            + ["work_location_stats"]
-            + price_models
-            + ["work_location_stats"]
-            + developer_models
-            + ["work_location_stats"]
-            + household_models
-            + ["work_location_stats"]
-            + employment_models
-            + ["work_location_stats"]
+            # + ["work_location_stats"]
+            # + price_models
+            # + ["work_location_stats"]
+            # + developer_models
+            # + ["work_location_stats"]
+            # + household_models
+            # + ["work_location_stats"]
+            # + employment_models
+            # + ["work_location_stats"]
             + end_of_year_models
-            + ["income_stats"]
-            + mlcm_postprocessing
-            + ["work_location_stats"]
+            # + ["income_stats"]
+            # + mlcm_postprocessing
+            # + ["work_location_stats"]
             + export_demo_steps
         )
     else:
