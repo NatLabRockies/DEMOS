@@ -3,9 +3,7 @@ import os
 
 import numpy as np
 import orca
-import pandas as pd
 from urbansim_templates import modelmanager as mm
-from urbansim_templates.models import LargeMultinomialLogitStep, OLSRegressionStep
 
 
 def run(
@@ -127,4 +125,3 @@ if __name__ == '__main__':
     # breakpoint()
     # uid = pwd.getpwnam(usernmae).pw_uid
     # gid = grp.getgrnam(groupname).gr_gid
-    os.chown(output_fname, uid, gid)

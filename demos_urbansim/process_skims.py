@@ -1,5 +1,4 @@
 import pandas as pd
-import geopandas
 
 beam_skims_types = {'timePeriod': str,'pathType': str,'origin': int,'destination': int,'TIME_minutes': float, 'TOTIVT_IVT_minutes': float, 'VTOLL_FAR': float, 'DIST_meters': float, 'WACC_minutes': float, 'WAUX_minutes': float, 'WEGR_minutes': float, 'DTIM_minutes': float, 'DDIST_meters': float, 'KEYIVT_minutes': float, 'FERRYIVT_minutes': float, 'BOARDS': float, 'DEBUG_TEXT': str}
 

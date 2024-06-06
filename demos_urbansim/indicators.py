@@ -1,4 +1,3 @@
-import os
 import orca
 import yaml
 import json
