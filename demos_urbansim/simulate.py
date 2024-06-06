@@ -125,4 +125,3 @@ if __name__ == '__main__':
     # breakpoint()
     # uid = pwd.getpwnam(usernmae).pw_uid
     # gid = grp.getgrnam(groupname).gr_gid
-    os.chown(output_fname, uid, gid)
