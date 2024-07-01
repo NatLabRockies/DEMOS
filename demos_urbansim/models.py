@@ -246,12 +246,17 @@ def fatality_model(persons, households, year):
     target_share = target / persons_df.shape[0]
 
     error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
+    print("The Fatality Model Calibration:")
+    calibrate_time = 0
     while error >= 1000:
+        print(f"{calibrate_time} time: {error}")
         mortality.fitted_parameters[0] += np.log(target.sum()/fatality_list.sum())
         mortality.run()
         fatality_list = mortality.choices.astype(int)
         predicted_share = fatality_list.sum() / persons_df.shape[0]
         error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
+        calibrate_time += 1
+    print(f"{calibrate_time} time: {error}")
     # print("Fatality list count: ", fatality_list.value_counts())
     # print(fatality_list.sum(), " fatalities")
     # print("Fatality list shape: ", fatality_list.shape)
@@ -863,13 +868,17 @@ def laborforce_model(persons, year):
     target_share = observed_stay_unemployed[observed_stay_unemployed["year"]==year]["share"]
     target = target_share * stay_unemployed_list.shape[0]
     error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-    
+    print("The Labor Force In Model Calibration:")
+    calibrate_time = 0
     while error >= 0.01:
+        print(f"{calibrate_time} time: {error}")
         in_workforce_model.fitted_parameters[0] += np.log(target.sum()/stay_unemployed_list.sum())
         in_workforce_model.run()
         stay_unemployed_list = in_workforce_model.choices.astype(int)
         predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
         error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+        calibrate_time += 1
+    print(f"{calibrate_time} time: {error}")
     
     out_workforce_model = mm.get_step("exit_labor_force")
     out_workforce_model.run()
@@ -880,12 +889,17 @@ def laborforce_model(persons, year):
     target = target_share * exit_workforce_list.shape[0]
 
     error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+    print("The Labor Force Out Model Calibration:")
+    calibrate_time = 0
     while error >= 0.01:
+        print(f"{calibrate_time} time: {error}")
         out_workforce_model.fitted_parameters[0] += np.log(target.sum()/exit_workforce_list.sum())
         out_workforce_model.run()
         exit_workforce_list = out_workforce_model.choices.astype(int)
         predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
         error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+        calibrate_time += 1
+    print(f"{calibrate_time} time: {error}")
 
     # Update labor status
     update_labor_status(persons, stay_unemployed_list, exit_workforce_list, year)
@@ -1061,13 +1075,17 @@ def birth_model(persons, households, year):
     target_share = target / eligible_hh_df.shape[0]
 
     error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-    # print("here")
+    print("The Birth Model Calibration:")
+    calibrate_time = 0
     while error >= 1000:
+        print(f"{calibrate_time} time: {error}")
         birth.fitted_parameters[0] += np.log(target.sum()/birth_list.sum())
         birth.run()
         birth_list = birth.choices.astype(int)
         predicted_share = birth_list.sum() / eligible_hh_df.shape[0]
         error = np.sqrt(np.mean((birth_list.sum() - target)**2))
+        calibrate_time += 1
+    print(f"{calibrate_time} time: {error}")
 
     # breakpoint()
     # print("Eligible households >45",
