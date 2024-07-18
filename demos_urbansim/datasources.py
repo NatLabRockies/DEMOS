@@ -7,10 +7,10 @@ import openmatrix as omx
 import orca
 import pandas as pd
 import yaml
-from google.cloud import storage
+#from google.cloud import storage
 from urbansim_templates.data import LoadTable
 
-print("importing datasources")
+print("********** Statrt importing datasources **********")
 
 # -----------------------------------------------------------------------------------------
 # UC SIMULATIONS: ADDS SPECIAL SCENARIO INJECTABLES FROM NOTES
@@ -42,25 +42,12 @@ if len(scenario_data) > 0:
 # -----------------------------------------------------------------------------------------
 all_local = orca.get_injectable("all_local")
 if not all_local:
-    storage_client = storage.Client("swarm-test-1470707908646")
-    bucket = storage_client.get_bucket("national_block_v2")
-
-    if orca.get_injectable("local_simulation") == False:
-        uc_region_code = orca.get_injectable("mpo_id")
-        blob = bucket.get_blob("base_data/us/uc_database/regions.csv")
-        blob.download_to_filename("configs/regions.csv")
-        regions = pd.read_csv(
-            "configs/regions.csv", dtype={"region_id": object, "uc_id": object}
-        )
-        regions = regions[~regions["uc_id"].isnull()].set_index("uc_id")
-        uc_region_dict = regions.to_dict()["region_id"]
-        print("URBANCANVAS REGION CODE", uc_region_code)
-        print("BLOCK MODEL V2 REGION CODE", uc_region_dict[uc_region_code])
-        orca.add_injectable("region_code", uc_region_dict[uc_region_code])
+    # TODO: get the region code from cloud and register it into orca
+    pass
 
 region_code = orca.get_injectable("region_code")
 calibrated_folder = orca.get_injectable("calibrated_folder")
-print("importing datasources for region %s" % region_code)
+print("Importing datasources for region %s" % region_code)
 
 if len(region_code) == 2:
     region_type = "state"
@@ -71,15 +58,16 @@ elif len(region_code) == 8:
 else:
     region_type = "region"
 orca.add_injectable("region_type", region_type)
+
+#e.g. data_name is the input file, it could be 'custom_mpo_06197001_model_data.h5'
 data_name = '%s_%s_model_data.h5' % (region_type, region_code)
 if calibrated_folder == 'custom':
     data_name = 'custom_%s' % (data_name)
-# data_name = 'model_data_2017.h5'
-
 orca.add_injectable('data_name', data_name)
-print(data_name)
+print("The input file is: ", data_name)
 
 # Downloading the household totals, income rates, and move in rates
+print("Load household size counting table and register it as 'hsize_ct'.")
 hhsize_data_name = "data/hsize_ct_%s.csv" % region_code
 hhsize_data = pd.read_csv(hhsize_data_name,
                           dtype={"lcm_county_id": object,
@@ -89,6 +77,7 @@ hhsize_data = pd.read_csv(hhsize_data_name,
 hhsize_data = hhsize_data.set_index("year")
 orca.add_table("hsize_ct", hhsize_data)
 
+print("Load income rate and register it as 'income_rates'.")
 income_rates_data_name = "data/income_rates_%s.csv" % region_code
 income_rates_data = pd.read_csv(income_rates_data_name,
                                 dtype={"lcm_county_id": object,
@@ -96,44 +85,41 @@ income_rates_data = pd.read_csv(income_rates_data_name,
                                        "rate": float})
 orca.add_table("income_rates", income_rates_data)
 
-
+print("Load relmap and register it as 'rel_map'.")
 rel_map_data_name = "data/relmap_%s.csv" % region_code
 rel_map_data = pd.read_csv(rel_map_data_name).set_index("index")
 orca.add_table("rel_map", rel_map_data)
 
+#read the calibration data
+print("Read calibration data for birth model.")
 observed_births_data_name = "outputs/calibration/%s/births_over_time_obs.csv" % region_code
 observed_births_data = pd.read_csv(observed_births_data_name) 
 orca.add_table("observed_births_data", observed_births_data)
 
+print("Read calibration data for fatality model.")
 observed_fatalities_data_name = "outputs/calibration/%s/mortalities_over_time_obs.csv" % region_code
 observed_fatalities_data = pd.read_csv(observed_fatalities_data_name)
 orca.add_table("observed_fatalities_data", observed_fatalities_data)
 
+print("Read calibration data for marriage model.")
 observed_marrital_data_name = "outputs/calibration/%s/marrital_status_over_time_obs.csv" % region_code
 observed_marrital_data = pd.read_csv(observed_marrital_data_name)
 orca.add_table("observed_marrital_data", observed_marrital_data)
 
+print("Read calibration data for enter_labor model.")
 observed_entering_workforce_data_name = "outputs/calibration/%s/entering_workforce_obs.csv" % region_code
 observed_entering_workforce_data = pd.read_csv(observed_entering_workforce_data_name)
 orca.add_table("observed_entering_workforce", observed_entering_workforce_data)
 
+print("Read calibration data for exit_labor model.")
 observed_exiting_workforce_data_name = "outputs/calibration/%s/exiting_workforce_obs.csv" % region_code
 observed_exiting_workforce_data = pd.read_csv(observed_exiting_workforce_data_name)
 orca.add_table("observed_exiting_workforce", observed_exiting_workforce_data)
 
-# observed_enrollment_data_name = "outputs/calibration/%s/enrollment_over_time_obs.csv" % region_code
-# observed_enrollment_data = pd.read_csv(observed_enrollment_data_name)
-# orca.add_table("observed_enrollment_data", observed_enrollment_data)
-
 
 if not all_local:
-    if not os.path.exists("data/%s" % data_name):
-        print("Downloading model_data from ", "model_data/%s" % data_name)
-        blob = bucket.get_blob("model_data/%s" % data_name)
-        blob.download_to_filename("./data/%s" % data_name)
-        print("Download of model_data.h5 file done")
-    else:
-        print("Not downloading model_data.h5, since already exists")
+    # TODO: download the input file from the cloud to data folder.
+    pass
 else:
     if not os.path.exists("data/%s" % data_name):
         raise OSError("No input data found at data/%s" % data_name)
@@ -171,19 +157,21 @@ hdf_tables = [
     "work_locations"
     
 ]
-mlcm_tables = {"school_locations": ["person_id", "school_id"],
-    "work_locations": ["person_id", "work_block_id"]}
 
+print("Register mlcm tables as 'school_locations' and 'work_locations'.")
+mlcm_tables = {"school_locations": ["person_id", "school_id"],
+                 "work_locations": ["person_id", "work_block_id"]}
 for t, c in mlcm_tables.items():
     data = pd.DataFrame(columns=c)
     orca.add_table(t, data)
 
-
+print("Add 'metadata' as a hdf table")
 store = pd.HDFStore(hdf_path)
 if "/metadata" in store.keys():
     hdf_tables += ["metadata"]
 store.close()
 
+print("Register all tables of the input file.")
 for table_name in hdf_tables:
     step_name = "load_" + table_name
     LoadTable(
@@ -194,8 +182,9 @@ for table_name in hdf_tables:
         name=step_name,
     ).run()
 
-
+# make metadata table if it is not in the input file, storing maxperson id and max household id.
 if "metadata" not in orca.list_tables():
+    print("Create metadata table.")
     metadata = pd.DataFrame(columns=["value"], index=["max_p_id", "max_hh_id"])
     print(orca.list_tables())
     max_p_id = orca.get_table("persons").local.index.max()
@@ -207,26 +196,21 @@ if "metadata" not in orca.list_tables():
     store["metadata"] = metadata
     store.close()
 
+print("Add work and school stuff in persons")
 persons = orca.get_table("persons").local
-# breakpoint()
-print(persons.columns)
+print("Properties in persons: ", persons.columns)
 persons["work_block_id"] = "-1"
 persons["workplace_taz"] = "-1"
 persons["school_id"] = "-1"
 persons["school_block_id"] = "-1"
 persons["school_taz"] = "-1"
-
 orca.add_table("persons", persons)
 
-# breakpoint()
-
-# Getting income distribution
-
+print("Add age and edu grp in persons")
 persons = orca.get_table("persons").local
 # Define the intervals for age and education
 age_intervals = [0, 20, 30, 40, 50, 65, 900]
 education_intervals = [0, 18, 22, 200]
-
 # Define the labels for age and education groups
 age_labels = ['lte20', '21-29', '30-39', '40-49', '50-64', 'gte65']
 education_labels = ['lte17', '18-21', 'gte22']
@@ -234,16 +218,18 @@ education_labels = ['lte17', '18-21', 'gte22']
 persons['age_group'] = pd.cut(persons['age'], bins=age_intervals, labels=age_labels, include_lowest=True).astype(str)
 persons['education_group'] = pd.cut(persons['edu'], bins=education_intervals, labels=education_labels, include_lowest=True).astype(str)
 
+print("Create income_dist of workers and register it")
 # Group by age and education groups and calculate mean and std deviation of earning
 income_dist = persons[persons["worker"]==1].groupby(['age_group', 'education_group']).agg(
     data_mean = ('earning', 'mean'),
     data_std = ('earning', 'std')).reset_index()
-
 # Convert to the parameters of the underlying normal distribution
 income_dist["mu"] = np.log(income_dist["data_mean"]**2 / np.sqrt(income_dist["data_std"]**2 + income_dist["data_mean"]**2))
 income_dist["sigma"] = np.sqrt(np.log(1 + income_dist["data_std"]**2 / income_dist["data_mean"]**2))
-
+print("Show the first 5 rows of income_dist tables: \n", income_dist.head(5))
 orca.add_table("income_dist", income_dist)
+
+print("All registered tables: ", orca.list_tables())
 
 # -----------------------------------------------------------------------------------------
 # DOWNLOADS CUSTOM SETTINGS IF AVAILABLE
@@ -253,34 +239,20 @@ if calibrated_folder == "custom":
     # Custom settings, useful for the definition of time-based accessibility variables
     print("Checking if custom_settings.yaml file exists")
     if not all_local:
-        blob = bucket.blob(
-            "calibrated_configs/custom/custom_%s_%s/custom_settings.yaml"
-            % (region_type, region_code)
-        )
-        if blob.exists():
-            print("Downloading custom_settings.yaml")
-            blob.download_to_filename("configs/custom_settings.yaml")
-            with open("configs/custom_settings.yaml") as f:
-                custom_settings = yaml.load(f, Loader=yaml.FullLoader)
-            orca.add_injectable("custom_settings", custom_settings)
-    else:
-        try:
-            with open("configs/custom_settings.yaml") as f:
-                custom_settings = yaml.load(f, Loader=yaml.FullLoader)
-            orca.add_injectable("custom_settings", custom_settings)
-        except OSError:
-            raise OSError("No settings found at configs/custom_settings.yaml")
+        # TODO: Download custom_settings.yaml to config folder
+        pass
+    try:
+        with open("configs/custom_settings.yaml") as f:
+            custom_settings = yaml.load(f, Loader=yaml.FullLoader)
+        orca.add_injectable("custom_settings", custom_settings)
+    except OSError:
+        raise OSError("No settings found at configs/custom_settings.yaml")
 
     # Custom output parameters, useful when variables change from default
     print("Checking if custom output_parameters.yaml file exists")
     if not all_local:
-        blob = bucket.blob(
-            "calibrated_configs/custom/custom_%s_%s/output_parameters.yaml"
-            % (region_type, region_code)
-        )
-        if blob.exists():
-            print("Downloading custom output_parameters.yaml")
-            blob.download_to_filename("configs/output_parameters.yaml")
+        # TODO: Download output_parameters to config folder
+        pass
     else:
         if not os.path.exists("configs/output_parameters.yaml"):
             raise OSError("No settings found at configs/output_parameters.yaml")
@@ -290,13 +262,8 @@ if calibrated_folder == "custom":
         print("Checking if custom pf_vars.yaml file exists")
 
         if not all_local:
-            blob = bucket.blob(
-                "calibrated_configs/custom/custom_%s_%s/pf_vars.yaml"
-                % (region_type, region_code)
-            )
-            if blob.exists():
-                print("Downloading custom pf_vars.yaml")
-                blob.download_to_filename("pf_vars.yaml")
+            # TODO: Download pf_vars.yaml to 'configs/calibrated_configs/custom/custom_%s_%s' folder
+            pass
         else:
             if not os.path.exists("pf_vars.yaml"):
                 raise OSError("No settings found at ./pf_vars.yaml")
@@ -322,6 +289,7 @@ def register_aggregation_table(table_name, table_id):
 
 
 # Aggregate-geography tables
+print("Create aggregate tables and register them.")
 aggregate_geos = [
     ("pumas", "puma10_id"),
     ("counties", "county_id"),
@@ -343,7 +311,7 @@ for geog in aggregate_geos:
 # DEFINES YEAR INJECTABLE
 # -----------------------------------------------------------------------------------------
 
-
+print("Register current year of the current iteration")
 @orca.injectable("year")
 def year():
     default_year = orca.get_injectable("base_year")
@@ -357,15 +325,17 @@ def year():
 # -----------------------------------------------------------------------------------------
 # DEFINES BUILDING TYPES
 # -----------------------------------------------------------------------------------------
-
+print("Fix buiding type in resident_unit table if need")
 btypes_dict = {"sf_own": 1, "sf_rent": 2, "mf_own": 3, "mf_rent": 4}
 orca.add_injectable("btypes_dict", btypes_dict)
 units = orca.get_table("residential_units").local.copy()
 
 if units["building_type_id"].isin(list(btypes_dict.values())).all():
     # btypes already converted
+    print("No need fix.")
     pass
 else:
+    print("Need fix.")
     units["building_type"] = units["building_type_id"].copy()
     units["building_type"] = units["building_type"] + "_" + units["tenure"]
     if units["building_type"].isin(list(btypes_dict.keys())).all():
@@ -378,26 +348,28 @@ else:
 # -----------------------------------------------------------------------------------------
 # DEFINES DEFAULT TARGET VACANCY FOR REAL ESTATE TRANSITION
 # -----------------------------------------------------------------------------------------
-
+print("Calculate vacancy and register it.")
 vacancy = 1 - (
     len(orca.get_table("households")) * 1.0 / len(orca.get_table("residential_units"))
 )
 orca.add_injectable("vacancy", vacancy * 1.15)
 
-
 # -----------------------------------------------------------------------------------------
 # COMBINE VALIDATION AND FORECAST CONTROL TOTALS
 # -----------------------------------------------------------------------------------------
-
+print("Forecast hct and ect.")
 hct = orca.get_table("validation_hct").local.reset_index()
 ect = orca.get_table("validation_ect").local.reset_index()
-
+print("validation_hct table: \n", hct.head())
+print("validation_ect table: \n", ect.head())
 # if orca.get_injectable('segmented_lcms') == True:
 #    hct = hct.groupby(['year', 'hh_type'])['total_number_of_households'].sum().reset_index()
 #    ect = ect.groupby(['year', 'agg_sector'])['total_number_of_jobs'].sum().reset_index()
 # else:
 hct = hct.groupby(["year"])["total_number_of_households"].sum().reset_index()
 ect = ect.groupby(["year"])["total_number_of_jobs"].sum().reset_index()
+print("validation_hct table after grp: \n", hct.head())
+print("validation_ect table after grp: \n", ect.head())
 try:
     forecast_hct = (
         orca.get_table("hct")
@@ -465,6 +437,7 @@ orca.add_table("ect", ect.set_index("year"))
 # -----------------------------------------------------------------------------------------
 # ADD ACTIVITYSIM SKIMS DATA
 # -----------------------------------------------------------------------------------------
+print("Handle skim data.")
 skims = omx.open_file('data/skims_mpo_{}.omx'.format(region_code),'r')
 orca.add_injectable('asim_skims', skims)
 
@@ -511,10 +484,11 @@ def update_travel_data(travel_data):
     t = travel_data.local
     t = add_missing_combinations(t)
     orca.add_table('travel_data', t)
+
 # -----------------------------------------------------------------------------------------
 # ADD DEMOS TABLES
 # -----------------------------------------------------------------------------------------
-
+print("Register DEMOS as empty tables")
 demos_tables = [
     "graveyard",
     "pop_over_time",
@@ -550,20 +524,19 @@ demos_tables = [
     "school_locations",
     "work_locations"
 ]
-
 for table in demos_tables:
     orca.add_table(table, pd.DataFrame())
 
-
-# orca.add_injectable("max_p_id", orca.get_table("persons").local.index.max())
-# orca.add_injectable("max_hh_id", orca.get_table("households").local.index.max())
-
+print("Register persons and households columns.")
 orca.add_injectable("persons_local_cols", orca.get_table("persons").local.columns)
 orca.add_injectable("households_local_cols", orca.get_table("households").local.columns)
 
+print("Register geoid_to_zone table.")
 geoid_to_zone = pd.read_csv("data/geoid_to_zone.csv", dtype={"GEOID": str, "zone_id": str})
 geoid_to_zone["GEOID10"] = geoid_to_zone["GEOID"].copy()
+orca.add_table("geoid_to_zone", geoid_to_zone)
 
+print("Register blocks_distr table.")
 blocks_districts = pd.read_csv("data/blocks_school_districts_2010.csv")
 blocks_districts["UNIFIED_DISTRICT"] = np.where(blocks_districts["SCHOOL_DIST_TYPE"]=="UNIFIED", 1, 0)
 blocks_districts["GEOID10"] = ["0"+str(x) for x in blocks_districts["GEOID10_BLOCK"]]
@@ -572,11 +545,10 @@ blocks_districts["DISTRICT_LEVEL"] = blocks_districts.apply(lambda row: (row['GE
 blocks_districts = blocks_districts.merge(geoid_to_zone, how="left", on=["GEOID10"])
 blocks_districts = blocks_districts.rename(columns={"zone_id": "school_taz"})
 blocks_districts["school_block_id"] = blocks_districts["GEOID10"].copy()
-
 orca.add_table("blocks_districts", blocks_districts)
-orca.add_table("geoid_to_zone", geoid_to_zone)
 
 
+print("Register school tables.")
 schools_df = pd.read_csv("data/schools_2010.csv", dtype={"GEOID10": str, "SCHOOL_ID": str})
 schools_df['CAP_TOTAL_INC'] = schools_df['CAP_TOTAL'] * 1.2
 schools_df['REM_CAP'] = schools_df['CAP_TOTAL_INC']
@@ -584,7 +556,6 @@ schools_df["GEOID10"] = ["0"+str(x) for x in schools_df["GEOID10"]]
 schools_df["GEOID10_SD"] = ["0"+str(x) for x in schools_df["NCESDist"]]
 schools_df["school_id"] = schools_df["SCHOOL_ID"].copy()
 schools_df = schools_df[~(schools_df["school_id"]=="0000000")].copy()
-
 orca.add_table("schools", schools_df)
 
 # -----------------------------------------------------------------------------------------
@@ -610,12 +581,18 @@ def read_yaml(path):
 region_code = orca.get_injectable("region_code")
 calibrated_folder = orca.get_injectable("calibrated_folder")
 skim_source = orca.get_injectable("skim_source")
-calibrated_path = os.path.join(
-    'calibrated_configs/', calibrated_folder, region_code)
+calibrated_path = os.path.join('calibrated_configs', calibrated_folder, region_code)
 if os.path.exists(os.path.join('configs', calibrated_path, skim_source)):
     calibrated_path = os.path.join(calibrated_path, skim_source)
-configs_folder = 'configs/' + calibrated_path if orca.get_injectable('calibrated') else 'estimated_configs'
-marriage_model = read_yaml(configs_folder + "/marriage.yml")
+configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable('calibrated') else 'estimated_configs')
+print("Models' folder: ", configs_folder)
+
+print("Register marriage model.")
+marriage_model = read_yaml(os.path.join(configs_folder, "marriage.yml"))
 orca.add_injectable("marriage_model", marriage_model)
-cohabitation_model = read_yaml(configs_folder + "/cohabitation.yaml")
+
+print("Register cohabitation model.")
+cohabitation_model = read_yaml(os.path.join(configs_folder, "cohabitation.yaml"))
 orca.add_injectable("cohabitation_model", cohabitation_model)
+
+print("********** End importing datasources **********")
