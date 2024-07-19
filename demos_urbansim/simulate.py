@@ -1,5 +1,5 @@
 import argparse
-import os
+# import os
 
 import numpy as np
 import orca
@@ -34,17 +34,9 @@ def run(
     if random_seed:
         np.random.seed(random_seed)
 
-    calibrated_path = os.path.join(
-        'calibrated_configs/', calibrated_folder, region_code)
-    if os.path.exists(os.path.join('configs', calibrated_path, skim_source)):
-        calibrated_path = os.path.join(calibrated_path, skim_source)
-    configs_folder = calibrated_path if orca.get_injectable('calibrated') else 'estimated_configs'
-    mm.initialize('configs/' + configs_folder)
+    mm.initialize(datasources.configs_folder)
     orca.run(orca.get_injectable('pre_processing_steps'))
 
-    # for table in models.demos_tables:
-    #     orca.add_table(table, pd.DataFrame())
-    # print(datasources.hdf_tables)
     if table_save:
         out_tables = datasources.hdf_tables + ["graveyard"]
     else:
@@ -60,14 +52,6 @@ def run(
         out_run_local=True,
         out_interval= 1
     )
-    # update_demos.dead_facts()
-    # update_demos.calculate(True)
-    # update_demos.export('pop_over_time')
-    # update_demos.export('age_over_time')
-    # update_demos.export('edu_over_time')
-    # update_demos.export('households')
-    # update_demos.export('graveyard')
-    # orca.run(orca.get_injectable('export_demo_stats'))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -115,13 +99,13 @@ if __name__ == '__main__':
         calibrated, calibrated_folder, multi_level, segmented, capacity_boost,
         all_local, freq_interval, output_fname, skim_source, random_match, table_save, scenario_name)
 
-    # make sure output data has same permissions as input (only an
-    # issue when running from inside docker which will execute this
-    # script as root)
-    input_data_name = orca.get_injectable('data_name')
-    data_stats = os.stat('data/{0}'.format(input_data_name))
-    uid = data_stats.st_uid
-    gid = data_stats.st_gid
+    # TODO: make sure output data has same permissions as input (only an
+    #       issue when running from inside docker which will execute this
+    #       script as root)
+    # input_data_name = orca.get_injectable('data_name')
+    # data_stats = os.stat('data/{0}'.format(input_data_name))
+    # uid = data_stats.st_uid
+    # gid = data_stats.st_gid
     # breakpoint()
     # uid = pwd.getpwnam(usernmae).pw_uid
     # gid = grp.getgrnam(groupname).gr_gid
