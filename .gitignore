@@ -1,1 +1,4 @@
 */__pycache__
+.idea
+demos_urbansim/outputs/simulation/**/*
+demos_urbansim/outputs/figures
