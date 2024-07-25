@@ -35,7 +35,6 @@ def run(
         np.random.seed(random_seed)
 
     mm.initialize(datasources.configs_folder)
-    orca.run(orca.get_injectable('pre_processing_steps'))
 
     if table_save:
         out_tables = datasources.hdf_tables + ["graveyard"]

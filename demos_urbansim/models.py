@@ -1,38 +1,37 @@
-import math
+#import math
 import os
 import time
 import warnings
-from operator import index
-from typing import Sized
+#from operator import index
+#from typing import Sized
 
 warnings.filterwarnings("ignore")
 
 import indicators
 import numpy as np
 import orca
-import pandana as pdna
+#import pandana as pdna
 import pandas as pd
-import stopwatch
-import yaml
-from google.cloud import storage
+#import stopwatch
+#import yaml
+#from google.cloud import storage
 from scipy.spatial.distance import cdist
 from scipy.special import softmax
-from urbansim.developer import developer
+#from urbansim.developer import developer
 
 # import demo_models
-from urbansim.models import GrowthRateTransition, transition
+#from urbansim.models import GrowthRateTransition, transition
 from urbansim_templates import modelmanager as mm
-from urbansim_templates.models import BinaryLogitStep, OLSRegressionStep
+from urbansim_templates.models import BinaryLogitStep
 
-# modelmanager.initialize()
 
-print("importing models for region", orca.get_injectable("region_code"))
+print("Importing models for region", orca.get_injectable("region_code"))
 
 # -----------------------------------------------------------------------------------------
 # PREPROCESSING
 # -----------------------------------------------------------------------------------------
 
-@orca.step("work_location")
+'''@orca.step("work_location")
 def work_location(persons):
 
     # This workaorund is necesary to make the work
@@ -114,7 +113,7 @@ def build_networks(blocks, block_groups, nodes, edges):
     block_groups["node_id"] = net.get_node_ids(block_groups["x"], block_groups["y"])
     orca.add_column("block_groups", "node_id", block_groups["node_id"])
 
-    orca.add_injectable("net", net)
+    orca.add_injectable("net", net)'''
 
 
 # def read_yaml(path):
@@ -145,7 +144,7 @@ def simulation_mnl(data, coeffs):
     return pd.Series(index=data.index, data=choices)
 
 
-@orca.step("add_temp_variables")
+'''@orca.step("add_temp_variables")
 def add_temp_variables():
     """Adds temporary variables to the persons and
     households tables.
@@ -166,7 +165,7 @@ def remove_temp_variables():
     """
     persons = orca.get_table("persons").local
     persons = persons.drop(columns=["dead", "stop", "kid_moves"])
-    orca.add_table("persons", persons)
+    orca.add_table("persons", persons)'''
 
 
 # -----------------------------------------------------------------------------------------
@@ -1560,7 +1559,7 @@ def update_households_after_kids(persons, households, kids_moving):
     orca.add_table("kids_move_table", kids_moving_table)
 
 
-def extract_students(persons):
+'''def extract_students(persons):
     edu_levels = np.arange(3, 16).astype(float)
     STUDENTS_CONDITION = (persons["student"]==1) & (persons["edu"].isin(edu_levels))
     students_df = persons[STUDENTS_CONDITION].copy()
@@ -1613,9 +1612,9 @@ def create_results_table(students_df, assigned_students_list, year):
                                                                                     "SCHOOL_ID": "school_id",})
     school_assignment_df = students_df[["person_id"]].merge(assigned_students_df[["person_id", "school_id", "GEOID10_SD"]], on="person_id", how='left').fillna("-1")
     school_assignment_df["year"] = year
-    return school_assignment_df
+    return school_assignment_df'''
 
-@orca.step("mlcm_postprocessing")
+'''@orca.step("mlcm_postprocessing")
 def mlcm_postprocessing(persons):
     # breakpoint()
     # SCHOOL
@@ -1679,7 +1678,7 @@ def school_location(persons, households, year):
     school_assignment_df = create_results_table(students_df, assigned_students_list, year)
     # breakpoint()
     # At this breakpoint, figure out how many still don't have an assignment
-    orca.add_table("school_locations", school_assignment_df[["person_id", "school_id"]])
+    orca.add_table("school_locations", school_assignment_df[["person_id", "school_id"]])'''
 
 @orca.step("kids_moving_model")
 def kids_moving_model(persons, households):
@@ -3402,7 +3401,7 @@ def print_marr_stats():
 # -----------------------------------------------------------------------------------------
 
 
-@orca.step('household_transition')
+'''@orca.step('household_transition')
 def household_transition(households, persons, year, metadata):
     # breakpoint()
     # at this breakpoint, look at the persons table
@@ -3856,7 +3855,7 @@ def simple_relocation(choosers, relocation_rate, fieldname):
     print("Assigning for relocation...")
     chooser_ids = np.random.choice(choosers.index, size=int(relocation_rate * len(choosers)), replace=False)
     choosers.update_col_from_series(fieldname, pd.Series('-1', index=chooser_ids))
-    print("Total currently unplaced: %d" % choosers[fieldname].value_counts().get("-1", 0))
+    print("Total currently unplaced: %d" % choosers[fieldname].value_counts().get("-1", 0))'''
 
 # -----------------------------------------------------------------------------------------
 # POSTPROCESSING
@@ -4106,7 +4105,7 @@ def generate_metrics(year, persons, households):
 
 all_local = orca.get_injectable("all_local")
 if orca.get_injectable("running_calibration_routine") == False:
-    region_code = orca.get_injectable("region_code")
+    '''region_code = orca.get_injectable("region_code")
 
     if not all_local:
         storage_client = storage.Client("swarm-test-1470707908646")
@@ -4272,11 +4271,11 @@ if orca.get_injectable("running_calibration_routine") == False:
                     raise OSError(
                         "No model config found at ./configs/estimated_configs/%s.yaml"
                         % f
-                    )
+                    )'''
 
     if orca.get_injectable("local_simulation") == True:
-        add_variables = ["add_temp_variables"]
-        start_of_year_models = ["status_report"]
+        # add_variables = ["add_temp_variables"]
+        # start_of_year_models = ["status_report"]
         demo_models = [
             "update_age",
             "laborforce_model",
@@ -4287,15 +4286,14 @@ if orca.get_injectable("running_calibration_routine") == False:
             "education_model",
             "export_demo_stats",
         ]
-        pre_processing_steps = price_models + ["build_networks", "generate_outputs", "update_travel_data"]
-        rem_variables = ["remove_temp_variables"]
+        '''rem_variables = ["remove_temp_variables"]
         export_demo_steps = ["export_demo_stats"]
         household_stats = ["household_stats"]
         school_models = ["school_location"]
         end_of_year_models = ["generate_outputs"]
         work_models = ["work_location"]
         mlcm_postprocessing = ["mlcm_postprocessing"]
-        update_income = ["update_income"]
+        update_income = ["update_income"]'''
         steps_all_years = (
             #start_of_year_models
             demo_models
@@ -4310,13 +4308,13 @@ if orca.get_injectable("running_calibration_routine") == False:
             # + ["work_location_stats"]
             # + employment_models
             # + ["work_location_stats"]
-            + end_of_year_models
+            # + end_of_year_models
             # + ["income_stats"]
             # + mlcm_postprocessing
             # + ["work_location_stats"]
-            + export_demo_steps
+            # + export_demo_steps
         )
-    else:
+    '''else:
         start_of_year_models = [
             "status_report",
             "skim_swapper",
@@ -4335,7 +4333,5 @@ if orca.get_injectable("running_calibration_routine") == False:
             + household_models
             + employment_models
             + end_of_year_models
-        )
+        )'''
     orca.add_injectable("sim_steps", steps_all_years)
-    orca.add_injectable("pre_processing_steps", pre_processing_steps)
-    orca.add_injectable("export_demo_stats", export_demo_steps)
