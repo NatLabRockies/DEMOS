@@ -479,11 +479,10 @@ def add_missing_combinations(df):
 
     return new_df
 
-@orca.step('update_travel_data')
-def update_travel_data(travel_data):
-    t = travel_data.local
-    t = add_missing_combinations(t)
-    orca.add_table('travel_data', t)
+print("Update travel data table's index.")
+travel_data = orca.get_table("travel_data")
+t = add_missing_combinations(travel_data.local)
+orca.add_table('travel_data', t)
 
 # -----------------------------------------------------------------------------------------
 # ADD DEMOS TABLES
