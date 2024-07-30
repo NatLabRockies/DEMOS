@@ -563,7 +563,7 @@ orca.add_table("schools", schools_df)
 output_folder = "outputs/simulation/%s/" % region_code
 if not os.path.exists(output_folder):
     print("Creating output folder")
-    os.mkdir(output_folder)
+    os.makedirs(output_folder)
 else:
     print("Output path exists!")
 orca.add_injectable("output_folder", output_folder)
