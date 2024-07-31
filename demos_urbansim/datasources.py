@@ -8,7 +8,7 @@ import orca
 import pandas as pd
 import yaml
 #from google.cloud import storage
-from urbansim_templates.data import LoadTable
+from templates.data import LoadTable
 
 print("********** Statrt importing datasources **********")
 
