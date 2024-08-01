@@ -12,12 +12,12 @@ with open('README.md', 'r') as f:
     long_description = f.read()
 
 setup(
-    name='demos_urbansim',
+    name='demos',
     version='0.1dev',
-    description='Scripts to run demos & urbansim',
+    description='Scripts to run demos',
     long_description=long_description,
-    author='UrbanSim Inc.',
-    author_email='info@urbansim.com',
-    url='https://github.com/urbansim/DEMOS_URBANSIM',
-    classifiers=['Programming Language :: Python :: 3.6'],
+    author='NREL',
+    author_email='@nrel.gov',
+    url='https://github.com/NREL/DEMOS_NREL',
+    classifiers=['Programming Language :: Python :: 3.8'],
 )

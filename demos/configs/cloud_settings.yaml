@@ -1,9 +1,9 @@
 # Required. Python modules that contain orca registrations.  Omit the '.py'
 orca_modules:
-    - demos_urbansim.datasources
-    - demos_urbansim.variables
-    - demos_urbansim.models
-    - demos_urbansim.update_demos
+    - demos.datasources
+    - demos.variables
+    - demos.models
+    - demos.update_demos
     - urbansim_hooks.block.hooks
 
 # Model manager module
@@ -52,12 +52,12 @@ output_storage:
         provider: gcs
         project: urbansim-cloud
         bucket: urbansim-stage
-        path: results/demos_urbansim
+        path: results/demos
     prod:
         provider: gcs
         project: urbansim-cloud
         bucket: urbansim_models
-        path: results/demos_urbansim
+        path: results/demos
 
 model_description: National Block Model
 
