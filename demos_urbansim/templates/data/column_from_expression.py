@@ -1,8 +1,6 @@
-import orca
-import pandas as pd
-
-from urbansim_templates import modelmanager, shared, utils, __version__
-from urbansim_templates.shared import CoreTemplateSettings, OutputColumnSettings
+from .. import modelmanager, shared, __version__
+from ..shared import CoreTemplateSettings, OutputColumnSettings
+from ..utils import misc
 
 
 class ExpressionSettings():
@@ -138,10 +136,10 @@ class ColumnFromExpression():
         if settings.table is None:
             settings.table = self.data.table
 
-        cols = utils.cols_in_expression(self.data.expression)
+        cols = misc.cols_in_expression(self.data.expression)
         
         def build_column():
-            df = utils.get_df(self.data.table, columns=cols)
+            df = misc.get_df(self.data.table, columns=cols)
             series = df.eval(self.data.expression)
             return series
 

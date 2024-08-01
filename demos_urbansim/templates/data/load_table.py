@@ -10,7 +10,7 @@ import os
 import orca
 import pandas as pd
 
-from urbansim_templates import modelmanager, __version__
+from .. import modelmanager, __version__
 
 
 @modelmanager.template

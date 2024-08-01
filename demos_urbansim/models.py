@@ -14,7 +14,6 @@ import orca
 import pandas as pd
 #import stopwatch
 #import yaml
-#from google.cloud import storage
 from scipy.spatial.distance import cdist
 from scipy.special import softmax
 

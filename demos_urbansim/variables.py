@@ -6,10 +6,19 @@ import numpy as np
 import orca
 import pandas as pd
 import yaml
-from urbansim.utils import misc
 
-print('importing variables for region', orca.get_injectable('region_code'))
+print('Importing variables for region', orca.get_injectable('region_code'))
 
+# ----------------------------------------------------------------------------------------
+# COMMON FUNCTIONS
+# -----------------------------------------------------------------------------------------
+def reindex(series1, series2):
+    df = pd.merge(pd.DataFrame({"left": series2}),
+                  pd.DataFrame({"right": series1}),
+                  left_on="left",
+                  right_index=True,
+                  how="left")
+    return df.right
 
 # -----------------------------------------------------------------------------------------
 # WORK LOCATION CHOICE VARIABLES
@@ -102,11 +111,11 @@ def jobs_capacity(jobs):
 
 @orca.column('persons')
 def taz_pct_no_higher_ed(persons, zones):
-    return misc.reindex(zones.pct_no_higher_ed, persons.home_taz)
+    return reindex(zones.pct_no_higher_ed, persons.home_taz)
 
 @orca.column('persons')
 def taz_pct_hh_inc_under_25k(persons, zones):
-    return misc.reindex(zones.pct_hh_inc_under_25k, persons.home_taz)
+    return reindex(zones.pct_hh_inc_under_25k, persons.home_taz)
 
 @orca.column('blocks')
 def pct_sector_tech(jobs):
@@ -2035,11 +2044,11 @@ def dest_employment_density(travel_data, zones):
 
 @orca.column('households', cache=True)
 def home_taz(households, blocks):
-    return misc.reindex(blocks['taz_zone_id'], households['block_id']).astype(str)
+    return reindex(blocks['taz_zone_id'], households['block_id']).astype(str)
 
 @orca.column('jobs', cache=True)
 def taz(jobs, blocks):
-    return misc.reindex(blocks['taz_zone_id'], jobs['block_id']).astype(str)
+    return reindex(blocks['taz_zone_id'], jobs['block_id']).astype(str)
 
 @orca.column('zones', cache=True)
 def totpop(households):
@@ -2101,7 +2110,7 @@ def employment_density(zones):
 # def county_id(travel_data, zones):
 #     td = travel_data.local.reset_index()
 #
-#     series = misc.reindex(zones['county_id'], td['from_zone_id'].astype(str))
+#     series = reindex(zones['county_id'], td['from_zone_id'].astype(str))
 #     series.name = 'county_id'
 #
 #     df = pd.DataFrame(data = series)
@@ -2118,15 +2127,15 @@ def employment_density(zones):
 
 @orca.column('persons', cache=True)
 def home_taz(households, persons):
-    return misc.reindex(households.home_taz, persons.household_id)
+    return reindex(households.home_taz, persons.household_id)
 
 @orca.column('job_flows', cache=True)
 def from_zone_id(job_flows, blocks):
-    return misc.reindex( blocks.taz_zone_id, job_flows.home_block_id)
+    return reindex( blocks.taz_zone_id, job_flows.home_block_id)
 
 @orca.column('job_flows', cache=True)
 def to_zone_id(job_flows, blocks):
-    return misc.reindex( blocks.taz_zone_id, job_flows.work_block_id)
+    return reindex( blocks.taz_zone_id, job_flows.work_block_id)
 
 # @orca.column('travel_data', cache=True)
 # def job_flows(travel_data, job_flows):
@@ -2308,7 +2317,7 @@ def register_pandana_access_variable(column_name, onto_table, variable_to_summar
         results = net.aggregate(distance, type=agg_type, decay=decay)
         if log:
             results = results.apply(eval('np.log1p'))
-        return misc.reindex(results, table.node_id)
+        return reindex(results, table.node_id)
     return column_func
 
 

@@ -3,10 +3,9 @@ from __future__ import print_function
 import datetime
 
 import orca
-import pandas as pd
 
-from urbansim_templates import modelmanager, __version__
-from urbansim_templates.utils import get_data
+from .. import modelmanager, __version__
+from ..utils.misc import get_data
 
 
 @modelmanager.template

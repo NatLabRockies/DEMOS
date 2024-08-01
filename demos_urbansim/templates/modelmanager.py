@@ -6,10 +6,10 @@ import pickle
 from collections import OrderedDict
 
 import orca
-from urbansim.utils import yamlio
+from .utils import yamlio
 
 from .__init__ import __version__
-from .utils import update_name, version_greater_or_equal
+from .utils.misc import update_name, version_greater_or_equal
 
 
 _templates = {}  # global registry of template classes
@@ -102,7 +102,6 @@ def build_step(d):
         for i, item in enumerate(d['supplemental_objects']):
             content = load_supplemental_object(d['name'], **item)
             d['supplemental_objects'][i]['content'] = content
-    print(_templates)
     return _templates[template].from_dict(d)
     
 

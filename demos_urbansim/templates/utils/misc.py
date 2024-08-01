@@ -6,8 +6,7 @@ from datetime import datetime as dt
 import pandas as pd
 
 import orca
-from urbansim.models.util import (apply_filter_query, columns_in_filters, 
-        columns_in_formula)
+from .models import (apply_filter_query, columns_in_filters, columns_in_formula)
 
 
 ################################

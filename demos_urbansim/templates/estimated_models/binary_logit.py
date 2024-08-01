@@ -1,15 +1,13 @@
 from __future__ import print_function
 
 import numpy as np
-import pandas as pd
 import patsy
-from datetime import datetime as dt
 from statsmodels.api import Logit
 
 import orca
 
 from .. import modelmanager
-from ..utils import get_data
+from ..utils.misc import get_data
 from .shared import TemplateStep
 
 @modelmanager.template

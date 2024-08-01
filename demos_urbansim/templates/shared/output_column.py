@@ -1,6 +1,6 @@
 import orca
 
-from urbansim_templates import __version__
+from .. import __version__
 
 
 class OutputColumnSettings():

@@ -6,7 +6,6 @@ from collections import OrderedDict
 from datetime import datetime as dt
 
 import orca
-from urbansim.models import util
 
 from ..__init__ import __version__
 
