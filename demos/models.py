@@ -14,16 +14,12 @@ import orca
 import pandas as pd
 #import stopwatch
 #import yaml
-#from google.cloud import storage
 from scipy.spatial.distance import cdist
 from scipy.special import softmax
-#from urbansim.developer import developer
 
 # import demo_models
-#from urbansim.models import GrowthRateTransition, transition
-from urbansim_templates import modelmanager as mm
-from urbansim_templates.models import BinaryLogitStep
-
+from templates import modelmanager as mm
+from templates.estimated_models import BinaryLogitStep
 
 print("Importing models for region", orca.get_injectable("region_code"))
 

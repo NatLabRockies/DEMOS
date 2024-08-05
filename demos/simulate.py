@@ -3,7 +3,7 @@ import argparse
 
 import numpy as np
 import orca
-from urbansim_templates import modelmanager as mm
+from templates import modelmanager as mm
 
 
 def run(
