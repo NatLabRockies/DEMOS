@@ -36,8 +36,8 @@ saved_object:
   - edubin3
   - race_blk
   name: marriage
-  tables: households
-  out_tables: households
+  tables: persons
+  out_tables: persons
   filters: null
   template: MultinomialLogitStep
   template_version: 0.2.dev9
