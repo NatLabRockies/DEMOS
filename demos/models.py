@@ -20,6 +20,7 @@ from scipy.special import softmax
 # import demo_models
 from templates import modelmanager as mm
 from templates.estimated_models import BinaryLogitStep
+from templates.estimated_models import MultinomialLogitStep
 
 print("Importing models for region", orca.get_injectable("region_code"))
 
@@ -118,27 +119,6 @@ def build_networks(blocks, block_groups, nodes, edges):
 #         config = list(yaml.safe_load_all(f))[0]
 
 #     return config
-
-
-def simulation_mnl(data, coeffs):
-    """Function to run simulation of the MNL model
-
-    Args:
-        data (_type_): _description_
-        coeffs (_type_): _description_
-
-    Returns:
-        Pandas Series: Pandas Series of the outcomes of the simulated model
-    """
-    utils = np.dot(data, coeffs)
-    base_util = np.zeros(utils.shape[0])
-    utils = np.column_stack((base_util, utils))
-    probabilities = softmax(utils, axis=1)
-    s = probabilities.cumsum(axis=1)
-    r = np.random.rand(probabilities.shape[0]).reshape((-1, 1))
-    choices = (s < r).sum(axis=1)
-    return pd.Series(index=data.index, data=choices)
-
 
 '''@orca.step("add_temp_variables")
 def add_temp_variables():
@@ -1701,7 +1681,7 @@ def kids_moving_model(persons, households):
     update_households_after_kids(persons, households, kids_moving)
 
 
-@orca.step("marriage_model")
+'''@orca.step("marriage_model")
 def marriage_model(persons, households):
     """Function to run the marriage model, pair individuals, and
     replace marriage status and households in the persons and households
@@ -1744,7 +1724,7 @@ def marriage_model(persons, households):
     if random_match==True:
         update_married_households_random(persons, households, marriage_list)
     else:
-        update_married_households(persons, households, marriage_list)
+        update_married_households(persons, households, marriage_list)'''
         
 
 def fix_erroneous_households(persons, households):
@@ -2787,7 +2767,7 @@ def update_cohabitating_households(persons, households, cohabitate_list):
         metadata.loc["max_p_id", "value"] = persons_df.index.max()
     orca.add_table("metadata", metadata)
 
-@orca.step("cohabitation_model")
+''''@orca.step("cohabitation_model")
 def cohabitation_model(persons, households):
     """Function to run the cohabitation to X model.
     The function runs the model and updates households.
@@ -2820,7 +2800,7 @@ def cohabitation_model(persons, households):
     # print("Running cohabitation model...")
     # breakpoint()
     cohabitate_x_list = simulation_mnl(data, cohabitation_coeffs)
-    update_cohabitating_households(persons, households, cohabitate_x_list)
+    update_cohabitating_households(persons, households, cohabitate_x_list)'''
 
 
 def update_divorce(divorce_list):
@@ -3222,8 +3202,8 @@ def households_reorg(persons, households, year):
     persons_local_cols = persons.local_columns
 
     marriage_model = orca.get_injectable("marriage_model")
-    marriage_coeffs = pd.DataFrame(marriage_model["model_coeffs"])
-    marriage_variables = pd.DataFrame(marriage_model["spec_names"])
+    marriage_coeffs = pd.DataFrame(marriage_model['saved_object']["model_coeffs"])
+    marriage_variables = pd.DataFrame(marriage_model['saved_object']["spec_names"])
     model_columns = marriage_variables[0].values.tolist()
     vars = persons_local_cols + model_columns
     persons_df = persons.to_frame(columns=vars)
@@ -3245,7 +3225,9 @@ def households_reorg(persons, households, year):
     ###############################################################
     # print("Running marriage model...")
     # breakpoint()
-    marriage_list = simulation_mnl(data, marriage_coeffs)
+    marriage = mm.get_step("marriage")
+    marriage_list = marriage.run(data, marriage_coeffs)
+    # marriage_list = simulation_mnl(data, marriage_coeffs)
     # print("Number of marriages and cohabitations:")
     # print(marriage_list.value_counts())
     random_match = orca.get_injectable("random_match")
@@ -3306,8 +3288,8 @@ def households_reorg(persons, households, year):
     hh_local_cols = orca.get_table("households").local_columns
     
     cohabitation_model = orca.get_injectable("cohabitation_model")
-    cohabitation_coeffs = pd.DataFrame(cohabitation_model["model_coeffs"])
-    cohabitation_variables = pd.DataFrame(cohabitation_model["spec_names"])
+    cohabitation_coeffs = pd.DataFrame(cohabitation_model['saved_object']["model_coeffs"])
+    cohabitation_variables = pd.DataFrame(cohabitation_model['saved_object']["spec_names"])
     model_columns = cohabitation_variables[0].values.tolist()
     vars = np.unique(np.array(hh_local_cols + model_columns))
     persons_df = persons.local
@@ -3324,7 +3306,9 @@ def households_reorg(persons, households, year):
     )
     # Run Model
     # print("Running cohabitation model...")
-    cohabitate_x_list = simulation_mnl(data, cohabitation_coeffs)
+    cohabitation = mm.get_step("cohabitation")
+    cohabitate_x_list = cohabitation.run(data, cohabitation_coeffs)
+    # cohabitate_x_list = simulation_mnl(data, cohabitation_coeffs)
     # print("Cohabitation outcomes:")
     # print(cohabitate_x_list.value_counts())
     

@@ -587,7 +587,7 @@ configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable(
 print("Models' folder: ", configs_folder)
 
 print("Register marriage model.")
-marriage_model = read_yaml(os.path.join(configs_folder, "marriage.yml"))
+marriage_model = read_yaml(os.path.join(configs_folder, "marriage.yaml"))
 orca.add_injectable("marriage_model", marriage_model)
 
 print("Register cohabitation model.")
