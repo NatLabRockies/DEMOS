@@ -28,7 +28,7 @@ This repository contains only code and configuration/setup files necessary
 	pip install -r requirements.txt
 	```
 
-5. Download input data [data_nrel.zip](https://app.box.com/s/tox2nflumia2g4n6rk2i0navca9pskep)
+5. Download input data [data_nrel.zip](https://app.box.com/s/tox2nflumia2g4n6rk2i0navca9pskep). You may also refer to the data description [here](https://cloud.urbansim.com/docs/general/documentation/urbansim%20block%20model%20data.html)
 
 6. Put all files of input data into `DEMOS_NREL/demos/data`
 
