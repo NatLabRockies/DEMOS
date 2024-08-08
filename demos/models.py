@@ -20,6 +20,7 @@ from scipy.special import softmax
 # import demo_models
 from templates import modelmanager as mm
 from templates.estimated_models import BinaryLogitStep
+from templates.estimated_models import MultinomialLogitStep
 
 print("Importing models for region", orca.get_injectable("region_code"))
 
@@ -118,27 +119,6 @@ def build_networks(blocks, block_groups, nodes, edges):
 #         config = list(yaml.safe_load_all(f))[0]
 
 #     return config
-
-
-def simulation_mnl(data, coeffs):
-    """Function to run simulation of the MNL model
-
-    Args:
-        data (_type_): _description_
-        coeffs (_type_): _description_
-
-    Returns:
-        Pandas Series: Pandas Series of the outcomes of the simulated model
-    """
-    utils = np.dot(data, coeffs)
-    base_util = np.zeros(utils.shape[0])
-    utils = np.column_stack((base_util, utils))
-    probabilities = softmax(utils, axis=1)
-    s = probabilities.cumsum(axis=1)
-    r = np.random.rand(probabilities.shape[0]).reshape((-1, 1))
-    choices = (s < r).sum(axis=1)
-    return pd.Series(index=data.index, data=choices)
-
 
 '''@orca.step("add_temp_variables")
 def add_temp_variables():
@@ -1701,7 +1681,7 @@ def kids_moving_model(persons, households):
     update_households_after_kids(persons, households, kids_moving)
 
 
-@orca.step("marriage_model")
+'''@orca.step("marriage_model")
 def marriage_model(persons, households):
     """Function to run the marriage model, pair individuals, and
     replace marriage status and households in the persons and households
@@ -1744,7 +1724,7 @@ def marriage_model(persons, households):
     if random_match==True:
         update_married_households_random(persons, households, marriage_list)
     else:
-        update_married_households(persons, households, marriage_list)
+        update_married_households(persons, households, marriage_list)'''
         
 
 def fix_erroneous_households(persons, households):
@@ -2787,7 +2767,7 @@ def update_cohabitating_households(persons, households, cohabitate_list):
         metadata.loc["max_p_id", "value"] = persons_df.index.max()
     orca.add_table("metadata", metadata)
 
-@orca.step("cohabitation_model")
+''''@orca.step("cohabitation_model")
 def cohabitation_model(persons, households):
     """Function to run the cohabitation to X model.
     The function runs the model and updates households.
@@ -2820,7 +2800,7 @@ def cohabitation_model(persons, households):
     # print("Running cohabitation model...")
     # breakpoint()
     cohabitate_x_list = simulation_mnl(data, cohabitation_coeffs)
-    update_cohabitating_households(persons, households, cohabitate_x_list)
+    update_cohabitating_households(persons, households, cohabitate_x_list)'''
 
 
 def update_divorce(divorce_list):
@@ -3216,17 +3196,7 @@ def household_divorce(persons, households):
 def households_reorg(persons, households, year):
     #
     # MARRIAGE MODEL
-    household_cols = households.local_columns
-    household_df = households.local
-    persons_cols = persons.local_columns
-    persons_local_cols = persons.local_columns
-
-    marriage_model = orca.get_injectable("marriage_model")
-    marriage_coeffs = pd.DataFrame(marriage_model["model_coeffs"])
-    marriage_variables = pd.DataFrame(marriage_model["spec_names"])
-    model_columns = marriage_variables[0].values.tolist()
-    vars = persons_local_cols + model_columns
-    persons_df = persons.to_frame(columns=vars)
+    persons_df = persons.to_frame()
     # get persons cohabitating and heads of their households
     COHABS_PERSONS = persons_df["relate"] == 13
     cohab_persons_df = persons_df.loc[COHABS_PERSONS].copy()
@@ -3241,11 +3211,11 @@ def households_reorg(persons, households, year):
     data = single_df.join(all_cohabs_df[["cohab"]], how="left")
     data = data.loc[data["cohab"] != 1].copy()
     data.drop(columns="cohab", inplace=True)
-    data = data.loc[:, model_columns].copy()
     ###############################################################
-    # print("Running marriage model...")
+    print("Running marriage model...")
     # breakpoint()
-    marriage_list = simulation_mnl(data, marriage_coeffs)
+    marriage = mm.get_step("marriage")
+    marriage_list = marriage.run(data.copy())
     # print("Number of marriages and cohabitations:")
     # print(marriage_list.value_counts())
     random_match = orca.get_injectable("random_match")
@@ -3267,6 +3237,7 @@ def households_reorg(persons, households, year):
     divorce_model.filters = "index in " + list_ids
     divorce_model.out_filters = "index in " + list_ids
 
+    print("Running divorce model...")
     divorce_model.run()
     divorce_list = divorce_model.choices.astype(int)
     # if divorce_list.shape[0] !=  len(ELIGIBLE_HOUSEHOLDS):
@@ -3300,31 +3271,20 @@ def households_reorg(persons, households, year):
     #########################################
     
     # COHABITATION_TO_X Model
-    persons_df = persons.local
     hh_df = households.to_frame(columns=["lcm_county_id"])
     hh_df.reset_index(inplace=True)
-    hh_local_cols = orca.get_table("households").local_columns
-    
-    cohabitation_model = orca.get_injectable("cohabitation_model")
-    cohabitation_coeffs = pd.DataFrame(cohabitation_model["model_coeffs"])
-    cohabitation_variables = pd.DataFrame(cohabitation_model["spec_names"])
-    model_columns = cohabitation_variables[0].values.tolist()
-    vars = np.unique(np.array(hh_local_cols + model_columns))
+
     persons_df = persons.local
     ELIGIBLE_HOUSEHOLDS = (
         persons_df[(persons_df["relate"] == 13) & \
                    (persons_df["MAR"]!=1) & \
                    ((persons_df["age"]>=15))]["household_id"].unique().astype(int)
     )
-    # households_df = orca.get_table("households").to_frame(columns=model_columns)
-    # print(model_columns)
-    data = (
-        households.to_frame(columns=model_columns)
-        .loc[ELIGIBLE_HOUSEHOLDS, model_columns]
-    )
+    data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
     # Run Model
-    # print("Running cohabitation model...")
-    cohabitate_x_list = simulation_mnl(data, cohabitation_coeffs)
+    print("Running cohabitation model...")
+    cohabitation = mm.get_step("cohabitation")
+    cohabitate_x_list = cohabitation.run(data)
     # print("Cohabitation outcomes:")
     # print(cohabitate_x_list.value_counts())
     

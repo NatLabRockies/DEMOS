@@ -586,12 +586,4 @@ if os.path.exists(os.path.join('configs', calibrated_path, skim_source)):
 configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable('calibrated') else 'estimated_configs')
 print("Models' folder: ", configs_folder)
 
-print("Register marriage model.")
-marriage_model = read_yaml(os.path.join(configs_folder, "marriage.yml"))
-orca.add_injectable("marriage_model", marriage_model)
-
-print("Register cohabitation model.")
-cohabitation_model = read_yaml(os.path.join(configs_folder, "cohabitation.yaml"))
-orca.add_injectable("cohabitation_model", cohabitation_model)
-
 print("********** End importing datasources **********")
