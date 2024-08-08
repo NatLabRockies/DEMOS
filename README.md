@@ -1,4 +1,4 @@
-# demos
+# Demographic Microsimulator(DEMOS)
 
 >**TODO:** The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).
 
