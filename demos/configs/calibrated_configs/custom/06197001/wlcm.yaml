@@ -1,0 +1,90 @@
+modelmanager_version: 0.2.dev9
+
+saved_object:
+  alt_capacity: employment_capacity
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: null
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: null
+  constrained_choices: true
+  fitted_parameters:
+    - 0.31474108070035606
+    - 0.07309437551227703
+    - 0.8556529974367473
+    - -0.9512215842007385
+    - 1.5477121731209205
+    - -0.5023311756182108
+    - -0.838873589837604
+    - 1.0398960846106067
+    - -0.6720908756595019
+    - 0.7124863287738205
+    - 0.09748139461670556
+    - -0.06869978504593122
+    - -0.049869906867922566
+  max_iter: null
+  mct_intx_ops:
+    extra_alts_cols:
+      - zone_id
+    extra_obs_cols:
+      - home_taz
+    successive_merges:
+      - how: left
+        left_on:
+          - home_taz
+          - zone_id
+        right_cols:
+          - logsum
+          - tour_sov_in_vehicle_time
+          - tour_dist
+          - dist_0_5
+          - dist_5_15
+          - dist_15plus
+        right_index: true
+        right_table: travel_data
+  model_expression:
+    logsum + logsum:no_higher_ed +np.log1p(zones_jobs_1_sum_20_min_sov)+
+    np.log1p(zones_jobs_2_sum_20_min_sov) +np.log1p(zones_jobs_3_sum_20_min_sov)+
+    np.log1p(zones_jobs_4_sum_20_min_sov) +np.log1p(zones_jobs_5_sum_20_min_sov)
+    + pct_sector_tech + pct_sector_retail +np.log1p(density_jobs) +dist_0_5 +
+    dist_5_15 + dist_15plus  - 1
+  name: wlcm
+  out_alt_filters: null
+  out_alternatives: null
+  out_chooser_filters:
+    - worker == 1
+  out_choosers: persons
+  out_column: work_block_id
+  summary_table: "                  CHOICEMODELS ESTIMATION RESULTS            \
+    \      \n===================================================================\n\
+    Dep. Var.:                chosen   No. Observations:         10,000\nModel:\
+    \         Multinomial Logit   Df Residuals:              9,987\nMethod:  \
+    \     Maximum Likelihood   Df Model:                     13\nDate:       \
+    \          2023-07-06   Pseudo R-squ.:             0.353\nTime:          \
+    \            18:15   Pseudo R-bar-squ.:         0.353\nAIC:              \
+    \    59,607.114   Log-Likelihood:      -29,790.557\nBIC:                 \
+    \ 59,700.848   LL-Null:             -46,051.702\n====================================================================================\n\
+    \                                     coef   std err         z     P>|z| \
+    \  Conf. Int.\n------------------------------------------------------------------------------------\n\
+    logsum                             0.3147     0.034     9.294     0.000  \
+    \           \nlogsum:no_higher_ed                0.0731     0.008     8.885\
+    \     0.000             \nnp.log1p(jobs_1_sum_20_min_sov)    0.8557     0.051\
+    \    16.923     0.000             \nnp.log1p(jobs_2_sum_20_min_sov)   -0.9512\
+    \     0.067   -14.234     0.000             \nnp.log1p(jobs_3_sum_20_min_sov)\
+    \    1.5477     0.110    14.085     0.000             \nnp.log1p(jobs_4_sum_20_min_sov)\
+    \   -0.5023     0.108    -4.635     0.000             \nnp.log1p(jobs_5_sum_20_min_sov)\
+    \   -0.8389     0.132    -6.365     0.000             \npct_sector_tech  \
+    \                  1.0399     0.091    11.452     0.000             \npct_sector_retail\
+    \                 -0.6721     0.126    -5.314     0.000             \nnp.log1p(density_jobs)\
+    \             0.7125     0.011    64.881     0.000             \ndist_0_5\
+    \                           0.0975     0.035     2.813     0.005         \
+    \    \ndist_5_15                         -0.0687     0.007   -10.515     0.000\
+    \             \ndist_15plus                       -0.0499     0.001   -71.433\
+    \     0.000             \n===================================================================================="
+  tags:
+    - juan
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

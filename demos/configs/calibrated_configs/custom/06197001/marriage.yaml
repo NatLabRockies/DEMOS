@@ -3,7 +3,7 @@ modelmanager_version: 0.2.dev9
 saved_object:
   model_coeffs:
     cohabitate:
-    - -2.0
+    - -5.767
     - 3.352391
     - 2.889173
     - 2.232864
@@ -14,7 +14,7 @@ saved_object:
     - -0.670861
     - -0.139049
     married:
-    - -6.0
+    - -4.538
     - 1.347319
     - 0.808832
     - -0.750587

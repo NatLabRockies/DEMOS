@@ -2,19 +2,21 @@ modelmanager_version: 0.2.dev9
 saved_object:
     filters: null
     fitted_parameters:
-    - -10.062937
-    - 0.08047558
-    - -0.98160255 
-    - 1.1442612
-    - 1.2404861
-    - -0.04225827 
-    - -0.31910235
-    - -0.19940826
-    - 0.8482214
-    - 0.6148795
-    - 0.60858643
-    model_expression: dead ~ age + gender2 + employbin2 + employbin3
-        + edubin2 + edubin3 + race1 + marital2 + marital3 + marital4 + 1
+    - -9.833
+    - 2.233
+    - 3.345 
+    - 3.874
+    - 4.753
+    - 6.205 
+    - -0.809
+    - 0.982
+    - 1.796
+    - -0.261
+    - -0.642
+    - 0.779
+    - 0.546
+    model_expression: dead ~ agebin1_new + agebin2_new + agebin3_new + agebin4_new + agebin5_new 
+        + gender2 + employbin2 + employbin3 + edubin2 + edubin3 + marital25 + marital34 + 1
     name: mortality
     out_column: null
     out_filters: null

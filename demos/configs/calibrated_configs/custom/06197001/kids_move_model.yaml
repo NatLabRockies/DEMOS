@@ -2,7 +2,7 @@ modelmanager_version: 0.2.dev9
 saved_object:
   filters: (relate in [2, 3, 4, 7, 9, 14]) & (age>=16)
   fitted_parameters:
-  - -4.0
+  - -4.120
   - 2.733439
   - 1.985171
   - 3.153006
