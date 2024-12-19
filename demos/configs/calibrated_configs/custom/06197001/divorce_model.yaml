@@ -2,7 +2,7 @@ modelmanager_version: 0.2.dev9
 saved_object:
   filters: null
   fitted_parameters:
-  - -4.0
+  - -4.672
   - -0.38379
   - -1.0252
   - -3.1193
