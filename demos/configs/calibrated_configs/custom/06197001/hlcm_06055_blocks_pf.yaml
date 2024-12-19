@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - 0.5213021636009216
+  - 0.5877554416656494
+  - -0.3528267443180084
+  - -0.0004891367862001061
+  - 0.6859614253044128
+  - -0.22708824276924133
+  - 0.2629883587360382
+  - 0.6752417087554932
+  - -1.1800869703292847
+  - 0.058069463819265366
+  - -0.003175674006342888
+  - -0.7673912048339844
+  - -0.16255439817905426
+  - 0.7512272000312805
+  - -0.1175662949681282
+  - -0.1840096116065979
+  - -0.26994720101356506
+  - -0.22855179011821747
+  - -0.36518990993499756
+  - -0.0010078245541080832
+  - 0.5263181924819946
+  - 0.05422580987215042
+  - 0.576647162437439
+  - 0.0007412180420942605
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value_13_acs + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: hlcm_06055_blocks_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "06055")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06055")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

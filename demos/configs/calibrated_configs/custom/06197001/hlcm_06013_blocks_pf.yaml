@@ -1,0 +1,56 @@
+modelmanager_version: 0.2.dev9
+saved_object:
+  alt_capacity: vacant_residential_units
+  alt_filters: null
+  alt_sample_size: 100
+  alternatives: blocks
+  choice_column: block_id
+  chooser_filters: null
+  chooser_sample_size: null
+  chooser_size: null
+  choosers: households
+  constrained_choices: true
+  fitted_parameters:
+  - -0.008991928771138191
+  - 0.10592763870954514
+  - 0.17114561796188354
+  - -0.17792274057865143
+  - 0.16306473314762115
+  - -0.037832390516996384
+  - 0.2408905029296875
+  - 0.09813106060028076
+  - -0.11180450767278671
+  - 0.5682721734046936
+  - -0.002516120905056596
+  - 0.3047856390476227
+  - 0.014831564389169216
+  - 0.007931661792099476
+  - -0.3088877499103546
+  - 2.1877923011779785
+  - -1.3269339799880981
+  - -2.627289056777954
+  - -1.1909446716308594
+  - 0.8166465163230896
+  - 0.7852904796600342
+  - -0.8757815957069397
+  - 0.001184169203042984
+  - 0.7827280759811401
+  max_iter: null
+  model_expression: st_bg_mean_age_of_head + st_bg_mean_children + st_bg_mean_year_built
+    + st_bg_median_value_13_acs + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+    + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+    + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+    + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+    + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+    + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+    + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov - 1
+  name: hlcm_06013_blocks_pf
+  out_alt_filters: (vacant_residential_units > 0) & (county_id == "06013")
+  out_alternatives: null
+  out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06013")
+  out_choosers: null
+  out_column: block_id
+  summary_table: null
+  tags: []
+  template: LargeMultinomialLogitStep
+  template_version: 0.2.dev9

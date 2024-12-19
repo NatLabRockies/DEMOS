@@ -1,0 +1,156 @@
+modelmanager_version: 0.2.dev9
+
+saved_object:
+    alt_capacity: vacant_residential_units
+    alt_filters:
+    - (county_id == "06001")
+    alt_sample_size: 100
+    alternatives: blocks
+    choice_column: block_id
+    chooser_filters:
+    - ' (lcm_county_id == "06001") '
+    - ' (hh_type==4)'
+    chooser_sample_size: null
+    chooser_size: null
+    choosers: households
+    constrained_choices: true
+    fitted_parameters:
+    - 2.8963287816650225
+    - 0.7492958583158231
+    - 0.01286965240929002
+    - 0.07391859064066629
+    - -0.12251550096248214
+    - 0.1190365555437686
+    - 0.2931618573371828
+    - 0.17007871872063582
+    - 0.08265531803206604
+    - -0.44697407115381993
+    - 0.14372009739270178
+    - -0.09762841140113178
+    - 0.06259191250063181
+    - -0.17297071060584374
+    - 0.06292920223184832
+    - -0.05056027533632498
+    - -0.25105801260408456
+    - -0.14741154864331565
+    - -0.5817031995045722
+    - 0.3430632626632161
+    - 0.32880955181773475
+    - -0.5547508093626964
+    - 0.49172314389597943
+    - 0.15106418065930857
+    - 0.171159349828093
+    max_iter: null
+    mct_intx_ops:
+        extra_alts_cols:
+        - zone_id
+        successive_merges:
+        -   mct_cols:
+            - household_id
+            - zone_id
+            - mct_index
+            on_cols:
+            - household_id
+            right_cols:
+            - household_id
+            - mandatory_work_zone_id
+            - mandatory_school_zone_id
+            - mandatory_school_dummy
+            - mandatory_work_dummy
+            - mandatory_activity_dummy
+            right_table: persons
+        -   how: left
+            left_on:
+            - zone_id
+            - mandatory_work_zone_id
+            right_index: true
+            right_table: travel_data
+        -   how: left
+            left_on:
+            - zone_id
+            - mandatory_school_zone_id
+            right_index: true
+            right_table: travel_data
+            suffixes:
+            - _work
+            - _school
+        aggregations:
+            logsum_school: max
+            logsum_work: max
+            mandatory_activity_dummy: max
+            mandatory_school_dummy: max
+            mandatory_work_dummy: max
+        rename_cols:
+            logsum_school: max_school_logsum
+            logsum_work: max_work_logsum
+        sequential_eval_ops:
+        -   expr: 1 - mandatory_work_dummy
+            name: no_work
+        -   engine: python
+            expr: max_work_logsum.fillna(0)
+            name: work_nan_fill
+        -   engine: python
+            expr: max_school_logsum.fillna(0)
+            name: school_nan_fill
+        -   expr: (work_nan_fill * mandatory_work_dummy) + (no_work * school_nan_fill
+                * mandatory_school_dummy)
+            name: mandatory_logsum
+    model_expression: mandatory_activity_dummy:mandatory_logsum + st_bg_mean_age_of_head
+        + st_bg_mean_children + st_bg_mean_year_built + st_bg_median_value_13_acs
+        + st_bg_prop_hh_rent + st_bg_prop_units_sf + st_bg_ratio_households_to_units
+        + st_bg_total_units + st_density_jobs_90pct_plus + st_density_units_90pct_plus
+        + st_pred_built_out_sf + st_pred_rich_owned_antique + st_tracts_income_segment_1_hh
+        + st_tracts_income_segment_6_hh + st_zones_density_units_ave_5_min_sov + st_zones_income_6_hh_sum_10_min_sov
+        + st_zones_jobs_0_sum_5_min_sov + st_zones_jobs_1_sum_5_min_sov + st_zones_jobs_2_sum_5_min_sov
+        + st_zones_jobs_3_sum_5_min_sov + st_zones_jobs_4_sum_5_min_sov + st_zones_jobs_5_sum_5_min_sov
+        + st_zones_total_jobs_sum_20_min_sov + st_zones_total_units_sum_10_min_sov
+        - 1
+    name: hlcm_06001_blocks_own_2p_55plus_pf
+    out_alt_filters: (vacant_residential_units > 0) & (county_id == "06001") & (zone_id
+        == zone_id) & (zone_id == zone_id)
+    out_alternatives: null
+    out_chooser_filters: (block_id == "-1") & (lcm_county_id == "06001") & (hh_type==4)
+    out_choosers: null
+    out_column: block_id
+    summary_table: "                  CHOICEMODELS ESTIMATION RESULTS            \
+        \       \n====================================================================\n\
+        Dep. Var.:                chosen   No. Observations:          53,529\nModel:\
+        \         Multinomial Logit   Df Residuals:              53,504\nMethod: \
+        \      Maximum Likelihood   Df Model:                      25\nDate:     \
+        \            2023-06-29   Pseudo R-squ.:              0.114\nTime:       \
+        \               18:50   Pseudo R-bar-squ.:          0.114\nAIC:          \
+        \       436,827.508   Log-Likelihood:      -218,388.754\nBIC:            \
+        \     437,049.708   LL-Null:             -246,510.155\n==============================================================================================\n\
+        \                                               coef   std err         z \
+        \    P>|z|   Conf. Int.\n----------------------------------------------------------------------------------------------\n\
+        mandatory_activity_dummy:mandatory_logsum    2.8963     0.005   640.764  \
+        \   0.000             \nst_bg_mean_age_of_head                       0.7493\
+        \     0.008    88.252     0.000             \nst_bg_mean_children        \
+        \                  0.0129     0.007     1.901     0.057             \nst_bg_mean_year_built\
+        \                        0.0739     0.007    11.177     0.000            \
+        \ \nst_bg_median_value_13_acs                   -0.1225     0.009   -13.809\
+        \     0.000             \nst_bg_prop_hh_rent                           0.1190\
+        \     0.011    11.299     0.000             \nst_bg_prop_units_sf        \
+        \                  0.2932     0.009    32.974     0.000             \nst_bg_ratio_households_to_units\
+        \              0.1701     0.009    18.192     0.000             \nst_bg_total_units\
+        \                            0.0827     0.007    11.145     0.000        \
+        \     \nst_density_jobs_90pct_plus                  -0.4470     0.010   -46.660\
+        \     0.000             \nst_density_units_90pct_plus                  0.1437\
+        \     0.005    31.660     0.000             \nst_pred_built_out_sf       \
+        \                 -0.0976     0.005   -18.161     0.000             \nst_pred_rich_owned_antique\
+        \                   0.0626     0.002    26.057     0.000             \nst_tracts_income_segment_1_hh\
+        \               -0.1730     0.009   -20.244     0.000             \nst_tracts_income_segment_6_hh\
+        \                0.0629     0.009     6.847     0.000             \nst_zones_density_units_ave_5_min_sov\
+        \        -0.0506     0.009    -5.655     0.000             \nst_zones_income_6_hh_sum_10_min_sov\
+        \         -0.2511     0.045    -5.585     0.000             \nst_zones_jobs_0_sum_5_min_sov\
+        \               -0.1474     0.016    -9.065     0.000             \nst_zones_jobs_1_sum_5_min_sov\
+        \               -0.5817     0.038   -15.407     0.000             \nst_zones_jobs_2_sum_5_min_sov\
+        \                0.3431     0.038     9.093     0.000             \nst_zones_jobs_3_sum_5_min_sov\
+        \                0.3288     0.048     6.863     0.000             \nst_zones_jobs_4_sum_5_min_sov\
+        \               -0.5548     0.048   -11.478     0.000             \nst_zones_jobs_5_sum_5_min_sov\
+        \                0.4917     0.073     6.734     0.000             \nst_zones_total_jobs_sum_20_min_sov\
+        \           0.1511     0.028     5.480     0.000             \nst_zones_total_units_sum_10_min_sov\
+        \          0.1712     0.052     3.291     0.001             \n=============================================================================================="
+    tags: []
+    template: LargeMultinomialLogitStep
+    template_version: 0.2.dev9
