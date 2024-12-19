@@ -199,11 +199,13 @@ if "metadata" not in orca.list_tables():
 print("Add work and school stuff in persons")
 persons = orca.get_table("persons").local
 print("Properties in persons: ", persons.columns)
+persons["work_zone_id"] = "-1"
 persons["work_block_id"] = "-1"
 persons["workplace_taz"] = "-1"
 persons["school_id"] = "-1"
 persons["school_block_id"] = "-1"
 persons["school_taz"] = "-1"
+persons["school_zone_id"] = "-1"
 orca.add_table("persons", persons)
 
 print("Add age and edu grp in persons")
@@ -560,7 +562,8 @@ orca.add_table("schools", schools_df)
 # -----------------------------------------------------------------------------------------
 # ADD OUTPUT FOLDER
 # -----------------------------------------------------------------------------------------
-output_folder = "outputs/simulation/%s/" % region_code
+forecast_year = orca.get_injectable("forecast_year")
+output_folder = "outputs/simulation/%s_%s/" % (region_code, forecast_year)
 if not os.path.exists(output_folder):
     print("Creating output folder")
     os.makedirs(output_folder)

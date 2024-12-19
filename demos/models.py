@@ -21,7 +21,10 @@ from scipy.special import softmax
 from templates import modelmanager as mm
 from templates.estimated_models import BinaryLogitStep
 from templates.estimated_models import MultinomialLogitStep
+from templates.estimated_models import LargeMultinomialLogitStep
 
+from templates.utils import transition
+from templates.utils.transition import GrowthRateTransition
 print("Importing models for region", orca.get_injectable("region_code"))
 
 # -----------------------------------------------------------------------------------------
@@ -372,7 +375,7 @@ def remove_dead_persons(persons, households, fatality_list, year):
     alive_heads = alive_heads[["household_id", "MAR"]]
     widow_heads = alive[(alive["household_id"].isin(dead_partners["household_id"])) & (alive["relate"]==0)].copy()
     # widow_heads = widow_heads.set_index("person_id")
-    widow_heads["MAR"].values[:] = 3
+    widow_heads["MAR"].values[:] = 2
 
     # Dead heads, alive partners
     dead_heads = dead[dead["relate"] == 0]
@@ -385,13 +388,13 @@ def remove_dead_persons(persons, households, fatality_list, year):
     #    dead_heads[["household_id"]], how="inner", on="household_id"
     #)
     #widow_partners = widow_partners.set_index("person_id")
-    widow_partners["MAR"].values[:] = 3  # THIS MIGHT NEED VERIFICATION, WHAT DOES MAR MEAN?
+    widow_partners["MAR"].values[:] = 2  # THIS MIGHT NEED VERIFICATION, WHAT DOES MAR MEAN?
 
     # Merge the two groups of widows
     widows = pd.concat([widow_heads, widow_partners])[["MAR"]]
     # Update the alive database's MAR values using the widows table
     alive_copy = alive.copy()
-    alive.loc[widows.index, "MAR"] = 3
+    alive.loc[widows.index, "MAR"] = 2
     #alive = widows.combine_first(alive)
     alive["MAR"] = alive["MAR"].astype(int)
 
@@ -3357,7 +3360,7 @@ def print_marr_stats():
 # -----------------------------------------------------------------------------------------
 
 
-'''@orca.step('household_transition')
+@orca.step('household_transition')
 def household_transition(households, persons, year, metadata):
     # breakpoint()
     # at this breakpoint, look at the persons table
@@ -3811,7 +3814,7 @@ def simple_relocation(choosers, relocation_rate, fieldname):
     print("Assigning for relocation...")
     chooser_ids = np.random.choice(choosers.index, size=int(relocation_rate * len(choosers)), replace=False)
     choosers.update_col_from_series(fieldname, pd.Series('-1', index=chooser_ids))
-    print("Total currently unplaced: %d" % choosers[fieldname].value_counts().get("-1", 0))'''
+    print("Total currently unplaced: %d" % choosers[fieldname].value_counts().get("-1", 0))
 
 # -----------------------------------------------------------------------------------------
 # POSTPROCESSING
@@ -4061,7 +4064,7 @@ def generate_metrics(year, persons, households):
 
 all_local = orca.get_injectable("all_local")
 if orca.get_injectable("running_calibration_routine") == False:
-    '''region_code = orca.get_injectable("region_code")
+    region_code = orca.get_injectable("region_code")
 
     if not all_local:
         storage_client = storage.Client("swarm-test-1470707908646")
@@ -4136,7 +4139,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                 elcm_models += ["elcm_pf"]
 
         developer_models = ["supply_transition"] + rdplcm_models
-        household_models = ["household_transition"] + ["households_relocation_basic"] + hlcm_models
+        household_models = ["household_transition"] + ["households_relocation_basic"] # + hlcm_models
         employment_models = ["job_transition"] + elcm_models
         location_models = rdplcm_models + hlcm_models + elcm_models
         calibrated_folder = orca.get_injectable("calibrated_folder")
@@ -4160,7 +4163,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                 local_configs_path = os.path.join(local_configs_path, skim_source)
         if not os.path.exists("configs/" + local_configs_path):
             os.makedirs("./configs/" + local_configs_path)
-        for f in location_models:
+        """ for f in location_models:
             if not all_local:
                 print(
                     "Downloading %s config from calibrated_configs/%s"
@@ -4175,7 +4178,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                     raise OSError(
                         "No model config found at ./configs/%s/%s.yaml"
                         % (local_configs_path, f)
-                    )
+                    ) """
 
         for model in ["value", "rent"]:
             print("Checking if %s configs exist" % model)
@@ -4201,9 +4204,9 @@ if orca.get_injectable("running_calibration_routine") == False:
         developer_models = ["supply_transition"] + [
             "rdplcm" + str(segment) for segment in range(0, 4)
         ]
-        household_models = ["household_transition"] + ["households_relocation_basic"] + ["household_stats"], [
-            "hlcm" + str(segment) for segment in range(1, 11)
-        ]
+        household_models = ["household_transition"] + ["households_relocation_basic"] + ["household_stats"] #, [
+        #    "hlcm" + str(segment) for segment in range(1, 11)
+        # ]
         employment_models = ["job_transition"] + [
             "elcm" + str(segment) for segment in range(0, 6)
         ]
@@ -4215,7 +4218,7 @@ if orca.get_injectable("running_calibration_routine") == False:
 
         if not os.path.exists("configs/estimated_configs"):
             os.makedirs("./configs/estimated_configs")
-        for f in location_models:
+        """ for f in location_models:
             if not all_local:
                 print("Downloading %s config from estimated_configs" % f)
                 blob = bucket.get_blob(
@@ -4227,7 +4230,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                     raise OSError(
                         "No model config found at ./configs/estimated_configs/%s.yaml"
                         % f
-                    )'''
+                    ) """
 
     if orca.get_injectable("local_simulation") == True:
         # add_variables = ["add_temp_variables"]
@@ -4260,7 +4263,7 @@ if orca.get_injectable("running_calibration_routine") == False:
             # + ["work_location_stats"]
             # + developer_models
             # + ["work_location_stats"]
-            # + household_models
+             + household_models
             # + ["work_location_stats"]
             # + employment_models
             # + ["work_location_stats"]
