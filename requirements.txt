@@ -12,7 +12,6 @@ bokeh
 seaborn
 datashader
 plotly
-stopwatch.py
 openmatrix
 patsy >= 0.4
 statsmodels >= 0.8
