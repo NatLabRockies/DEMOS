@@ -2,3 +2,4 @@
 .idea
 demos/outputs/simulation/**/*
 demos/outputs/figures
+.DS_Store
