@@ -22,6 +22,7 @@ from templates import modelmanager as mm
 from templates.estimated_models import BinaryLogitStep
 from templates.estimated_models import MultinomialLogitStep
 
+# TODO: This seems to be logging. Integrate all logging in a consistent way.
 print("Importing models for region", orca.get_injectable("region_code"))
 
 # -----------------------------------------------------------------------------------------
@@ -640,6 +641,8 @@ def update_age(persons, households):
     This function updates the age of the persons table and
     updates the age of the household head in the household table.
 
+    YE: ***
+
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
         households (DataFrameWrapper): DataFrameWrapper of the households table
@@ -822,6 +825,8 @@ def laborforce_model(persons, year):
     """
     Run the education model and update the persons table
 
+    YE: ***
+
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
 
@@ -887,6 +892,8 @@ def update_labor_status(persons, stay_unemployed_list, exit_workforce_list, year
     """
     Function to update the worker status in persons table based
     on the labor participation model
+
+    YE: ***
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
@@ -1240,6 +1247,8 @@ def update_birth(persons, households, birth_list):
 def update_households_after_kids(persons, households, kids_moving):
     """
     Add and update households after kids move out.
+
+    YE: ***
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of persons table
@@ -1662,6 +1671,8 @@ def kids_moving_model(persons, households):
     Running the kids moving model and updating household
     stats.
 
+    YE: ***
+
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
         households (DataFrameWrapper): DataFrameWrapper of the households table
@@ -1728,6 +1739,7 @@ def marriage_model(persons, households):
         
 
 def fix_erroneous_households(persons, households):
+    """ YE: *** """
     print("Fixing erroneous households")
     p_df = persons.local
     household_cols = households.local_columns
@@ -1756,6 +1768,9 @@ def fix_erroneous_households(persons, households):
 def update_married_households_random(persons, households, marriage_list):
     """
     Update the marriage status of individuals and create new households
+
+    YE: ***
+
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
         households (DataFrameWrapper): DataFrameWrapper of the households table
@@ -2551,6 +2566,8 @@ def update_cohabitating_households(persons, households, cohabitate_list):
     """
     Updating households and persons after cohabitation model.
 
+    YE: ***
+
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of persons table
         households (DataFrameWrapper): DataFrameWrapper of households table
@@ -2806,6 +2823,8 @@ def cohabitation_model(persons, households):
 def update_divorce(divorce_list):
     """
     Updating stats for divorced households
+
+    YE: ***
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
@@ -3194,6 +3213,7 @@ def household_divorce(persons, households):
 
 @orca.step("households_reorg")
 def households_reorg(persons, households, year):
+    """ YE: *** """
     #
     # MARRIAGE MODEL
     persons_df = persons.to_frame()
