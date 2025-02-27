@@ -1,23 +1,16 @@
-#import math
 import os
 import time
 import warnings
-#from operator import index
-#from typing import Sized
 
 warnings.filterwarnings("ignore")
 
 import indicators
 import numpy as np
 import orca
-#import pandana as pdna
 import pandas as pd
-#import stopwatch
-#import yaml
 from scipy.spatial.distance import cdist
 from scipy.special import softmax
 
-# import demo_models
 from templates import modelmanager as mm
 from templates.estimated_models import BinaryLogitStep
 from templates.estimated_models import MultinomialLogitStep

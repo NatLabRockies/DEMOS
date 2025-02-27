@@ -1,9 +1,10 @@
 # TODOs
 - Why were there so many problems with file ownership?
+- What is in the runs folder?
+    - Looks like there is some ind of intermediate output.
 
 - `models.py`
     - `work_location` seems obsolete
-    - 
 
 # Commit history review
 August 8th, 2024
