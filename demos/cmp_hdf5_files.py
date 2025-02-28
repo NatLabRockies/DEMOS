@@ -42,7 +42,7 @@ def compare_hdf5_files(file1_path, file2_path):
 
 # Example usage:
 start = time.time()
-file1_path = 'data/model_data_origin_win.h5' #you may change file path here, like 'data/model_data_origin_linux.h5' if you're in Linux
+file1_path = 'data/model_data_2011_origin_macos.h5' #you may change file path here, like 'data/model_data_origin_linux.h5' if you're in Linux
 file2_path = 'data/model_data_2011.h5' #you may change file path here
 if compare_hdf5_files(file1_path, file2_path):
     print("All output datasets are equal.")

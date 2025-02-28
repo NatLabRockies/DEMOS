@@ -2,6 +2,7 @@
 - Why were there so many problems with file ownership?
 - What is in the runs folder?
     - Looks like there is some ind of intermediate output.
+- What steps from the bottom of `models.py` do we want to keep?
 
 - `models.py`
     - `work_location` seems obsolete
