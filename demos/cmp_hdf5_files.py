@@ -1,15 +1,17 @@
-from pandas import HDFStore, DataFrame
 import time
+import numpy as np
+from pandas import HDFStore, DataFrame
 
 def compare_datasets(dset1, dset2):
     df1 = DataFrame(dset1).sort_index(axis=1)
     df2 = DataFrame(dset2).sort_index(axis=1)
-
-    if not df1.equals(df2):
-        print(f"Datasets are different.")
-        return False
+    comparison = df1.compare(df2)
+    
+    if len(comparison) > 0:
+        return np.allclose(comparison.swaplevel(axis=1)['self'],comparison.swaplevel(axis=1)['other'])
 
     return True
+
 
 def compare_hdf5_files(file1_path, file2_path):
     with HDFStore(file1_path, 'r') as store1, HDFStore(file2_path, 'r') as store2:
