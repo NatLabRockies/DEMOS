@@ -1,28 +1,16 @@
 import os
-import time
-import warnings
-
-warnings.filterwarnings("ignore")
-
-import indicators
-import numpy as np
 import orca
+import warnings
+import indicators
 import pandas as pd
-from scipy.special import softmax
-
-import models
-from templates import modelmanager as mm
-from templates.estimated_models import BinaryLogitStep
-from templates.estimated_models import MultinomialLogitStep
 
 # TODO: This seems to be logging. Integrate all logging in a consistent way.
 print("Importing models for region", orca.get_injectable("region_code"))
-
+# TODO: Handle this
+warnings.filterwarnings("ignore")
 # -----------------------------------------------------------------------------------------
 # DEMOS
 # -----------------------------------------------------------------------------------------
-
-
 @orca.step("income_stats")
 def income_stats(persons, households):
     """Function to print the number of households from both the households and pers
@@ -36,6 +24,7 @@ def income_stats(persons, households):
     households_df = orca.get_table("households").local
     print("Households median Income: ", households_df["income"].median())
     print("Households median income persons table: ", persons_df.groupby("household_id")["earning"].sum().median())
+
 
 @orca.step("update_income")
 def update_income(persons, households, year):
@@ -137,8 +126,6 @@ def print_marr_stats():
 # -----------------------------------------------------------------------------------------
 # POSTPROCESSING
 # -----------------------------------------------------------------------------------------
-
-
 @orca.step("generate_outputs")
 def generate_outputs(year, base_year, forecast_year, tracts):
     print(
