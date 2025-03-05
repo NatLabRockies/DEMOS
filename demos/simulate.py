@@ -65,7 +65,6 @@ if __name__ == '__main__':
     parser.add_argument("-b", "--capacity_boost", type=int, help="value to multiply capacities during simulation")
     parser.add_argument("-l", "--all_local", action="store_true", help="no cloud access whatsoever")
     parser.add_argument("-i", "--input_year", type=int, help="input data (base) year")
-    parser.add_argument("-f", "--freq_interval", type=int, help="intra-simulation frequency interval")
     parser.add_argument("-o", "--output_fname", type=str, help="output file name")
     parser.add_argument("-t", "--travel_model", type=str, help="source of skims data. e.g. beam, polaris")
     parser.add_argument("-ts", "--table_save", action="store_true", help="store all other generated tables")
@@ -77,7 +76,7 @@ if __name__ == '__main__':
     initial_run = args.initial_run if args.initial_run else False
     base_year = args.input_year if args.input_year else 2010
     forecast_year = args.year if args.year else 2020
-    freq_interval = args.freq_interval if args.freq_interval else 1
+    freq_interval = 1
     random_seed = args.random_seed if args.random_seed else False
     calibrated = args.calibrated if args.calibrated else False
     calibrated_folder = args.calibrated_folder if args.calibrated_folder \
