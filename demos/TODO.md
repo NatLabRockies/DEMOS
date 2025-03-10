@@ -7,6 +7,9 @@
 - `models.py`
     - `work_location` seems obsolete
 
+- `aging.py`
+    - What is "relate" and where is it defined?
+
 # Commit history review
 August 8th, 2024
 - ⬜️ `cc558e4`: Edits `README.md`

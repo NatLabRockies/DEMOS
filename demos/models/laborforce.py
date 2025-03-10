@@ -8,8 +8,6 @@ def laborforce_model(persons, year):
     """
     Run the education model and update the persons table
 
-    YE: ***
-
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
 
@@ -71,8 +69,6 @@ def update_labor_status(persons, stay_unemployed_list, exit_workforce_list, year
     """
     Function to update the worker status in persons table based
     on the labor participation model
-
-    YE: ***
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table

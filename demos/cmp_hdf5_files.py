@@ -8,7 +8,7 @@ def compare_datasets(dset1, dset2):
     comparison = df1.compare(df2)
     
     if len(comparison) > 0:
-        return np.allclose(comparison.swaplevel(axis=1)['self'],comparison.swaplevel(axis=1)['other'])
+        return np.allclose(comparison.swaplevel(axis=1)['self'],comparison.swaplevel(axis=1)['other'], equal_nan=True)
 
     return True
 
@@ -42,7 +42,7 @@ def compare_hdf5_files(file1_path, file2_path):
 
 # Example usage:
 start = time.time()
-file1_path = 'data/model_data_2011_origin_macos.h5' #you may change file path here, like 'data/model_data_origin_linux.h5' if you're in Linux
+file1_path = 'data/model_data_2011_yamil_version.h5' #you may change file path here, like 'data/model_data_origin_linux.h5' if you're in Linux
 file2_path = 'data/model_data_2011.h5' #you may change file path here
 if compare_hdf5_files(file1_path, file2_path):
     print("All output datasets are equal.")

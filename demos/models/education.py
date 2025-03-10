@@ -1,6 +1,5 @@
 import orca
 import numpy as np
-import pandas as pd
 from templates import estimated_models, modelmanager as mm
 
 @orca.step("education_model")
