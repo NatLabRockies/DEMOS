@@ -9,6 +9,10 @@ def update_age(persons, households):
     This function updates the age of the persons table and
     updates the age of the household head in the household table.
 
+    Modifies State Variables:
+        - persons.age
+        - households.age_of_head
+
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
         households (DataFrameWrapper): DataFrameWrapper of the households table

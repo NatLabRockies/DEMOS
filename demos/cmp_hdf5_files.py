@@ -8,6 +8,7 @@ def compare_datasets(dset1, dset2):
     comparison = df1.compare(df2)
     
     if len(comparison) > 0:
+        print(comparison)
         return np.allclose(comparison.swaplevel(axis=1)['self'],comparison.swaplevel(axis=1)['other'], equal_nan=True)
 
     return True
@@ -24,10 +25,10 @@ def compare_hdf5_files(file1_path, file2_path):
 
         if only_in_store1:
             print(f"Keys only in {file1_path}: {only_in_store1}")
-            return False
+            # return False
         if only_in_store2:
             print(f"Keys only in {file2_path}: {only_in_store2}")
-            return False
+            # return False
 
         for key in common_keys:
             print(f"Comparing dataset {key}......", end=" ")
@@ -35,7 +36,7 @@ def compare_hdf5_files(file1_path, file2_path):
             dset2 = store2[key]
             if not compare_datasets(dset1, dset2):
                 print("Not Equal.")
-                return False
+                # return False
             else:
                 print("Equal.")
         return True

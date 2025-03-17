@@ -3,12 +3,14 @@
 - What is in the runs folder?
     - Looks like there is some ind of intermediate output.
 - What steps from the bottom of `models.py` do we want to keep?
+- Refactor the model calibration steps
+- Why the laborforce models do not return a value for every person?
 
 - `models.py`
     - `work_location` seems obsolete
 
-- `aging.py`
-    - What is "relate" and where is it defined?
+- `laborforce.py`
+    - Fix the filter in estimated model for out workforce (worker==0 should be 1)
 
 # Commit history review
 August 8th, 2024

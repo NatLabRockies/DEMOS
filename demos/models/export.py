@@ -1,7 +1,21 @@
 import orca
+import pandas as pd
+
+orca.add_table("age_evolution", pd.DataFrame())
+
+
+def compute_age_dist(year, age):
+    return {
+        "year": [year],
+        "20-30": [((age >= 20) & (age <= 30)).sum()],
+        "31-40": [((age >= 31) & (age <= 40)).sum()],
+        "41-50": [((age >= 41) & (age <= 50)).sum()],
+        "51-70": [((age >= 51) & (age <= 70)).sum()],
+        "70+":   [((age > 70) ).sum()]
+    }
 
 @orca.step("export_demo_stats")
-def export_demo_stats(year, forecast_year):
+def export_demo_stats(year, forecast_year, persons):
     """
     Export Demographic Stats tables
 
@@ -12,6 +26,7 @@ def export_demo_stats(year, forecast_year):
     Returns:
         None
     """
+    orca.add_table("age_evolution", compute_age_dist(year, persons.to_frame(["age"])))
 
     if year == forecast_year:
         export("pop_over_time")
