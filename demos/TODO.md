@@ -12,6 +12,9 @@
 - `laborforce.py`
     - Fix the filter in estimated model for out workforce (worker==0 should be 1)
 
+- `education.py`
+    - Is there no way for students to enter school?
+
 # Commit history review
 August 8th, 2024
 - ⬜️ `cc558e4`: Edits `README.md`

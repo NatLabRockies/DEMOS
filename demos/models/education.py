@@ -3,9 +3,16 @@ import numpy as np
 from templates import estimated_models, modelmanager as mm
 
 @orca.step("education_model")
-def education_model(persons, year):
+def education_model(persons,
+                    edu_highschool_proportion,
+                    edu_highschool_grads_proportion,
+                    year):
     """
     Run the education model and update the persons table
+
+        Modifies State Variables:
+        - persons.edu
+        - persons.student
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
@@ -13,120 +20,70 @@ def education_model(persons, year):
     Returns:
         None
     """
-    # Add temporary variable
+    # Run education model
+    ## Add temporary variable
     persons_df = persons.local
     persons_df["stop"] = -99
     orca.add_table("persons", persons_df)
 
-    # Run the education model
-    # print("Running the education model...")
+    stop_student_list = run_education_model()
+    reindexed_stop_student = stop_student_list.reindex(persons.local.index).fillna(-99)
+
+    # Update education years
+    ## Kids
+    persons.local.loc[persons["age"] == 3, "edu"] = 2
+    persons.local.loc[persons["age"].isin([4, 5]), "edu"] = 4
+
+    ## Dropping out
+    persons.local.loc[reindexed_stop_student == 1, "student"] = 0
+    # TODO: Check if this line is really necessary
+    # persons.local.loc[reindexed_stop_student == 0, "student"] = 1
+
+    ## Update those that stayed in school
+    stayed_index = reindexed_stop_student == 0
+
+    ### Between 4 and 13, increase by one - Students go all the way to grade 10
+    tenth_grade_or_below_index = persons["edu"].between(4, 13, inclusive="both")
+    persons.local.loc[stayed_index & tenth_grade_or_below_index, "edu"] += 1
+
+    ### Students in grade 11 move to either 15 or 16 based on weights
+    ### Proportion of 12th grade students to diploma highschool students is roughly maintained
+    eleventh_grade_index = persons["edu"] == 14
+    eleventh_grade_transition = np.random.choice([15, 16],
+                                                 size=(stayed_index & eleventh_grade_index).sum(),
+                                                 p=[edu_highschool_proportion[15],
+                                                    edu_highschool_proportion[16]])
+    persons.local.loc[stayed_index & eleventh_grade_index, "edu"] = eleventh_grade_transition
+
+    ### Students in grade 12 move to either 15 or 16 based on weights
+    ### Proportion of no diploma to GED students is roughly maintained
+    twelveth_grade_index = persons["edu"] == 15
+    twelveth_grade_transition = np.random.choice([16, 17],
+                                                 size=(stayed_index & twelveth_grade_index).sum(),
+                                                 p=[edu_highschool_proportion[16],
+                                                    edu_highschool_proportion[17]])
+    persons.local.loc[stayed_index & twelveth_grade_index, "edu"] = twelveth_grade_transition
+
+    ### Students with GED or HS Degree move to college
+    ged_or_hs_index = persons["edu"].isin([16, 17])
+    persons.local.loc[stayed_index & ged_or_hs_index, "edu"] = 18
+
+    ### Students with one year of college move to the next
+    college_index = persons["edu"] == 18
+    persons.local.loc[stayed_index & college_index, "edu"] = 19
+
+
+def run_education_model():
     edu_model = mm.get_step("education")
     edu_model.run()
-    student_list = edu_model.choices.astype(int)
+    return edu_model.choices.astype(int)
 
-    # Update student status
-    # print("Updating student status...")
-    update_education_status(persons, student_list, year)
 
-def update_education_status(persons, student_list, year):
-    """
-    Function to update the student status in persons table based
-    on the
+@orca.injectable(name="edu_highschool_proportion")
+def edu_highschool_proportion(data="persons.edu"):
+    return data[data.isin([15, 16])].value_counts(normalize=True)
 
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
-        student_list (pd.Series): Pandas Series containing the output of
-        the education model
 
-    Returns:
-        None
-    """
-    # Pull Data
-    persons_df = persons.to_frame(
-        columns=["age", "household_id", "edu", "student", "stop"]
-    )
-    persons_df["stop"] = student_list
-    persons_df["stop"].fillna(2, inplace=True)
-
-    # Update education level for individuals staying in school
-    weights = persons_df["edu"].value_counts(normalize=True)
-
-    persons_df.loc[persons_df["age"] == 3, "edu"] = 2
-    persons_df.loc[persons_df["age"].isin([4, 5]), "edu"] = 4
-
-    dropping_out = persons_df.loc[persons_df["stop"] == 1].copy()
-    staying_school = persons_df.loc[persons_df["stop"] == 0].copy()
-
-    dropping_out.loc[:, "student"] = 0
-    staying_school.loc[:, "student"] = 1
-
-    # high school and high school graduates proportions
-    hs_p = persons_df[persons_df["edu"].isin([15, 16])]["edu"].value_counts(
-        normalize=True
-    )
-    hs_grad_p = persons_df[persons_df["edu"].isin([16, 17])]["edu"].value_counts(
-        normalize=True
-    )
-    # Students all the way to grade 10
-    staying_school.loc[:, "edu"] = np.where(
-        staying_school["edu"].between(4, 13, inclusive="both"),
-        staying_school["edu"] + 1,
-        staying_school["edu"],
-    )
-    # Students in grade 11 move to either 15 or 16 based on weights
-    staying_school.loc[:, "edu"] = np.where(
-        staying_school["edu"] == 14,
-        np.random.choice([15, 16], p=[hs_p[15], hs_p[16]]),
-        staying_school["edu"],
-    )
-    # Students in grade 12 either get hs degree or GED
-    staying_school.loc[:, "edu"] = np.where(
-        staying_school["edu"] == 15,
-        np.random.choice([16, 17], p=[hs_grad_p[16], hs_grad_p[17]]),
-        staying_school["edu"],
-    )
-    # Students with GED or HS Degree move to college
-    staying_school.loc[:, "edu"] = np.where(
-        staying_school["edu"].isin([16, 17]), 18, staying_school["edu"]
-    )
-    # Students with one year of college move to the next
-    staying_school.loc[:, "edu"] = np.where(
-        staying_school["edu"] == 18, 19, staying_school["edu"]
-    )
-    # Others to be added here.
-
-    # Update education levels
-    persons_df.update(staying_school)
-    persons_df.update(dropping_out)
-
-    orca.get_table("persons").update_col("edu", persons_df["edu"])
-    orca.get_table("persons").update_col("student", persons_df["student"])
-
-    # compute mean age of students
-    # print("Updating students metrics...")
-    students = persons_df[persons_df["student"] == 1]
-    edu_over_time = orca.get_table("edu_over_time").to_frame()
-    # student_population = orca.get_table("student_population").to_frame()
-    # if student_population.empty:
-    #     student_population = pd.DataFrame(
-    #         data={"year": [year], "count": [students.shape[0]]}
-    #     )
-    # else:
-    #     student_population_new = pd.DataFrame(
-    #         data={"year": [year], "count": [students.shape[0]]}
-    #     )
-    #     students = pd.concat([student_population, student_population_new])
-    # if edu_over_time.empty:
-    #     edu_over_time = pd.DataFrame(
-    #         data={"year": [year], "mean_age_of_students": [students["age"].mean()]}
-    #     )
-    # else:
-    #     edu_over_time = edu_over_time.append(
-    #         pd.DataFrame(
-    #             {"year": [year], "mean_age_of_students": [students["age"].mean()]}
-    #         ),
-    #         ignore_index=True,
-    #     )
-
-    # orca.add_table("edu_over_time", edu_over_time)
-    # orca.add_table("student_population", student_population)
+@orca.injectable(name="edu_highschool_grads_proportion")
+def edu_highschool_grads_proportion(data="persons.edu"):
+    return data[data.isin([16, 17])].value_counts(normalize=True)
