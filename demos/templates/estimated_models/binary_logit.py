@@ -254,5 +254,49 @@ class BinaryLogitStep(TemplateStep):
             df.loc[df._choices==False, colname] = self.out_value_false
         
         orca.get_table(tabname).update_col_from_series(colname, df[colname], cast=True)
+
+    
+    def run_with_data(self, df):
+        """
+        TODO
+        
+        Parameters
+        ----------
+        None
+        
+        Returns
+        -------
+        None
+        
+        """
+        # TO DO - verify that params are in place for prediction
+        dm = patsy.dmatrices(data=df, formula_like=self.model_expression,
+                             return_type='dataframe')[1]  # right-hand-side design matrix
+        
+        beta_X = np.dot(dm, self.fitted_parameters)
+        probs = np.divide(np.exp(beta_X), 1 + np.exp(beta_X))
+        
+        rand = np.random.random(len(probs))
+        choices = np.less(rand, probs)
+        
+        # Save results to the class object (via df to include index)
+        df['_probs'] = probs
+        self.probabilities = df._probs
+        df['_choices'] = choices
+        self.choices = df._choices
+                
+        # TO DO - generate column if it does not exist
+
+        colname = self._get_out_column()
+        tabname = self._get_out_table()
+        
+        if self.out_value_true != 'nothing':
+            df.loc[df._choices==True, colname] = self.out_value_true
+        
+        if self.out_value_false != 'nothing':
+            df.loc[df._choices==False, colname] = self.out_value_false
+        
+        return self.choices
+
         
         
