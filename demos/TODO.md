@@ -15,6 +15,11 @@
 - `education.py`
     - Is there no way for students to enter school?
 
+- `household_reorg.py`
+    - Household 382474 has 4 people labeled as relate == 1 and some of them have MAR == 5
+        - This means the outputs will not be exactly the same after the refactoring
+    - `hh_income` is incorrectly computed: There is a hard-coded 30_000 and the rest are 60, 100, etc (not thousands)
+
 # Commit history review
 August 8th, 2024
 - ⬜️ `cc558e4`: Edits `README.md`

@@ -10,7 +10,7 @@ def education_model(persons,
     """
     Run the education model and update the persons table
 
-        Modifies State Variables:
+    Modifies State Variables:
         - persons.edu
         - persons.student
 

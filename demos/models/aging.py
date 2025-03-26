@@ -34,13 +34,18 @@ def senior(data="persons.age"):
     return (data >= 65).astype(int)
 
 
+@orca.column(table_name="persons", cache=True, cache_scope="iteration")
+def age_gt55(data="persons.age"):
+    return (data >= 55).astype(int)
+
+
 @orca.column(table_name="households", cache=True, cache_scope="iteration")
 def hh_children(persons):
     return persons.to_frame(["household_id", "child"]) \
                   .groupby("household_id") \
                   .sum()["child"].replace({0: "no", 1: "yes"})
 
-
+# TODO: I think this is wrong and unused
 @orca.column(table_name="households", cache=True, cache_scope="iteration")
 def gt55(persons):
     return (persons.to_frame(["household_id", "senior"]) \
