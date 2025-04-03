@@ -34,7 +34,8 @@
     - If both new partners are head of household, one could potentially leave dependents behind.
         - I think the current code is just making the person that earns the most head of household
         - In fact at the moment there are children labeled as head of household (9 year olds earning 0 for instance)
-    - I ignored the "marriage_table", consider re-implementing it after the refactor
+    - I ignored the "marriage_table" and "divorce_table", consider re-implementing it after the refactor
+    - What is `member_id` and why is set 1 for leaving person in a divorce but "relate" for those staying?
 
 ## Ideas for cheking sanity of input data
 - Check there is only one head of household

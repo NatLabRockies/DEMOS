@@ -100,6 +100,12 @@ def gt55(persons_grouped_household):
 
 
 @orca.column(table_name="households")
+def gt2(persons_grouped_household):
+    agg_df = persons_grouped_household.size() > 2
+    return agg_df.astype(int)
+
+
+@orca.column(table_name="households")
 def hh_income(persons_grouped_household):
     agg_df = persons_grouped_household\
         .agg(income=("earning", "sum"))
@@ -207,11 +213,11 @@ def households_reorg(persons, households, year, get_new_households):
     print("Marriages..")
     update_married_households_random(persons, marriage_list, get_new_households)
     print_household_stats()
-    fix_erroneous_households(persons, households)
+    fix_erroneous_households(persons)
     print_household_stats()
     
     print("Divorces..")
-    update_divorce(divorce_list)
+    update_divorce(persons, divorce_list, get_new_households)
     print_household_stats()
     
     marrital = orca.get_table("marrital").to_frame()
