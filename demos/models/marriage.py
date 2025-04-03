@@ -6,67 +6,6 @@ from scipy.spatial.distance import cdist
 from templates import estimated_models, modelmanager as mm
 
 
-@orca.step("household_divorce")
-def household_divorce(persons, households):
-    """
-    Running the household divorce tble
-
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
-        households (DataFrameWrapper): DataFrameWrapper of the households table
-
-    Returns:
-        None
-    """
-    t0 = time.time()
-    households_df = orca.get_table("households").local
-    households_df["divorced"] = -99
-    orca.add_table("households", households_df)
-    persons_df = orca.get_table("persons").local
-    t1 = time.time()
-    total = t1-t0
-    # print("Pulling data:", total)
-    t0 = time.time()
-    ELIGIBLE_HOUSEHOLDS = list(
-        persons_df[(persons_df["relate"].isin([0, 1])) & (persons_df["MAR"] == 1)][
-            "household_id"
-        ]
-        .unique()
-        .astype(int)
-    )
-    sizes = (
-        persons_df[
-            persons_df["household_id"].isin(ELIGIBLE_HOUSEHOLDS)
-            & (persons_df["relate"].isin([0, 1]))
-        ]
-        .groupby("household_id")
-        .size()
-    )
-    ELIGIBLE_HOUSEHOLDS = sizes[(sizes == 2)].index.to_list()
-    t1 = time.time()
-    total = t1-t0
-    # print("Eligibility time:", total)
-    # print("eligible households are", len(ELIGIBLE_HOUSEHOLDS))
-    t0 = time.time()
-    divorce_model = mm.get_step("divorce")
-    t1 = time.time()
-    total = t1-t0
-    # print("retrieving model:", total)
-    list_ids = str(ELIGIBLE_HOUSEHOLDS)
-    divorce_model.filters = "index in " + list_ids
-    divorce_model.out_filters = "index in " + list_ids
-    divorce_model.run()
-    t1 = time.time()
-    total = t1-t0
-    # print("Running model:", total)
-    t0 = time.time()
-    divorce_list = divorce_model.choices.astype(int)
-    t1 = time.time()
-    total = t1-t0
-    # print("Converting to int:", total)
-    update_divorce(persons, households, divorce_list)
-
-
 def update_married_households_random(persons, marriage_list, get_new_households):
     """
     Update the marriage status of individuals and create new households
@@ -626,8 +565,6 @@ def update_married_households(persons, households, marriage_list):
 def update_divorce(divorce_list):
     """
     Updating stats for divorced households
-
-    YE: ***
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
