@@ -4,7 +4,7 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 
 @orca.step("update_age")
-def update_age(persons, households):
+def update_age(persons):
     """
     This function updates the age of the persons table and
     updates the age of the household head in the household table.
@@ -21,7 +21,6 @@ def update_age(persons, households):
         None
     """
     persons["age"] += 1
-    households["age_of_head"] += 1
 
 
 @orca.column(table_name="persons", cache=True, cache_scope="iteration")
