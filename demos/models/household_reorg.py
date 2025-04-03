@@ -23,7 +23,7 @@ def cohabitate(persons):
 
 
 @orca.column(table_name="persons", cache=True, cache_scope="step")
-def is_single(persons):
+def is_not_married(persons):
     # TODO: Standarize the variable name MAR
     return (persons["MAR"] != 1) & (persons["age"] >= 15)
 
@@ -172,7 +172,7 @@ def households_reorg(persons, households, year, get_new_households):
         None
     """
     # Marriage Model
-    single_noncohab_index = ~persons["cohabitate"] & persons["is_single"]
+    single_noncohab_index = ~persons["cohabitate"] & persons["is_not_married"]
 
     print("Running marriage model...")
     marriage = mm.get_step("marriage")
@@ -197,9 +197,8 @@ def households_reorg(persons, households, year, get_new_households):
     # Cohabitation to X Model
     print("Running cohabitation model...")
     ELIGIBLE_HOUSEHOLDS = (
-        persons.local[(persons["relate"] == 13) & \
-                   (persons["MAR"]!=1) & \
-                   ((persons["age"]>=15))]["household_id"].unique().astype(int)
+        persons.local[(persons["relate"] == 13) & persons["is_not_married"]]["household_id"] \
+            .unique().astype(int)
     )
     cohabitation = mm.get_step("cohabitation")
     cohabitate_x_list = cohabitation.run(households.to_frame(cohabitation.variable_names).loc[ELIGIBLE_HOUSEHOLDS])
