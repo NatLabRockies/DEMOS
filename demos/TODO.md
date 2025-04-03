@@ -1,7 +1,7 @@
 # TODOs
 - Why were there so many problems with file ownership?
 - What is in the runs folder?
-    - Looks like there is some ind of intermediate output.
+    - Looks like there is some kind of intermediate output.
 - What steps from the bottom of `models.py` do we want to keep?
 - Refactor the model calibration steps
 - Why the laborforce models do not return a value for every person?
@@ -11,14 +11,33 @@
 
 - `laborforce.py`
     - Fix the filter in estimated model for out workforce (worker==0 should be 1)
+    - students are currently selected for work
 
 - `education.py`
     - Is there no way for students to enter school?
+    - School progression is faulty because of the order of the calculation
+    - Double check the logic for transitioning from 14,15,16
 
 - `household_reorg.py`
+    - Check if the three models interfere with themselves (they are applied according to filters to the same dataset)
     - Household 382474 has 4 people labeled as relate == 1 and some of them have MAR == 5
         - This means the outputs will not be exactly the same after the refactoring
     - `hh_income` is incorrectly computed: There is a hard-coded 30_000 and the rest are 60, 100, etc (not thousands)
+    - I believe the only reason `fix_erroneous_households` exists is in case people are flagged by two models at once
+
+- `marriage.py`
+    - There is a filter that when the number of people getting married is too low, the module does nothing
+    - Filter for <= 10 weddings
+    - There was also this code `if (min_mar == 0) or (min_mar == 0):`
+    - Discuss `CONDITIONS` part of the code
+    - `MAR` is not correctly being updated because final is filtered to those that move
+    - If both new partners are head of household, one could potentially leave dependents behind.
+        - I think the current code is just making the person that earns the most head of household
+        - In fact at the moment there are children labeled as head of household (9 year olds earning 0 for instance)
+    - I ignored the "marriage_table", consider re-implementing it after the refactor
+
+## Ideas for cheking sanity of input data
+- Check there is only one head of household
 
 # Commit history review
 August 8th, 2024

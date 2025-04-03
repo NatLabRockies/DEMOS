@@ -3,6 +3,7 @@ import orca
 import warnings
 import indicators
 import pandas as pd
+import numpy as np
 
 # TODO: This seems to be logging. Integrate all logging in a consistent way.
 print("Importing models for region", orca.get_injectable("region_code"))

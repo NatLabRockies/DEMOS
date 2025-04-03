@@ -6,6 +6,14 @@ from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
 from .marriage import update_married_households_random, update_married_households, update_divorce
 
+@orca.injectable(autocall=False)
+def get_new_households(n, persons):
+    return (
+        np.arange(n)                         # = [0, 1, 2 ...] up to the number of people
+        + persons.local.household_id.max()   # = [max_hh_id, max_household_id + 1, ...]
+        + 1
+    )
+
 @orca.column(table_name="persons", cache=True, cache_scope="step")
 def cohabitate(persons):
     unmarried_partner_index = persons["relate"] == 13
@@ -141,7 +149,7 @@ def hh_size(persons_grouped_household):
 
 
 @orca.step("households_reorg")
-def households_reorg(persons, households, year):
+def households_reorg(persons, households, year, get_new_households):
     """
     Households reorganization module
 
@@ -193,11 +201,11 @@ def households_reorg(persons, households, year):
     ######### UPDATING
     print("Restructuring households:")
     print("Cohabitations..")
-    update_cohabitating_households(persons, households, cohabitate_x_list)
+    update_cohabitating_households(persons, cohabitate_x_list, get_new_households)
     print_household_stats()
     
     print("Marriages..")
-    update_married_households_random(persons, households, marriage_list)
+    update_married_households_random(persons, marriage_list, get_new_households)
     print_household_stats()
     fix_erroneous_households(persons, households)
     print_household_stats()
@@ -277,7 +285,7 @@ def household_stats(persons, households):
     print("Households with 1 and 13: ", ((persons_df_sum["relate_1"] * persons_df_sum["relate_13"])>0).sum())
 
 
-def update_cohabitating_households(persons, households, cohabitate_list):
+def update_cohabitating_households(persons, cohabitate_list, get_new_households):
     """
     Updating households and persons after cohabitation model.
 
@@ -303,42 +311,23 @@ def update_cohabitating_households(persons, households, cohabitate_list):
 
     # Perform update for people that broke up
     leaving_person_index = newly_brokeup_persons_index & unmarried_partner_index
-    staying_person_index = newly_brokeup_persons_index & unmarried_partner_index
 
     ## Person leaving is now head of household
     persons.local.loc[leaving_person_index, "relate"] = 0
 
     ### Assign new household_id to people leaving
-    persons.local.loc[leaving_person_index, "relate"] = (
-        np.arange(leaving_person_index.sum()) # = [0, 1, 2 ...] up to the number of people that left
-        + households.local.index.max()        # = [max_hh_id, max_household_id + 1, ...]
-        + 1
-    )
+    persons.local.loc[leaving_person_index, "household_id"] = get_new_households(leaving_person_index.sum(), persons)
 
 
-def fix_erroneous_households(persons, households):
-    """ YE: *** """
-    print("Fixing erroneous households")
-    p_df = persons.local
-    household_cols = households.local_columns
-    household_df = households.local
-    persons_cols = persons.local_columns
-    # print("Hh size: ", household_df.shape)
-    # print("Persons size: ", p_df.shape)
-    households_to_drop = p_df[p_df['relate'].isin([1, 13])].groupby('household_id')['relate'].nunique().reset_index()
-    households_to_drop = households_to_drop[households_to_drop["relate"]==2]["household_id"].to_list()
-    # print("Num hh to be dropped: ", len(households_to_drop))
-    household_df = household_df.drop(households_to_drop)
-    p_df = p_df[~p_df["household_id"].isin(households_to_drop)]
+def fix_erroneous_households(persons):
+    """
+    """
+    n_partners_df = persons.local[(persons["relate"] == 1) | (persons["relate"] == 13)] \
+        .groupby("household_id")["relate"] \
+        .nunique() \
+        .reset_index()
+    households_to_drop = n_partners_df[n_partners_df["relate"] == 2]["household_id"].to_list()
 
-    orca.add_table("households", household_df[household_cols])
-    orca.add_table("persons", p_df[persons_cols])
-
-    metadata = orca.get_table("metadata").to_frame()
-    max_hh_id = metadata.loc["max_hh_id", "value"]
-    max_p_id = metadata.loc["max_p_id", "value"]
-    if household_df.index.max() > max_hh_id:
-        metadata.loc["max_hh_id", "value"] = household_df.index.max()
-    if p_df.index.max() > max_p_id:
-        metadata.loc["max_p_id", "value"] = p_df.index.max()
-    orca.add_table("metadata", metadata)
+    # Drop the households
+    if len(households_to_drop) > 0:
+        persons.local = persons.local[~persons.local["household_id"].isin(households_to_drop)]
