@@ -163,6 +163,7 @@ def households_reorg(persons, households, year, get_new_households):
         - persons.relate
         - persons.MAR
         - persons.household_id
+        - persons.member_id
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table

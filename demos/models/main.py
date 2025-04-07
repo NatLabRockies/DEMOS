@@ -323,11 +323,11 @@ if orca.get_injectable("running_calibration_routine") == False:
         demo_models = [
             # "update_age",
             # "laborforce_model",
-            "households_reorg",
+            # "households_reorg",
             "kids_moving_model",
             "fatality_model",
             "birth_model",
-            "education_model",
+            # "education_model",
             "export_demo_stats",
         ]
         steps_all_years = (

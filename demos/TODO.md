@@ -19,7 +19,8 @@
     - Double check the logic for transitioning from 14,15,16
 
 - `household_reorg.py`
-    - Check if the three models interfere with themselves (they are applied according to filters to the same dataset)
+    - <del>Check if the three models interfere with themselves (they are applied according to filters to the same dataset)</del>
+        - Models do not seem to intersect
     - Household 382474 has 4 people labeled as relate == 1 and some of them have MAR == 5
         - This means the outputs will not be exactly the same after the refactoring
     - `hh_income` is incorrectly computed: There is a hard-coded 30_000 and the rest are 60, 100, etc (not thousands)
@@ -36,6 +37,11 @@
         - In fact at the moment there are children labeled as head of household (9 year olds earning 0 for instance)
     - I ignored the "marriage_table" and "divorce_table", consider re-implementing it after the refactor
     - What is `member_id` and why is set 1 for leaving person in a divorce but "relate" for those staying?
+
+- `kids_moving`
+    - The filters in the estimated model consider relate values of 7 and 9 children as well
+    - I ignored the "kids_move_table", consider re-implementing it after the refactor
+
 
 ## Ideas for cheking sanity of input data
 - Check there is only one head of household
