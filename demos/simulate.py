@@ -37,9 +37,9 @@ def run(
     mm.initialize(datasources.configs_folder)
 
     if table_save:
-        out_tables = datasources.hdf_tables + ["graveyard"]
+        out_tables = datasources.synpop_tables + ["graveyard"]
     else:
-        out_tables = datasources.hdf_tables + ["graveyard"] #TODO: FIX THIS
+        out_tables = datasources.synpop_tables + ["graveyard"] #TODO: FIX THIS
     iter_vars = list(range(
         base_year + freq_interval, forecast_year + freq_interval, freq_interval))
     orca.run(
@@ -75,7 +75,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     region_code = args.region_code
     initial_run = args.initial_run if args.initial_run else False
-    base_year = args.input_year if args.input_year else 2010
+    base_year = args.input_year if args.input_year else 2019
     forecast_year = args.year if args.year else 2020
     freq_interval = args.freq_interval if args.freq_interval else 1
     random_seed = args.random_seed if args.random_seed else False
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     skim_source = args.travel_model if args.travel_model else 'beam'
     scenario_name = args.scenario_name if args.scenario_name else False
     output_fname = args.output_fname if args.output_fname \
-        else "data/model_data_{0}.h5".format(forecast_year)
+        else "data/model_data_{0}_hhcali.h5".format(forecast_year)
 
     run(
         region_code, initial_run, base_year, forecast_year, random_seed,
