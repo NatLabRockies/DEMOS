@@ -28,7 +28,7 @@ This repository contains only code and configuration/setup files necessary
 	pip install -r requirements.txt
 	```
 
-5. Download input data [data_nrel_SCAG.zip](https://app.box.com/s/bw1l837i8kalhc7cn8qbkwun3nm31sg0).
+5. Download input data [data_nrel_SCAG.zip](https://app.box.com/shared/static/xkz00wbzcjfmf0wu60kjbozh5hh8qsxh.zip).
 
 6. Put all files of input data into `DEMOS_NREL/demos/data`
    
