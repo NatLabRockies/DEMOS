@@ -7,10 +7,11 @@ from templates.utils.models import columns_in_formula
 from .marriage import update_married_households_random, update_married_households, update_divorce
 
 @orca.injectable(autocall=False)
-def get_new_households(n, persons):
+def get_new_households(n, persons, graveyard):
+    current_max = max([persons.local.household_id.max(), graveyard.local.household_id.max()])
     return (
         np.arange(n)                         # = [0, 1, 2 ...] up to the number of people
-        + persons.local.household_id.max()   # = [max_hh_id, max_household_id + 1, ...]
+        + current_max   # = [max_hh_id, max_household_id + 1, ...]
         + 1
     )
 
