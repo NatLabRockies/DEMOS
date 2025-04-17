@@ -8,9 +8,10 @@ from .marriage import update_married_households_random, update_married_household
 
 @orca.injectable(autocall=False)
 def get_new_households(n, persons, graveyard):
-    current_max = max([persons.local.household_id.max(), graveyard.local.household_id.max()])
+    current_max = pd.concat([persons.local, graveyard.local], ignore_index=True).household_id.max()
     return (
         np.arange(n)                         # = [0, 1, 2 ...] up to the number of people
+        + current_max   # = [max_hh_id, max_household_id + 1, ...]
         + current_max   # = [max_hh_id, max_household_id + 1, ...]
         + 1
     )
@@ -54,6 +55,7 @@ def persons_grouped_household(persons):
 
 
 @orca.column(table_name="households")
+def hh_agegroup_of_head(persons_grouped_household):
 def hh_agegroup_of_head(persons_grouped_household):
     agg_df = persons_grouped_household\
         .agg(age_of_head=("age_head", "sum"))
@@ -156,7 +158,7 @@ def hh_size(persons_grouped_household):
 
 
 @orca.step("households_reorg")
-def households_reorg(persons, households, year, get_new_households):
+def households_reorg(persons, households, year, get_new_households, graveyard):
     """
     Households reorganization module
 
@@ -208,17 +210,17 @@ def households_reorg(persons, households, year, get_new_households):
     ######### UPDATING
     print("Restructuring households:")
     print("Cohabitations..")
-    update_cohabitating_households(persons, cohabitate_x_list, get_new_households)
+    update_cohabitating_households(persons, cohabitate_x_list, get_new_households, graveyard)
     print_household_stats()
     
     print("Marriages..")
-    update_married_households_random(persons, marriage_list, get_new_households)
+    update_married_households_random(persons, marriage_list, get_new_households, graveyard)
     print_household_stats()
     fix_erroneous_households(persons)
     print_household_stats()
     
     print("Divorces..")
-    update_divorce(persons, divorce_list, get_new_households)
+    update_divorce(persons, divorce_list, get_new_households, graveyard)
     print_household_stats()
     
     marrital = orca.get_table("marrital").to_frame()
@@ -292,7 +294,7 @@ def household_stats(persons, households):
     print("Households with 1 and 13: ", ((persons_df_sum["relate_1"] * persons_df_sum["relate_13"])>0).sum())
 
 
-def update_cohabitating_households(persons, cohabitate_list, get_new_households):
+def update_cohabitating_households(persons, cohabitate_list, get_new_households, graveyard):
     """
     Updating households and persons after cohabitation model.
 
@@ -323,7 +325,7 @@ def update_cohabitating_households(persons, cohabitate_list, get_new_households)
     persons.local.loc[leaving_person_index, "relate"] = 0
 
     ### Assign new household_id to people leaving
-    persons.local.loc[leaving_person_index, "household_id"] = get_new_households(leaving_person_index.sum(), persons)
+    persons.local.loc[leaving_person_index, "household_id"] = get_new_households(leaving_person_index.sum(), persons, graveyard)
 
 
 def fix_erroneous_households(persons):

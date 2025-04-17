@@ -4,12 +4,10 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 
 @orca.step("kids_moving_model")
-def kids_moving_model(persons, households, get_new_households):
+def kids_moving_model(persons, get_new_households, graveyard):
     """
     Running the kids moving model and updating household
     stats.
-
-    YE: ***
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
@@ -27,9 +25,9 @@ def kids_moving_model(persons, households, get_new_households):
     kids_moving_model.run()
     kids_moving = kids_moving_model.choices.astype(int)
 
-    update_households_after_kids(persons, kids_moving, get_new_households)
+    update_households_after_kids(persons, kids_moving, get_new_households, graveyard)
 
-def update_households_after_kids(persons, kids_moving, get_new_households):
+def update_households_after_kids(persons, kids_moving, get_new_households, graveyard):
     """
     Add and update households after kids move out.
 
@@ -68,4 +66,4 @@ def update_households_after_kids(persons, kids_moving, get_new_households):
     # Finally combine all filters into one
     kids_moving_index = kids_moving.reindex(persons.local.index).fillna(0).astype(bool) & eligeble_households_index
 
-    persons.local.loc[kids_moving_index, "household_id"] = get_new_households(kids_moving_index.sum(), persons)
+    persons.local.loc[kids_moving_index, "household_id"] = get_new_households(kids_moving_index.sum(), persons, graveyard)

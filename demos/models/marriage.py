@@ -6,7 +6,7 @@ from scipy.spatial.distance import cdist
 from templates import estimated_models, modelmanager as mm
 
 
-def update_married_households_random(persons, marriage_list, get_new_households):
+def update_married_households_random(persons, marriage_list, get_new_households, graveyard):
     """
     Update the marriage status of individuals and create new households
 
@@ -100,7 +100,7 @@ def update_married_households_random(persons, marriage_list, get_new_households)
     ### If neither is head, form a new household
     neither_head_index = (all_df.relate != 0) & (all_df.partner_relate != 0)
     neither_head_not_first_index = all_df.loc[first_index & neither_head_index].partner_id.values
-    new_hh_ids = get_new_households((first_index & neither_head_index).sum(), persons)
+    new_hh_ids = get_new_households((first_index & neither_head_index).sum(), persons, graveyard)
 
     #### Set new households for heads and not heads
     all_df.loc[first_index & neither_head_index, "new_hh_id"] = new_hh_ids
@@ -562,7 +562,7 @@ def update_married_households(persons, households, marriage_list):
     orca.add_table("marriage_table", married_table)
 
 
-def update_divorce(persons, divorce_list, get_new_households):
+def update_divorce(persons, divorce_list, get_new_households, graveyard):
     """
     Updating stats for divorced households
 
@@ -587,7 +587,7 @@ def update_divorce(persons, divorce_list, get_new_households):
 
     # Update columns
     ## People leaving get a new household id
-    persons.local.loc[person_leaving_index, "household_id"] = get_new_households(person_leaving_index.sum(), persons)
+    persons.local.loc[person_leaving_index, "household_id"] = get_new_households(person_leaving_index.sum(), persons, graveyard)
     persons.local.loc[person_leaving_index, "relate"] = 0
     persons.local.loc[person_leaving_index, "MAR"] = 3
     persons.local.loc[person_leaving_index, "member_id"] = 1 # TODO: Needed?
