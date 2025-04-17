@@ -749,12 +749,10 @@ def top_edu_bin3(households):
 
 
 @orca.column('households')
-def have_spouse(persons, households):
+def have_spouse(persons):
     df = persons.to_frame(columns=['household_id', 'relate'])
-    households_df = households.to_frame(columns=['serialno'])
-    household_id = households_df.index.to_series()
     filtered_houses = df[df['relate'] == 1]['household_id']
-    return household_id.isin(filtered_houses) * 1
+    return (df['relate'] == 1).groupby(df["household_id"]).sum()
 
 @orca.column('households')
 def hh_birth_agebin1(persons, households):
