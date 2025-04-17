@@ -56,7 +56,6 @@ def persons_grouped_household(persons):
 
 @orca.column(table_name="households")
 def hh_agegroup_of_head(persons_grouped_household):
-def hh_agegroup_of_head(persons_grouped_household):
     agg_df = persons_grouped_household\
         .agg(age_of_head=("age_head", "sum"))
     
