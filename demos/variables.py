@@ -188,6 +188,11 @@ def agebin5_labor(persons):
     return (p>70) * 1
 
 @orca.column('persons')
+def agebin6_labor(persons):
+    p = persons.to_frame(columns=['age'])['age']
+    return p.between(20, 40, inclusive='both') * 1
+
+@orca.column('persons')
 def agebin1(persons):
     p = persons.to_frame(columns=['age'])['age']
     return p.between(16, 22, inclusive='both') * 1
@@ -209,6 +214,37 @@ def agebin3(persons):
 def agebin4(persons):
     p = persons.to_frame(columns=['age'])
     return p.gt(60) * 1
+
+################### addedd for updated 
+
+@orca.column('persons')
+def agebin1_new(persons):
+    p = persons.to_frame(columns=['age'])['age']
+    return p.between(21, 40, inclusive='both') * 1
+
+
+@orca.column('persons')
+def agebin2_new(persons):
+    p = persons.to_frame(columns=['age'])['age']
+    return p.between(41, 50, inclusive='both') * 1
+
+
+@orca.column('persons')
+def agebin3_new(persons):
+    p = persons.to_frame(columns=['age'])['age']
+    return p.between(51, 70, inclusive='both') * 1
+
+@orca.column('persons')
+def agebin4_new(persons):
+    p = persons.to_frame(columns=['age'])['age']
+    return p.between(71, 90, inclusive='both') * 1
+
+@orca.column('persons')
+def agebin5_new(persons):
+    p = persons.to_frame(columns=['age'])
+    return p.gt(90) * 1
+
+####################
 
 @orca.column('persons')
 def agebin1_mo(persons):
@@ -527,7 +563,16 @@ def married_before(persons):
     p = persons.to_frame(columns=['MAR'])
     return p['MAR'].between(2, 4) * 1
 
+@orca.column('persons')
+def marital25(persons):
+    p = persons.to_frame(columns=['MAR'])
+    # print(persons.local.columns)
+    return p.isin([2,5]).astype(int)
 
+@orca.column('persons')
+def marital34(persons):
+    p = persons.to_frame(columns=['MAR'])
+    return p.isin([3,4]).astype(int)
 # # PERSON VARIABLES
 # # -----------------------------------------------------------------------------------------
 
@@ -883,6 +928,15 @@ def fsize_bin5(households):
     df = households.to_frame(columns=['persons'])
     return df.gt(5) * 1
 
+@orca.column('households')
+def fsize_bin23(households):
+    df = households.to_frame(columns=['persons'])
+    return df['persons'].isin([2, 3]) * 1
+
+@orca.column('households')
+def fsize_bingt3(households):
+    df = households.to_frame(columns=['persons'])
+    return df.gt(3) * 1
 
 @orca.column('households')
 def avg_age(persons):

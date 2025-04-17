@@ -36,10 +36,12 @@ synpop_hh = synpop_hh.merge(race_of_head, on=["household_id"])
 
 synpop_hh['tenure'] = np.where(synpop_hh['ten'].isin([1,2]), 1, 2)
 
+# relation definition https://cloud.urbansim.com/docs/general/documentation/technical.html#pums-relp-variable-table
 relate = pd.DataFrame({'relshipp': [20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38], 
                        'relate':   [ 0, 1,13, 1,13, 2, 3, 4, 5, 6, 7, 8, 9,10,12,14,15,16,17]})
 synpop_pp = synpop_pp.merge(relate, on=["relshipp"])
 
+# education status definition https://cloud.urbansim.com/docs/general/documentation/technical.html#pums-schl-variable-table
 edu = pd.DataFrame({'schg': [0,1,2,3,4,5,6,7,8, 9,10,11,12,13,14,15,16], 
                     'edu':  [0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,19,21]})
 synpop_pp = synpop_pp.merge(edu, on=["schg"])
@@ -60,10 +62,44 @@ synpop_pp['hispanic'] = np.where(synpop_pp['race']==1, 1, 0)
 # -----------------------------------------------------------------------------------------
 ### no earning column in persons table. temporary solution:
 hh_worker = synpop_pp.groupby('household_id').agg({'worker': 'sum'}).rename(columns={"worker": "workers"})
-synpop_hh = synpop_hh.merge(hh_worker, how="left", on=["household_id"])
-synpop_hh['earning'] = np.where(synpop_hh['workers'] > 0, synpop_hh['income'] / synpop_hh['workers'], synpop_hh['income'] / synpop_hh['persons'])
-synpop_pp = synpop_pp.merge(synpop_hh[['household_id', 'earning']], how="left", on=["household_id"])
-synpop_hh = synpop_hh.drop(columns=['earning']) 
+
+# Count people age >= 16
+count_16 = synpop_pp[synpop_pp['age'] >= 16].groupby('household_id').size()
+
+# Count people age >= 15 (fallback)
+count_15 = synpop_pp[synpop_pp['age'] >= 15].groupby('household_id').size()
+
+# Use count_16 if exists, otherwise fallback to count_15
+hh_adult = count_16.combine_first(count_15).astype(int)
+hh_adult.name = "adults"
+hh_adult = hh_adult.reset_index()
+
+synpop_hh = synpop_hh.merge(hh_worker, how="left", on=["household_id"]).fillna(0)
+synpop_hh = synpop_hh.merge(hh_adult, how="left", on=["household_id"]).fillna(0)
+
+synpop_hh["worker_earning"] = np.where(
+    synpop_hh["workers"] > 0, 
+    synpop_hh["income"] / synpop_hh["workers"], 
+    0
+)
+synpop_hh["adult_earning"] = np.where(
+    (synpop_hh["workers"] == 0) & (synpop_hh["adults"] > 0),
+    synpop_hh["income"] / synpop_hh["adults"],
+    0
+)
+
+synpop_pp = synpop_pp.merge(
+    synpop_hh[["household_id", "worker_earning", "adult_earning"]],
+    how="left",
+    on="household_id"
+)
+
+synpop_pp["earning"] = 0  # initialize
+synpop_pp.loc[synpop_pp["worker"] == 1, "earning"] = synpop_pp["worker_earning"].astype(int)
+synpop_pp.loc[(synpop_pp["worker"] != 1) & (synpop_pp["age"] >= 16), "earning"] = synpop_pp["adult_earning"].astype(int)
+
+synpop_pp = synpop_pp.drop(columns=["worker_earning", "adult_earning"])
+synpop_hh = synpop_hh.drop(columns=["worker_earning", "adult_earning"])
 
 ###
 # -----------------------------------------------------------------------------------------

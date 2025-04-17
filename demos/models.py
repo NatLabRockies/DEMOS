@@ -3225,7 +3225,206 @@ def household_divorce(persons, households):
 @orca.step("households_reorg")
 def households_reorg(persons, households, year):
     #
+    persons_original = persons.to_frame()
+    households_original = households.to_frame()
+    print("Initial marital status...")
+    print_marr_stats()
     # MARRIAGE MODEL
+    data = marriage_data(persons)
+    print("single_male:", data[data["person_sex"] == "male"].shape[0])
+    print("single_female:", data[data["person_sex"] == "female"].shape[0])    
+    ###############################################################
+    print("Running marriage model...")
+    # breakpoint()
+    marriage = mm.get_step("marriage")
+    marriage_list = marriage.run(data.copy())
+    print("Number of marriages and cohabitations:")
+    print(marriage_list.value_counts())
+    random_match = orca.get_injectable("random_match")
+    # DIVORCE MODEL
+    list_ids = divorce_data(persons, households)
+    
+    divorce = mm.get_step("divorce")
+    divorce.filters = "index in " + list_ids
+    divorce.out_filters = "index in " + list_ids
+
+    print("Running divorce model...")
+    divorce.run()
+    divorce_list = divorce.choices.astype(int)
+    # if divorce_list.shape[0] !=  len(ELIGIBLE_HOUSEHOLDS):
+    #     breakpoint()
+    print("Number of divorces:")
+    print(divorce_list.value_counts())
+    # COHABITATION_TO_X Model
+    cohab_data = cohabitation_data(persons, households)
+    # Run Model
+    print("Running cohabitation model...")
+    cohabitation = mm.get_step("cohabitation")
+    cohabitate_x_list = cohabitation.run(cohab_data)
+    print("Cohabitation outcomes:")
+    print(cohabitate_x_list.value_counts())
+
+    updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list)
+    
+    persons_df = orca.get_table("persons").local
+    predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
+    predicted_married_share = predicted_married_count / persons_df.shape[0]
+    
+    predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
+    predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
+
+    observed_marrital = orca.get_table("observed_marrital_data").to_frame()
+    target_married_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==1)]["count"].values[0]
+    target_married_share = target_married_count / persons_df.shape[0] # observed_marrital[observed_marrital["year"] == year]["count"].sum()
+
+    target_divorced_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==3)]["count"].values[0]
+    target_divorced_share = target_divorced_count / persons_df.shape[0]
+
+    print(f"predicted_married_share - target_married_share: {predicted_married_share - target_married_share}")
+    print(f"predicted_divorced_share - target_divorced_share: {predicted_divorced_share - target_divorced_share}")
+
+    total_error = np.sqrt(np.mean((predicted_married_share - target_married_share) ** 2 + (predicted_divorced_share - target_divorced_share) ** 2))
+
+    scaling_factor = 1.5
+    momentum = 0.9
+    p_update_divorce = 0
+    p_update_marriage = 0
+    p_update_cohabitation = 0
+    max_iterations = 20
+    married_weight = target_married_count / (target_married_count + target_divorced_count)
+    divorced_weight = target_divorced_count / (target_married_count + target_divorced_count)
+    print("The Household Restructuring Calibration:")
+    calibrate_time = 0
+    while total_error > 0.06 and calibrate_time < max_iterations:
+        print(f"{calibrate_time} time: {total_error}")
+        
+        # Calculate updates with momentum
+        p_update_divorce = momentum * p_update_divorce + scaling_factor * divorced_weight * np.log(target_divorced_count / predicted_divorced_count)
+        p_update_marriage = momentum * p_update_marriage + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
+        p_update_cohabitation = momentum * p_update_cohabitation + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
+        
+        # Apply updates
+        divorce.fitted_parameters[0] += p_update_divorce
+        marriage.coeffs.loc[0, 'married'] += p_update_marriage
+        cohabitation.coeffs.loc[0, 'marriage'] += p_update_cohabitation
+
+        persons = persons_original
+        households = households_original
+        orca.add_table("households", households_original)
+        orca.add_table("persons", persons_original)
+        
+        print(f"{calibrate_time} time input: marital status...")
+        print_marr_stats()
+        print("original input: marital status...")
+        print(persons_original[persons_original["age"]>=15]["MAR"].value_counts().sort_values())
+        data = marriage_data(persons)
+        marriage_list = marriage.run(data.copy())
+        random_match = orca.get_injectable("random_match")
+        print("Number of marriages and cohabitations:")
+        print(marriage_list.value_counts())
+
+        list_ids = divorce_data(persons, households)
+        divorce.filters = "index in " + list_ids
+        divorce.out_filters = "index in " + list_ids
+        divorce.run()
+        divorce_list = divorce.choices.astype(int)
+        print("Number of divorces:")
+        print(divorce_list.value_counts())
+
+        cohab_data = cohabitation_data(persons, households)
+        cohabitate_x_list = cohabitation.run(cohab_data)
+
+        updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list)
+        
+        persons_df = orca.get_table("persons").local
+        predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
+        predicted_married_share = predicted_married_count / persons_df.shape[0]
+        
+        predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
+        predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
+
+        target_married_share = target_married_count / persons_df.shape[0]
+        target_divorced_share = target_divorced_count / persons_df.shape[0]
+        
+        print(f"predicted_married_share - target_married_share: {predicted_married_share - target_married_share}")
+        print(f"predicted_divorced_share - target_divorced_share: {predicted_divorced_share - target_divorced_share}")
+        prev_total_error = total_error
+        total_error = np.sqrt(np.mean((predicted_married_share - target_married_share) ** 2 + (predicted_divorced_share - target_divorced_share) ** 2))
+
+        calibrate_time += 1
+
+        if abs(prev_total_error - total_error) < 0.002 and calibrate_time > 3:
+            print("Stopping adjustments due to minimal error reduction.")
+            break
+        
+    print(f"{calibrate_time} time: {total_error}")
+
+    # print("Updating married table...")
+    married_table = orca.get_table("marriage_table").to_frame()
+    if married_table.empty:
+        married_table = pd.DataFrame(
+            [[(marriage_list == 1).sum(), (marriage_list == 2).sum()]],
+            columns=["married", "cohabitated"],
+        )
+    else:
+        new_married_table = pd.DataFrame(
+                [[(marriage_list == 1).sum(), (marriage_list == 2).sum()]],
+                columns=["married", "cohabitated"]
+            )
+        married_table = pd.concat([married_table, new_married_table],
+                                  ignore_index=True)
+
+    orca.add_table("marriage_table", married_table)
+
+    # print("Updating divorce metrics...")
+    divorce_table = orca.get_table("divorce_table").to_frame()
+    if divorce_table.empty:
+        divorce_table = pd.DataFrame([divorce_list.sum()], columns=["divorced"])
+    else:
+        new_divorce = pd.DataFrame([divorce_list.sum()], columns=["divorced"])
+        divorce_table = pd.concat([divorce_table, new_divorce], ignore_index=True)
+    orca.add_table("divorce_table", divorce_table)
+
+    marrital = orca.get_table("marrital").to_frame()
+    persons_df = orca.get_table("persons").local
+    persons_local_columns = orca.get_injectable("persons_local_cols")
+    persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
+    orca.add_table("persons", persons_df[persons_local_columns])
+
+    # print("Updating marrital table...")
+    if marrital.empty:
+        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
+        marrital = pd.DataFrame(persons_stats)
+        marrital["year"] = year
+    else:
+        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
+        new_marrital = pd.DataFrame(persons_stats)
+        new_marrital["year"] = year
+        marrital = pd.concat([marrital, new_marrital])
+    orca.add_table("marrital", marrital)
+
+def updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list):
+    
+    ######### UPDATING
+    print("Restructuring households:")
+    print("Cohabitations..")
+    update_cohabitating_households(persons, households, cohabitate_x_list)
+    # print_household_stats()
+    
+    print("Marriages..")
+    update_married_households_random(persons, households, marriage_list)
+    # print_household_stats()
+    fix_erroneous_households(persons, households)
+    # print_household_stats()
+    
+    print("Divorces..")
+    update_divorce(divorce_list)
+    # print_household_stats()
+
+def marriage_data(persons):
+    #
+    # MARRIAGE MODEL
+    # persons_df = persons.to_frame()
     persons_df = persons.to_frame()
     # get persons cohabitating and heads of their households
     COHABS_PERSONS = persons_df["relate"] == 13
@@ -3241,39 +3440,25 @@ def households_reorg(persons, households, year):
     data = single_df.join(all_cohabs_df[["cohab"]], how="left")
     data = data.loc[data["cohab"] != 1].copy()
     data.drop(columns="cohab", inplace=True)
-    ###############################################################
-    print("Running marriage model...")
-    # breakpoint()
-    marriage = mm.get_step("marriage")
-    marriage_list = marriage.run(data.copy())
-    # print("Number of marriages and cohabitations:")
-    # print(marriage_list.value_counts())
-    random_match = orca.get_injectable("random_match")
-    ## ------------------------------------
     
+    return data
+
+def divorce_data(persons, households):
     # DIVORCE MODEL
     households_df = orca.get_table("households").local
+    # households_df = households.local
     households_df["divorced"] = -99
     orca.add_table("households", households_df)
     persons_df = orca.get_table("persons").local
+    # persons_df = persons.local
     ELIGIBLE_HOUSEHOLDS = list(persons_df[(persons_df["relate"].isin([0, 1])) & (persons_df["MAR"] == 1)]["household_id"].unique().astype(int))
     sizes = (persons_df[persons_df["household_id"].isin(ELIGIBLE_HOUSEHOLDS)& (persons_df["relate"].isin([0, 1]))].groupby("household_id").size())
     # print("Sizes value counts: ", sizes.value_counts())
     ELIGIBLE_HOUSEHOLDS = sizes[(sizes == 2)].index.to_list()
     # print("Size of Eligible Households: ", len(ELIGIBLE_HOUSEHOLDS))
     # print("Eligible households for divorce are", len(ELIGIBLE_HOUSEHOLDS))
-    divorce_model = mm.get_step("divorce")
     list_ids = str(ELIGIBLE_HOUSEHOLDS)
-    divorce_model.filters = "index in " + list_ids
-    divorce_model.out_filters = "index in " + list_ids
 
-    print("Running divorce model...")
-    divorce_model.run()
-    divorce_list = divorce_model.choices.astype(int)
-    # if divorce_list.shape[0] !=  len(ELIGIBLE_HOUSEHOLDS):
-    #     breakpoint()
-    # print("Number of divorces:")
-    # print(divorce_list.value_counts())
     # # breakpoint()
     # predicted_num = (2*divorce_list.sum() + (persons_df[persons_df["age"]>=15]["MAR"]==3).sum())
     # predicted_share = predicted_num / persons_df.shape[0]
@@ -3299,56 +3484,25 @@ def households_reorg(persons, households, year):
     #     print(error)
         
     #########################################
-    
+    return list_ids
+
+def cohabitation_data(persons, households):
+    #
     # COHABITATION_TO_X Model
     hh_df = households.to_frame(columns=["lcm_county_id"])
+    # hh_df = orca.get_table("households").to_frame(columns=["lcm_county_id"])
     hh_df.reset_index(inplace=True)
-
+    
     persons_df = persons.local
+    # persons_df = orca.get_table("persons").local
     ELIGIBLE_HOUSEHOLDS = (
         persons_df[(persons_df["relate"] == 13) & \
                    (persons_df["MAR"]!=1) & \
                    ((persons_df["age"]>=15))]["household_id"].unique().astype(int)
     )
-    data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
-    # Run Model
-    print("Running cohabitation model...")
-    cohabitation = mm.get_step("cohabitation")
-    cohabitate_x_list = cohabitation.run(data)
-    # print("Cohabitation outcomes:")
-    # print(cohabitate_x_list.value_counts())
-    
-    ######### UPDATING
-    print("Restructuring households:")
-    print("Cohabitations..")
-    update_cohabitating_households(persons, households, cohabitate_x_list)
-    print_household_stats()
-    
-    print("Marriages..")
-    update_married_households_random(persons, households, marriage_list)
-    print_household_stats()
-    fix_erroneous_households(persons, households)
-    print_household_stats()
-    
-    print("Divorces..")
-    update_divorce(divorce_list)
-    print_household_stats()
-    
-    marrital = orca.get_table("marrital").to_frame()
-    persons_df = orca.get_table("persons").local
-    persons_local_columns = orca.get_injectable("persons_local_cols")
-    persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
-    orca.add_table("persons", persons_df[persons_local_columns])
-    if marrital.empty:
-        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
-        marrital = pd.DataFrame(persons_stats)
-        marrital["year"] = year
-    else:
-        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
-        new_marrital = pd.DataFrame(persons_stats)
-        new_marrital["year"] = year
-        marrital = pd.concat([marrital, new_marrital])
-    orca.add_table("marrital", marrital)
+    # cohab_data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
+    cohab_data = orca.get_table("households").to_frame().loc[ELIGIBLE_HOUSEHOLDS]
+    return cohab_data
 
 @orca.step("print_household_stats")
 def print_household_stats():
