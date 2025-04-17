@@ -3400,57 +3400,57 @@ def household_transition(households, persons, year, metadata):
     orca.add_table('metadata', metadata_df)
     # breakpoint()
 
-@orca.step("job_transition")
-def job_transition(jobs, year):
-    if ("annual_employment_control_totals" in orca.list_tables()) and (
-        "use_database_control_totals" not in orca.list_injectables()
-    ):
-        control_totals = orca.get_table("annual_employment_control_totals").to_frame()
-        full_transition(jobs, control_totals, "total", year, "block_id")
-    elif ("employment_growth_rate" in orca.list_injectables()) and (
-        "use_database_control_totals" not in orca.list_injectables()
-    ):
-        rate = orca.get_injectable("employment_growth_rate")
-        simple_transition(jobs, rate, "block_id", set_year_built=True)
-    else:
-        control_totals = orca.get_table("ect").to_frame()
-        if "agg_sector" in control_totals.columns:
-            if control_totals[control_totals.index == year].agg_sector.min() == -1:
-                control_totals = control_totals[["total_number_of_jobs"]]
-        full_transition(jobs, control_totals, "total_number_of_jobs", year, "block_id")
-    jobs = orca.get_table("jobs").local
-    jobs.loc[jobs["block_id"] == "-1", "lcm_county_id"] = "-1"
-    jobs.index.rename("job_id", inplace=True)
-    orca.add_table("jobs", jobs)
+# @orca.step("job_transition")
+# def job_transition(jobs, year):
+#     if ("annual_employment_control_totals" in orca.list_tables()) and (
+#         "use_database_control_totals" not in orca.list_injectables()
+#     ):
+#         control_totals = orca.get_table("annual_employment_control_totals").to_frame()
+#         full_transition(jobs, control_totals, "total", year, "block_id")
+#     elif ("employment_growth_rate" in orca.list_injectables()) and (
+#         "use_database_control_totals" not in orca.list_injectables()
+#     ):
+#         rate = orca.get_injectable("employment_growth_rate")
+#         simple_transition(jobs, rate, "block_id", set_year_built=True)
+#     else:
+#         control_totals = orca.get_table("ect").to_frame()
+#         if "agg_sector" in control_totals.columns:
+#             if control_totals[control_totals.index == year].agg_sector.min() == -1:
+#                 control_totals = control_totals[["total_number_of_jobs"]]
+#         full_transition(jobs, control_totals, "total_number_of_jobs", year, "block_id")
+#     jobs = orca.get_table("jobs").local
+#     jobs.loc[jobs["block_id"] == "-1", "lcm_county_id"] = "-1"
+#     jobs.index.rename("job_id", inplace=True)
+#     orca.add_table("jobs", jobs)
 
 
-@orca.step("supply_transition")
-def supply_transition(households, residential_units, vacancy):
-    agents = len(households)
-    agent_spaces = len(residential_units)
-    if "residential_vacancy_rate" in orca.list_injectables():
-        target_vacancy = orca.get_injectable("residential_vacancy_rate")
-    else:
-        target_vacancy = vacancy
-    target = developer.Developer.compute_units_to_build(
-        agents, agent_spaces, target_vacancy
-    )
-    if target > 0:
-        growth_rate = target * 1.0 / agent_spaces
-        print("Growth rate implied by target vacancy rate: %s" % growth_rate)
-        simple_transition(
-            residential_units, growth_rate, "block_id", set_year_built=True
-        )
+# @orca.step("supply_transition")
+# def supply_transition(households, residential_units, vacancy):
+#     agents = len(households)
+#     agent_spaces = len(residential_units)
+#     if "residential_vacancy_rate" in orca.list_injectables():
+#         target_vacancy = orca.get_injectable("residential_vacancy_rate")
+#     else:
+#         target_vacancy = vacancy
+#     target = developer.Developer.compute_units_to_build(
+#         agents, agent_spaces, target_vacancy
+#     )
+#     if target > 0:
+#         growth_rate = target * 1.0 / agent_spaces
+#         print("Growth rate implied by target vacancy rate: %s" % growth_rate)
+#         simple_transition(
+#             residential_units, growth_rate, "block_id", set_year_built=True
+#         )
 
-        units = orca.get_table("residential_units").local
-        units.index.rename("unit_id", inplace=True)
-        units.loc[units["block_id"] == "-1", "lcm_county_id"] = "-1"
-        orca.add_table("residential_units", units)
-    else:
-        print(
-            "No new residential units to construct; current vacancy > target vacancy (%s)."
-            % vacancy
-        )
+#         units = orca.get_table("residential_units").local
+#         units.index.rename("unit_id", inplace=True)
+#         units.loc[units["block_id"] == "-1", "lcm_county_id"] = "-1"
+#         orca.add_table("residential_units", units)
+#     else:
+#         print(
+#             "No new residential units to construct; current vacancy > target vacancy (%s)."
+#             % vacancy
+#         )
 
 
 def full_transition(
@@ -4139,7 +4139,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                 elcm_models += ["elcm_pf"]
 
         developer_models = ["supply_transition"] + rdplcm_models
-        household_models = ["household_transition"] + ["households_relocation_basic"] # + hlcm_models
+        household_models = ["household_transition"] # + ["households_relocation_basic"] + hlcm_models
         employment_models = ["job_transition"] + elcm_models
         location_models = rdplcm_models + hlcm_models + elcm_models
         calibrated_folder = orca.get_injectable("calibrated_folder")
@@ -4204,7 +4204,7 @@ if orca.get_injectable("running_calibration_routine") == False:
         developer_models = ["supply_transition"] + [
             "rdplcm" + str(segment) for segment in range(0, 4)
         ]
-        household_models = ["household_transition"] + ["households_relocation_basic"] + ["household_stats"] #, [
+        household_models = ["household_transition"] # + ["households_relocation_basic"] + ["household_stats"] , [
         #    "hlcm" + str(segment) for segment in range(1, 11)
         # ]
         employment_models = ["job_transition"] + [
