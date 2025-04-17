@@ -12,8 +12,8 @@ import os
 
 pd.set_option('display.max_columns', None)
 
-synpop_hh = pd.read_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_hh_2019.csv")
-synpop_pp = pd.read_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_pp_2019.csv")
+synpop_hh = pd.read_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_hh_2019.csv")
+synpop_pp = pd.read_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_pp_2019.csv")
 
 synpop_hh = synpop_hh.rename(columns={"hhid": "household_id", 
                                       "hhsize": "persons",
@@ -120,5 +120,5 @@ synpop_hh["hh_size"] = np.where(
 
 synpop_hh = synpop_hh.drop(columns=['puma10', 'htier2tazid', 'htier2tazseq', 'rt', 'htype', 'ten', 'hht', 'hht2']) 
 
-synpop_hh.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/households.csv", index=False)
-synpop_pp.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/persons.csv", index=False)
+synpop_hh.to_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/households.csv", index=False)
+synpop_pp.to_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/persons.csv", index=False)
