@@ -30,7 +30,7 @@
     - There is a filter that when the number of people getting married is too low, the module does nothing
     - Filter for <= 10 weddings
     - There was also this code `if (min_mar == 0) or (min_mar == 0):`
-    - Discuss `CONDITIONS` part of the code
+    - <del>Discuss `CONDITIONS` part of the code</del>
     - `MAR` is not correctly being updated because final is filtered to those that move
     - If both new partners are head of household, one could potentially leave dependents behind.
         - I think the current code is just making the person that earns the most head of household
@@ -42,9 +42,15 @@
     - The filters in the estimated model consider relate values of 7 and 9 children as well
     - I ignored the "kids_move_table", consider re-implementing it after the refactor
 
+- `mortaility.py`
+    - I ignored the "mortalities", consider re-implementing it after the refactor
+    - In `rel_map` table, `6,6 = 1`, which assumes marriage?
+    - In `rez` function, if spouse or partner becomes head, `relate` is not updated.
+    - If `relate==13` dies, the head is also labeled as `MAR=3` (I thought that was necessarily marriage widow).
 
 ## Ideas for cheking sanity of input data
 - Check there is only one head of household
+    - We should fix the households that don't have a head at the start
 
 # Commit history review
 August 8th, 2024
