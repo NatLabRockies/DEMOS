@@ -28,11 +28,13 @@ This repository contains only code and configuration/setup files necessary
 	pip install -r requirements.txt
 	```
 
-5. Download input data [data_nrel_v1.zip](https://app.box.com/s/bw1l837i8kalhc7cn8qbkwun3nm31sg0). You may also refer to the data description [here](https://cloud.urbansim.com/docs/general/documentation/urbansim%20block%20model%20data.html)
+5. Download input data [data_nrel_SCAG.zip](https://app.box.com/s/bw1l837i8kalhc7cn8qbkwun3nm31sg0).
 
 6. Put all files of input data into `DEMOS_NREL/demos/data`
+   
+7. Run demos/preprocessing.py
 
-7. Run DEMOS. First, enter into `DEMOS_NREL/demos`, then run:
+9. Run DEMOS. First, enter into `DEMOS_NREL/demos`, then run:
 
 	```
 	python -u simulate.py -c -y 2011 -cf custom -l -r 06197001 -s 100
@@ -62,7 +64,7 @@ This repository contains only code and configuration/setup files necessary
 	  -s --random_seed random seed settng
 	```
 
-8. simulation results
+10. simulation results
 the demos simulation will produce the following sets of data and results:
   - a synthetic population file showing the evolution of the synthetic population throughout the simulation years. the file should be named `model_data_<scenario_name_output_year>.h5` in directory `DEMOS_NREL/demos/data`.
   - series of aggregated statistics for the population size, number of households, household size distribution, gender distribution, number of births, number of mortalities, number of student enrollments, number of total marriages, number of total divorces, the age distribution of the synthetic population, and income distribution for each simulation year. The files are located at `DEMOS_NREL/demos/outputs/simulation`
