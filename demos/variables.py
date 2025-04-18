@@ -747,7 +747,7 @@ def income_segment(households):
 @orca.column('households')
 def income_bin1(households):
     df = households.to_frame(columns=["income"])
-    return df.lt(250000) * 1
+    return df.lt(25000) * 1
 
 @orca.column('households')
 def income_bin2(households):
