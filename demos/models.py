@@ -4064,7 +4064,7 @@ def generate_metrics(year, persons, households):
 
 all_local = orca.get_injectable("all_local")
 if orca.get_injectable("running_calibration_routine") == False:
-    region_code = orca.get_injectable("region_code")
+    '''region_code = orca.get_injectable("region_code")
 
     if not all_local:
         storage_client = storage.Client("swarm-test-1470707908646")
@@ -4139,7 +4139,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                 elcm_models += ["elcm_pf"]
 
         developer_models = ["supply_transition"] + rdplcm_models
-        household_models = ["household_transition"] # + ["households_relocation_basic"] + hlcm_models
+        household_models = ["household_transition"] + ["households_relocation_basic"] + hlcm_models
         employment_models = ["job_transition"] + elcm_models
         location_models = rdplcm_models + hlcm_models + elcm_models
         calibrated_folder = orca.get_injectable("calibrated_folder")
@@ -4163,7 +4163,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                 local_configs_path = os.path.join(local_configs_path, skim_source)
         if not os.path.exists("configs/" + local_configs_path):
             os.makedirs("./configs/" + local_configs_path)
-        """ for f in location_models:
+        for f in location_models:
             if not all_local:
                 print(
                     "Downloading %s config from calibrated_configs/%s"
@@ -4178,7 +4178,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                     raise OSError(
                         "No model config found at ./configs/%s/%s.yaml"
                         % (local_configs_path, f)
-                    ) """
+                    )
 
         for model in ["value", "rent"]:
             print("Checking if %s configs exist" % model)
@@ -4204,9 +4204,9 @@ if orca.get_injectable("running_calibration_routine") == False:
         developer_models = ["supply_transition"] + [
             "rdplcm" + str(segment) for segment in range(0, 4)
         ]
-        household_models = ["household_transition"] # + ["households_relocation_basic"] + ["household_stats"] , [
-        #    "hlcm" + str(segment) for segment in range(1, 11)
-        # ]
+        household_models = ["household_transition"] + ["households_relocation_basic"] + ["household_stats"], [
+            "hlcm" + str(segment) for segment in range(1, 11)
+        ]
         employment_models = ["job_transition"] + [
             "elcm" + str(segment) for segment in range(0, 6)
         ]
@@ -4218,7 +4218,7 @@ if orca.get_injectable("running_calibration_routine") == False:
 
         if not os.path.exists("configs/estimated_configs"):
             os.makedirs("./configs/estimated_configs")
-        """ for f in location_models:
+        for f in location_models:
             if not all_local:
                 print("Downloading %s config from estimated_configs" % f)
                 blob = bucket.get_blob(
@@ -4230,7 +4230,7 @@ if orca.get_injectable("running_calibration_routine") == False:
                     raise OSError(
                         "No model config found at ./configs/estimated_configs/%s.yaml"
                         % f
-                    ) """
+                    )'''
 
     if orca.get_injectable("local_simulation") == True:
         # add_variables = ["add_temp_variables"]
@@ -4243,6 +4243,7 @@ if orca.get_injectable("running_calibration_routine") == False:
             "fatality_model",
             "birth_model",
             "education_model",
+            "household_transition",
             "export_demo_stats",
         ]
         '''rem_variables = ["remove_temp_variables"]
@@ -4263,7 +4264,7 @@ if orca.get_injectable("running_calibration_routine") == False:
             # + ["work_location_stats"]
             # + developer_models
             # + ["work_location_stats"]
-             + household_models
+            # + household_models
             # + ["work_location_stats"]
             # + employment_models
             # + ["work_location_stats"]
