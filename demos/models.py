@@ -910,7 +910,7 @@ def update_labor_status(persons, stay_unemployed_list, exit_workforce_list, year
     age_intervals = [0, 20, 30, 40, 50, 65, 900]
     education_intervals = [0, 18, 22, 200]
     # Define the labels for age and education groups
-    age_labels = ['lte20', '21-29', '30-39', '40-49', '50-64', 'gte65']
+    age_labels = ['lte19', '20-29', '30-39', '40-49', '50-64', 'gte65']
     education_labels = ['lte17', '18-21', 'gte22']
     # Create age and education groups with labels
     persons_df['age_group'] = pd.cut(persons_df['age'], bins=age_intervals, labels=age_labels, include_lowest=True)
