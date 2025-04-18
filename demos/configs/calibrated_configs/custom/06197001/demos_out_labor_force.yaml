@@ -1,7 +1,7 @@
 modelmanager_version: 0.2.dev9
 saved_object:
   filters:
-    - (worker == 0) & (age >= 18)
+    - (worker == 1) & (age >= 18)
   fitted_parameters:
     - -1.554846
     - -0.067
@@ -15,7 +15,7 @@ saved_object:
   name: exit_labor_force
   out_column: null
   out_filters:
-    - (worker == 0) & (age >= 18)
+    - (worker == 1) & (age >= 18)
   out_tables: persons
   out_transform: null
   out_value_false: 0
