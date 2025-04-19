@@ -3685,6 +3685,14 @@ def full_transition(
             orca.add_table(table_name, updated_links[table_name])
     print("Total agents after transition: {}".format(len(updated)))
     orca.add_table(agents.name, updated[agents.local_columns])
+
+    # # output
+    # forecast_year = orca.get_injectable("forecast_year")
+    # updated.to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/updated_%s.csv" % (region_code, forecast_year, year), index=False)
+    # pd.DataFrame(added).to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/added_%s.csv" % (region_code, forecast_year, year), index=False)
+    # pd.DataFrame(copied).to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/copied_%s.csv" % (region_code, forecast_year, year), index=False)
+    # pd.DataFrame(removed).to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/removed_%s.csv" % (region_code, forecast_year, year), index=False)
+    
     return updated, added, copied, removed
 
 
