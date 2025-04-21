@@ -12,7 +12,6 @@ def get_new_households(n, persons, graveyard):
     return (
         np.arange(n)                         # = [0, 1, 2 ...] up to the number of people
         + current_max   # = [max_hh_id, max_household_id + 1, ...]
-        + current_max   # = [max_hh_id, max_household_id + 1, ...]
         + 1
     )
 
