@@ -11,7 +11,6 @@ def update_age(persons):
 
     Modifies State Variables:
         - persons.age
-        - households.age_of_head
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table

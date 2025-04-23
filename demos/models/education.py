@@ -60,8 +60,8 @@ def education_model(persons,
     twelveth_grade_index = persons["edu"] == 15
     twelveth_grade_transition = np.random.choice([16, 17],
                                                  size=(stayed_index & twelveth_grade_index).sum(),
-                                                 p=[edu_highschool_proportion[16],
-                                                    edu_highschool_proportion[17]])
+                                                 p=[edu_highschool_grads_proportion[16],
+                                                    edu_highschool_grads_proportion[17]])
     persons.local.loc[stayed_index & twelveth_grade_index, "edu"] = twelveth_grade_transition
 
     ### Students with GED or HS Degree move to college

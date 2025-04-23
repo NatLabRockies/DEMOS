@@ -110,9 +110,6 @@ def run_and_calibrate_mortality_model(persons, observed_fatalities_data, year):
     # Observed values for calibration
     observed_fatalities = observed_fatalities_data.to_frame()
 
-    # Dummy value for output column
-    persons["stay_out"] = -99
-
     # Get estimated model object and run it
     mortality = mm.get_step("mortality")
     mortality.run()

@@ -10,7 +10,7 @@ from .marriage import update_married_households_random, update_married_household
 def get_new_households(n, persons, graveyard):
     current_max = pd.concat([persons.local, graveyard.local], ignore_index=True).household_id.max()
     return (
-        np.arange(n)                         # = [0, 1, 2 ...] up to the number of people
+        np.arange(n)    # = [0, 1, 2 ...] up to the number of households
         + current_max   # = [max_hh_id, max_household_id + 1, ...]
         + 1
     )
@@ -50,7 +50,7 @@ def hispanic_head(persons):
 
 @orca.injectable(cache=True, cache_scope="step")
 def persons_grouped_household(persons):
-    return persons.groupby("household_id")
+    return persons.to_frame().groupby("household_id")
 
 
 @orca.column(table_name="households")
@@ -130,17 +130,20 @@ def hh_workers(persons_grouped_household):
 
 
 @orca.column(table_name="households")
-def hh_race_of_head(persons_grouped_household):
+def hh_race_of_head(data="households.hh_race_id_of_head"):
+    return data.map({
+        1: "white",
+        2: "black",
+        6: "asian",
+        7: "asian"
+    }).fillna("other")
+
+
+@orca.column(table_name="households")
+def hh_race_id_of_head(persons_grouped_household):
     agg_df = persons_grouped_household\
         .agg(race_of_head=("race_head", "sum"))
-    return np.where(
-        agg_df["race_of_head"] == 1, "white",
-        np.where(
-            agg_df["race_of_head"] == 2,
-            "black",
-            np.where(agg_df["race_of_head"].isin([6, 7]), "asian", "other"),
-        ),
-    )
+    return agg_df["race_of_head"]
 
 
 @orca.column(table_name="households")
@@ -164,7 +167,6 @@ def households_reorg(persons, households, year, get_new_households, graveyard):
         - persons.relate
         - persons.MAR
         - persons.household_id
-        - persons.member_id
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of the persons table
@@ -224,7 +226,7 @@ def households_reorg(persons, households, year, get_new_households, graveyard):
     marrital = orca.get_table("marrital").to_frame()
     persons_df = orca.get_table("persons").local
     persons_local_columns = orca.get_injectable("persons_local_cols")
-    persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
+    # persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
     orca.add_table("persons", persons_df[persons_local_columns])
     if marrital.empty:
         persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()

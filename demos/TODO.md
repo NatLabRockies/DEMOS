@@ -43,10 +43,21 @@
     - I ignored the "kids_move_table", consider re-implementing it after the refactor
 
 - `mortaility.py`
-    - I ignored the "mortalities", consider re-implementing it after the refactor
+    - I ignored the "mortalities" table, consider re-implementing it after the refactor
     - In `rel_map` table, `6,6 = 1`, which assumes marriage?
     - In `rez` function, if spouse or partner becomes head, `relate` is not updated.
     - If `relate==13` dies, the head is also labeled as `MAR=3` (I thought that was necessarily marriage widow).
+
+- `birth.py`
+    - I ignored the "btable" table, consider re-implementing it after the refactor
+    - Review the values of `education_group`, `age_group`, etc.
+    - Default `MAR == 5`?
+    - There is duplication of information between `race_id` and `race`
+    - `race` ignores `asian` values (it only maps `white` and `black`
+    )
+
+- `transition`
+    - If we need to increase the number of household and have none, skip
 
 ## Ideas for cheking sanity of input data
 - Check there is only one head of household

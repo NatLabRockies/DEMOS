@@ -16,7 +16,6 @@ def laborforce_model(persons,
     Modifies State Variables:
         - persons.worker
         - persons.earning
-        - persons.work_at_home
         - entering_workforce
         - exiting_workforce
 
@@ -32,9 +31,6 @@ def laborforce_model(persons,
     # Re-index to help querying below
     reindexed_remain_unemployed = stay_unemployed_list.reindex(persons.local.index).fillna(2)
     reindexed_exit_workforce = exit_workforce_list.reindex(persons.local.index).fillna(2)
-
-    # Fix "work_at_home" - TODO: Not sure where would a NaN be produced for this
-    persons["work_at_home"].fillna(0, inplace=True)
 
     # Updating working status and income
     persons.local.loc[reindexed_exit_workforce == 1, "worker"] = 0
