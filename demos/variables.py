@@ -757,10 +757,8 @@ def have_spouse(persons):
 @orca.column('households')
 def hh_birth_agebin1(persons, households):
     df = persons.to_frame(columns=['household_id', 'relate', 'sex', 'age'])
-    households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-    df = df.merge(households_df, on="household_id")
-    # subset = df[df["relate"].isin([0, 1])]
-    # print("DF shape:", df.shape[0])
+    # households_df = households.to_frame(columns=["have_spouse"]).reset_index()
+    # df = df.merge(households_df, on="household_id")
     df.loc[:,"is_head"] = np.where(df["relate"]==0, 1, 0)
     df.loc[:,"is_female"] = np.where(df["sex"]==2, 1, 0)
     df.loc[:,"female_head"] = df["is_head"] * df["is_female"]
@@ -774,17 +772,16 @@ def hh_birth_agebin1(persons, households):
         age_head = ("age_head", "sum"),
         age_female = ("age_female", "sum"),
         head_spouse = ("head_spouse", "sum")
-    ).reset_index()
+    )
     df.loc[:, "age_final"] = np.where(df["head_spouse"]>=2, df["age_female"], df["age_head"])
     # print("NEW DF", df.shape[0])
-    return np.where(df["age_final"]<=27, 1, 0)
+    return (df["age_final"]<=27).astype(int)
 
 @orca.column('households')
 def hh_birth_agebin2(persons, households):
     df = persons.to_frame(columns=['household_id', 'relate', 'sex', 'age'])
-    households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-    df = df.merge(households_df, on="household_id")
-    # subset = df[df["relate"].isin([0, 1])]
+    # households_df = households.to_frame(columns=["have_spouse"]).reset_index()
+    # df = df.merge(households_df, on="household_id")
     df.loc[:, "is_head"] = np.where(df["relate"]==0, 1, 0)
     df.loc[:, "is_female"] = np.where(df["sex"]==2, 1, 0)
     df.loc[:, "female_head"] = df["is_head"] * df["is_female"]
@@ -798,10 +795,10 @@ def hh_birth_agebin2(persons, households):
         age_head = ("age_head", "sum"),
         age_female = ("age_female", "sum"),
         head_spouse = ("head_spouse", "sum")
-    ).reset_index()
+    )
     df.loc[:, "age_final"] = np.where(df["head_spouse"]>=2, df["age_female"], df["age_head"])
     # print(df.shape[0])
-    return np.where(df["age_final"].between(27, 35, inclusive='right'), 1, 0)
+    return (df["age_final"].between(27, 35, inclusive='right')).astype(int)
 
 # @orca.column('households')
 # def use_agebin3(persons, households):

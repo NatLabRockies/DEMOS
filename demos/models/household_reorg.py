@@ -9,11 +9,15 @@ from .marriage import update_married_households_random, update_married_household
 @orca.injectable(autocall=False)
 def get_new_households(n, persons, graveyard):
     current_max = pd.concat([persons.local, graveyard.local], ignore_index=True).household_id.max()
-    return (
+    new_hh_ids = (
         np.arange(n)    # = [0, 1, 2 ...] up to the number of households
         + current_max   # = [max_hh_id, max_household_id + 1, ...]
         + 1
     )
+    # TODO: Change how we add empty rows to the households table
+    households = orca.get_table("households")
+    households.local = households.local.reindex(set(households.index).union(new_hh_ids))
+    return new_hh_ids 
 
 @orca.column(table_name="persons", cache=True, cache_scope="step")
 def cohabitate(persons):
@@ -97,7 +101,7 @@ def gt2(persons_grouped_household):
 def gt55(persons_grouped_household):
     agg_df = persons_grouped_household\
         .agg(gt55=("age_gt55", "sum"))
-    return (agg_df["age_gt55"] >= 1).astype(int)
+    return (agg_df["gt55"] >= 1).astype(int)
 
 
 @orca.column(table_name="households")
@@ -222,6 +226,9 @@ def households_reorg(persons, households, year, get_new_households, graveyard):
     print("Divorces..")
     update_divorce(persons, divorce_list, get_new_households, graveyard)
     print_household_stats()
+
+    # TODO: This needs to be reevaluated after the refactoring
+    households.local = households.local.reindex(sorted(persons.household_id.unique()))
     
     marrital = orca.get_table("marrital").to_frame()
     persons_df = orca.get_table("persons").local

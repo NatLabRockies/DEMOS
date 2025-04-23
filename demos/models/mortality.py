@@ -5,7 +5,7 @@ from templates import estimated_models, modelmanager as mm
 
 
 @orca.step("fatality_model")
-def fatality_model(persons, observed_fatalities_data, rel_map, graveyard, year):
+def fatality_model(persons, households, observed_fatalities_data, rel_map, graveyard, year):
     """Function to run the fatality model at the persons level.
     The function also updates the persons and households tables,
     and saves the mortalities table.
@@ -15,6 +15,7 @@ def fatality_model(persons, observed_fatalities_data, rel_map, graveyard, year):
         - persons.relate
         - (Adds rows from `graveyard` table)
         - (Removes rows from `persons` table)
+        - (Removes rows from `households` table)
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of persons table
@@ -103,6 +104,9 @@ def fatality_model(persons, observed_fatalities_data, rel_map, graveyard, year):
     dead_people = persons.local.loc[fatality_list_idx].copy()
     graveyard.local = pd.concat([graveyard.local, dead_people])
     persons.local = persons.local[~fatality_list_idx]
+
+    # TODO: This needs to be reevaluated after the refactoring
+    households.local = households.local.reindex(sorted(persons.household_id.unique()))
 
 
 # TODO: Refactor this

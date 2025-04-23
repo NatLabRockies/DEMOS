@@ -5,6 +5,8 @@
 - What steps from the bottom of `models.py` do we want to keep?
 - Refactor the model calibration steps
 - Why the laborforce models do not return a value for every person?
+- All computed columns should return a series with a valid index for the corresponding table
+- I noticed the number of households with multiple partners increases
 
 - `models.py`
     - `work_location` seems obsolete
@@ -53,8 +55,8 @@
     - Review the values of `education_group`, `age_group`, etc.
     - Default `MAR == 5`?
     - There is duplication of information between `race_id` and `race`
-    - `race` ignores `asian` values (it only maps `white` and `black`
-    )
+    - `race` ignores `asian` values (it only maps `white` and `black`)
+    - Check for the need to add the logic of `hispanic`, `hispanic.1`, ... 
 
 - `transition`
     - If we need to increase the number of household and have none, skip
