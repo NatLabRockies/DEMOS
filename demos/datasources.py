@@ -214,7 +214,7 @@ persons = orca.get_table("persons").local
 age_intervals = [0, 20, 30, 40, 50, 65, 900]
 education_intervals = [0, 18, 22, 200]
 # Define the labels for age and education groups
-age_labels = ['lte19', '20-29', '30-39', '40-49', '50-64', 'gte65']
+age_labels = ['lte20', '21-29', '30-39', '40-49', '50-64', 'gte65']
 education_labels = ['lte17', '18-21', 'gte22']
 # Create age and education groups with labels
 persons['age_group'] = pd.cut(persons['age'], bins=age_intervals, labels=age_labels, include_lowest=True).astype(str)
@@ -383,7 +383,7 @@ try:
     forecast_hct = forecast_hct.set_index("year").diff().iloc[1:].cumsum()
     base_value = hct[hct["year"] == hct["year"].max()].total_number_of_households.item()
     forecast_hct["total_number_of_households"] += base_value
-    hct = hct.append(forecast_hct.reset_index())
+    hct = pd.concat([hct, forecast_hct.reset_index()], ignore_index=True)
 except Exception:
     max = hct[hct["year"] == hct["year"].max()]
     min = hct[hct["year"] == hct["year"].min()]
@@ -401,7 +401,7 @@ except Exception:
         df = pd.DataFrame(data={"year": [year], "total_number_of_households": [hh]})
         if "hh_type" in hct.columns:
             df["hh_type"] = -1
-        hct = hct.append(df)
+        hct = pd.concat([hct, df], ignore_index=True)
 orca.add_table("hct", hct.set_index("year"))
 
 try:
@@ -415,7 +415,7 @@ try:
     forecast_ect = forecast_ect.set_index("year").diff().iloc[1:].cumsum()
     base_value = ect[ect["year"] == ect["year"].max()].total_number_of_jobs.item()
     forecast_ect["total_number_of_jobs"] += base_value
-    ect = ect.append(forecast_ect.reset_index())
+    ect = pd.concat([ect, forecast_ect.reset_index()], ignore_index=True)
 except Exception:
     max = ect[ect["year"] == ect["year"].max()]
     min = ect[ect["year"] == ect["year"].min()]
@@ -432,7 +432,7 @@ except Exception:
         df = pd.DataFrame(data={"year": [year], "total_number_of_jobs": [jobs]})
         if "agg_sector" in ect.columns:
             df["agg_sector"] = -1
-        ect = ect.append(df)
+        ect = pd.concat([ect, df], ignore_index=True)
 orca.add_table("ect", ect.set_index("year"))
 
 
@@ -563,7 +563,7 @@ orca.add_table("schools", schools_df)
 # ADD OUTPUT FOLDER
 # -----------------------------------------------------------------------------------------
 forecast_year = orca.get_injectable("forecast_year")
-output_folder = "outputs/simulation/%s_%s/" % (region_code, forecast_year)
+output_folder = "outputs/simulation/%s_fixed_simucali_2_%s/" % (region_code, forecast_year)
 if not os.path.exists(output_folder):
     print("Creating output folder")
     os.makedirs(output_folder)

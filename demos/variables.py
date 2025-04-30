@@ -683,21 +683,21 @@ def adult_count(households, persons):
     hh = households.local.copy()
     p = persons.local.copy()
     p = p[p['age'] >= 18].groupby('household_id').count()
-    return hh.join(p)["age"].fillna(0)
+    return hh.join(p[['age']])["age"].fillna(0)
 
 @orca.column('households')
 def adult_count2(households, persons):
     hh = households.local.copy()
     p = persons.local.copy()
     p = (p[p['age'] >= 18].groupby('household_id').count() == 2)
-    return hh.join(p)["age"].fillna(False) * 1
+    return hh.join(p[['age']])["age"].fillna(False) * 1
 
 @orca.column('households')
 def adult_count_gt2(households, persons):
     hh = households.local.copy()
     p = persons.local.copy()
     p = (p[p['age'] >= 18].groupby('household_id').count() > 2)
-    return hh.join(p)["age"].fillna(False) * 1
+    return hh.join(p[['age']])["age"].fillna(False) * 1
 
 
 @orca.column('households')

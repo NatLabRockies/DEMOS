@@ -277,12 +277,16 @@ def update_income(persons, households, year):
     persons_local_cols = persons_df.columns
     # print(persons_local_cols)
     hh_counties = households_df["lcm_county_id"].copy()
-
+    print("hh_counties: ", hh_counties.unique())
     income_rates = orca.get_table("income_rates").to_frame()
     income_rates = income_rates[income_rates["year"] == year]
 
+    print("Households size before merging: ", persons_df["household_id"].unique().shape[0])
     persons_df = (persons_df.reset_index().merge(hh_counties.reset_index(), on=["household_id"]).set_index("person_id"))
+    print("Households size after merging 1: ", persons_df["household_id"].unique().shape[0])
     persons_df = (persons_df.reset_index().merge(income_rates, on=["lcm_county_id"]).set_index("person_id"))
+    print("Households size after merging 2: ", persons_df["household_id"].unique().shape[0])
+
     persons_df["earning"] = persons_df["earning"] * (1 + persons_df["rate"])
 
     new_incomes = persons_df.groupby("household_id").agg(income=("earning", "sum"))
@@ -293,7 +297,7 @@ def update_income(persons, households, year):
     persons_local_columns = orca.get_injectable("persons_local_cols")
     orca.add_table("persons", persons_df[persons_local_columns])
     orca.add_table("households", households_df[households_local_cols])
-    orca.add_table("persons", persons_df[persons_local_cols])
+    # orca.add_table("persons", persons_df[persons_local_cols])
     # Update income stats at the persons level
     income_over_time = orca.get_table("income_over_time").to_frame()
     if income_over_time.empty:
@@ -417,6 +421,7 @@ def remove_dead_persons(persons, households, fatality_list, year):
         # print("Starting to restructure household")
         # Apply the rez function
         alive_sort = alive_sort.groupby("household_id").apply(rez)
+        alive_sort = alive_sort.reset_index("household_id", drop=True)  # drops one level
 
         # Update relationship values and make sure correct datatype is used
         alive.loc[alive_sort.index, "relate"] = alive_sort["relate"]
@@ -857,7 +862,7 @@ def laborforce_model(persons, year):
         error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
         calibrate_time += 1
     print(f"{calibrate_time} time: {error}")
-    
+    #######################
     out_workforce_model = mm.get_step("exit_labor_force")
     out_workforce_model.run()
     exit_workforce_list = out_workforce_model.choices.astype(int)
@@ -910,7 +915,7 @@ def update_labor_status(persons, stay_unemployed_list, exit_workforce_list, year
     age_intervals = [0, 20, 30, 40, 50, 65, 900]
     education_intervals = [0, 18, 22, 200]
     # Define the labels for age and education groups
-    age_labels = ['lte19', '20-29', '30-39', '40-49', '50-64', 'gte65']
+    age_labels = ['lte20', '21-29', '30-39', '40-49', '50-64', 'gte65']
     education_labels = ['lte17', '18-21', 'gte22']
     # Create age and education groups with labels
     persons_df['age_group'] = pd.cut(persons_df['age'], bins=age_intervals, labels=age_labels, include_lowest=True)
@@ -2046,6 +2051,9 @@ def update_married_households_random(persons, households, marriage_list):
     )
     new_hh["tenure_mover"] = "-1"
     new_hh["block_id"] = "-1"
+    # new_hh["block_id"] = np.random.choice(
+    #     household_df["block_id"].unique(), size=new_hh.shape[0]
+    # )#GZ
     new_hh["hh_type"] = "-1"
     household_df = pd.concat([household_df, new_hh])
 
@@ -2565,7 +2573,8 @@ def update_cohabitating_households(persons, households, cohabitate_list):
     persons_df = orca.get_table("persons").local
     persons_local_cols = persons_df.columns
     households_df = orca.get_table("households").local
-    hh_df = households.to_frame(columns=["lcm_county_id"])
+    #**# hh_df = households.to_frame(columns=["lcm_county_id"])
+    hh_df = orca.get_table("households").to_frame(columns=["lcm_county_id"])
     households_local_cols = households_df.columns
     married_hh = cohabitate_list.index[cohabitate_list == 2].to_list()
     breakup_hh = cohabitate_list.index[cohabitate_list == 1].to_list()
@@ -2734,7 +2743,10 @@ def update_cohabitating_households(persons, households, cohabitate_list):
     households_new["recent_mover"] = "unknown"
     households_new["sf_detached"] = "unknown"
     households_new["tenure_mover"] = "unknown"
-    households_new["block_id"] = "-1"
+    # households_new["block_id"] = "-1" #GZ
+    households_new["block_id"] = np.random.choice(
+            households_df["block_id"].unique(), size=households_new.shape[0]
+        )
     households_new["hh_type"] = "-1"
     households_df = pd.concat([households_df, households_new])
 
@@ -3078,8 +3090,12 @@ def update_divorce(divorce_list):
         "none",
         np.where(household_agg["cars"] == 1, "one", "two or more"),
     )
-    household_agg["block_id"] = "-1"
-    household_agg["lcm_county_id"] = "-1"
+    # household_agg["block_id"] = "-1" #GZ
+    household_agg["block_id"] = np.random.choice(
+            households_df["block_id"].unique(), size=household_agg.shape[0]
+        ) #GZ
+    # household_agg["lcm_county_id"] = "-1" #GZ
+    household_agg["lcm_county_id"] = household_agg["block_id"].str[:5]#GZ
     household_agg["hh_type"] = 1
     household_agg["household_type"] = 1
     household_agg["serialno"] = "-1"
@@ -3198,8 +3214,226 @@ def household_divorce(persons, households):
 @orca.step("households_reorg")
 def households_reorg(persons, households, year):
     #
+    persons_original = persons.local.copy()
+    households_original = households.local.copy()
+    print("Initial marital status...")
+    print_marr_stats()
     # MARRIAGE MODEL
+    data = marriage_data(persons)
+    print("single_male:", data[data["person_sex"] == "male"].shape[0])
+    print("single_female:", data[data["person_sex"] == "female"].shape[0])    
+    ###############################################################
+    print("Running marriage model...")
+    # breakpoint()
+    marriage = mm.get_step("marriage")
+    # Use previously calibrated ASC if available
+    if orca.is_injectable("marriage_asc"):
+        marriage.coeffs.loc[0, 'married'] = orca.get_injectable("marriage_asc")
+    marriage_list = marriage.run(data.copy())
+    print("Number of marriages and cohabitations:")
+    print(marriage_list.value_counts())
+    random_match = orca.get_injectable("random_match")
+    # DIVORCE MODEL
+    list_ids = divorce_data(persons, households)
+    
+    divorce = mm.get_step("divorce")
+    divorce.filters = "index in " + list_ids
+    divorce.out_filters = "index in " + list_ids
+    if orca.is_injectable("divorce_asc"):
+        divorce.fitted_parameters[0] = orca.get_injectable("divorce_asc")
+    print("Running divorce model...")
+    divorce.run()
+    divorce_list = divorce.choices.astype(int)
+    # if divorce_list.shape[0] !=  len(ELIGIBLE_HOUSEHOLDS):
+    #     breakpoint()
+    print("Number of divorces:")
+    print(divorce_list.value_counts())
+    # COHABITATION_TO_X Model
+    cohab_data = cohabitation_data(persons, households)
+    # Run Model
+    print("Running cohabitation model...")
+    cohabitation = mm.get_step("cohabitation")
+    if orca.is_injectable("cohabitation_asc"):
+        cohabitation.coeffs.loc[0, 'marriage'] = orca.get_injectable("cohabitation_asc")
+    cohabitate_x_list = cohabitation.run(cohab_data)
+    print("Cohabitation outcomes:")
+    print(cohabitate_x_list.value_counts())
+
+    updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list)
+    
+    persons_df = orca.get_table("persons").local
+    predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
+    # predicted_married_share = predicted_married_count / persons_df.shape[0]
+    
+    predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
+    # predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
+
+    observed_marrital = orca.get_table("observed_marrital_data").to_frame()
+    target_data = observed_marrital[observed_marrital["year"] == year]
+    if not target_data.empty:
+        target_married_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==1)]["count"].values[0]
+        # target_married_share = target_married_count / persons_df.shape[0] # observed_marrital[observed_marrital["year"] == year]["count"].sum()
+
+        target_divorced_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==3)]["count"].values[0]
+        # target_divorced_share = target_divorced_count / persons_df.shape[0]
+
+        print(f"predicted_married_count - target_married_count: {predicted_married_count - target_married_count}")
+        print(f"predicted_divorced_count - target_divorced_count: {predicted_divorced_count - target_divorced_count}")
+
+        total_error = np.sqrt(((predicted_married_count - target_married_count) ** 2 + (predicted_divorced_count - target_divorced_count) ** 2) / 2)
+
+        scaling_factor = 1.5
+        momentum = 0.9
+        p_update_divorce = 0
+        p_update_marriage = 0
+        p_update_cohabitation = 0
+        max_iterations = 20
+        married_weight = target_married_count / (target_married_count + target_divorced_count)
+        divorced_weight = target_divorced_count / (target_married_count + target_divorced_count)
+        print("The Household Restructuring Calibration:")
+        calibrate_time = 0
+        while total_error > 50000 and calibrate_time < max_iterations:
+            print(f"{calibrate_time} time: {total_error}")
+            
+            # Calculate updates with momentum
+            p_update_divorce = momentum * p_update_divorce + scaling_factor * divorced_weight * np.log(target_divorced_count / predicted_divorced_count)
+            p_update_marriage = momentum * p_update_marriage + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
+            p_update_cohabitation = momentum * p_update_cohabitation + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
+            
+            # Apply updates
+            divorce.fitted_parameters[0] += p_update_divorce
+            marriage.coeffs.loc[0, 'married'] += p_update_marriage
+            cohabitation.coeffs.loc[0, 'marriage'] += p_update_cohabitation
+
+            # Reset Orca tables properly
+            orca.add_table("persons", persons_original.copy())
+            orca.add_table("households", households_original.copy())
+
+            # Reload Orca tables for next iteration
+            persons = orca.get_table("persons")
+            households = orca.get_table("households")
+            
+            print(f"{calibrate_time} time input: marital status...")
+            print_marr_stats()
+            print("original input: marital status...")
+            print(persons_original[persons_original["age"]>=15]["MAR"].value_counts().sort_values())
+            data = marriage_data(persons)
+            marriage_list = marriage.run(data.copy())
+            random_match = orca.get_injectable("random_match")
+            print("Number of marriages and cohabitations:")
+            print(marriage_list.value_counts())
+
+            list_ids = divorce_data(persons, households)
+            divorce.filters = "index in " + list_ids
+            divorce.out_filters = "index in " + list_ids
+            divorce.run()
+            divorce_list = divorce.choices.astype(int)
+            print("Number of divorces:")
+            print(divorce_list.value_counts())
+
+            cohab_data = cohabitation_data(persons, households)
+            cohabitate_x_list = cohabitation.run(cohab_data)
+
+            updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list)
+            
+            persons_df = orca.get_table("persons").local
+            predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
+            # predicted_married_share = predicted_married_count / persons_df.shape[0]
+            
+            predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
+            # predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
+
+            # target_married_share = target_married_count / persons_df.shape[0]
+            # target_divorced_share = target_divorced_count / persons_df.shape[0]
+            
+            print(f"predicted_married_count - target_married_count: {predicted_married_count - target_married_count}")
+            print(f"predicted_divorced_count - target_divorced_count: {predicted_divorced_count - target_divorced_count}")
+            prev_total_error = total_error
+            total_error = np.sqrt(((predicted_married_count - target_married_count) ** 2 + (predicted_divorced_count - target_divorced_count) ** 2) / 2)
+
+            calibrate_time += 1
+
+            if abs(prev_total_error - total_error) < 1000 and calibrate_time > 3:
+                print("Stopping adjustments due to minimal error reduction.")
+                break
+        
+        print(f"{calibrate_time} time: {total_error}")
+        # Persist calibrated parameter for reuse
+        orca.add_injectable("divorce_asc", divorce.fitted_parameters[0])    
+        orca.add_injectable("marriage_asc", marriage.coeffs.loc[0, 'married'])    
+        orca.add_injectable("cohabitation_asc", cohabitation.coeffs.loc[0, 'marriage'])    
+
+    else:
+        print(f"No observed data available for year {year}, skipping calibration.")
+
+    # print("Updating married table...")
+    married_table = orca.get_table("marriage_table").to_frame()
+    if married_table.empty:
+        married_table = pd.DataFrame(
+            [[(marriage_list == 1).sum(), (marriage_list == 2).sum()]],
+            columns=["married", "cohabitated"],
+        )
+    else:
+        new_married_table = pd.DataFrame(
+                [[(marriage_list == 1).sum(), (marriage_list == 2).sum()]],
+                columns=["married", "cohabitated"]
+            )
+        married_table = pd.concat([married_table, new_married_table],
+                                  ignore_index=True)
+
+    orca.add_table("marriage_table", married_table)
+
+    # print("Updating divorce metrics...")
+    divorce_table = orca.get_table("divorce_table").to_frame()
+    if divorce_table.empty:
+        divorce_table = pd.DataFrame([divorce_list.sum()], columns=["divorced"])
+    else:
+        new_divorce = pd.DataFrame([divorce_list.sum()], columns=["divorced"])
+        divorce_table = pd.concat([divorce_table, new_divorce], ignore_index=True)
+    orca.add_table("divorce_table", divorce_table)
+
+    marrital = orca.get_table("marrital").to_frame()
+    persons_df = orca.get_table("persons").local
+    persons_local_columns = orca.get_injectable("persons_local_cols")
+    persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
+    orca.add_table("persons", persons_df[persons_local_columns])
+
+    # print("Updating marrital table...")
+    if marrital.empty:
+        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
+        marrital = pd.DataFrame(persons_stats)
+        marrital["year"] = year
+    else:
+        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
+        new_marrital = pd.DataFrame(persons_stats)
+        new_marrital["year"] = year
+        marrital = pd.concat([marrital, new_marrital])
+    orca.add_table("marrital", marrital)
+
+def updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list):
+    
+    ######### UPDATING
+    print("Restructuring households:")
+    print("Cohabitations..")
+    update_cohabitating_households(persons, households, cohabitate_x_list)
+    # print_household_stats()
+    
+    print("Marriages..")
+    update_married_households_random(persons, households, marriage_list)
+    # print_household_stats()
+    fix_erroneous_households(persons, households)
+    # print_household_stats()
+    
+    print("Divorces..")
+    update_divorce(divorce_list)
+    # print_household_stats()
+
+def marriage_data(persons):
+    #
+    # MARRIAGE MODEL
+    # persons_df = persons.to_frame()
     persons_df = persons.to_frame()
+
     # get persons cohabitating and heads of their households
     COHABS_PERSONS = persons_df["relate"] == 13
     cohab_persons_df = persons_df.loc[COHABS_PERSONS].copy()
@@ -3214,39 +3448,25 @@ def households_reorg(persons, households, year):
     data = single_df.join(all_cohabs_df[["cohab"]], how="left")
     data = data.loc[data["cohab"] != 1].copy()
     data.drop(columns="cohab", inplace=True)
-    ###############################################################
-    print("Running marriage model...")
-    # breakpoint()
-    marriage = mm.get_step("marriage")
-    marriage_list = marriage.run(data.copy())
-    # print("Number of marriages and cohabitations:")
-    # print(marriage_list.value_counts())
-    random_match = orca.get_injectable("random_match")
-    ## ------------------------------------
     
+    return data
+
+def divorce_data(persons, households):
     # DIVORCE MODEL
     households_df = orca.get_table("households").local
+    # households_df = households.local
     households_df["divorced"] = -99
     orca.add_table("households", households_df)
     persons_df = orca.get_table("persons").local
+    # persons_df = persons.local
     ELIGIBLE_HOUSEHOLDS = list(persons_df[(persons_df["relate"].isin([0, 1])) & (persons_df["MAR"] == 1)]["household_id"].unique().astype(int))
     sizes = (persons_df[persons_df["household_id"].isin(ELIGIBLE_HOUSEHOLDS)& (persons_df["relate"].isin([0, 1]))].groupby("household_id").size())
     # print("Sizes value counts: ", sizes.value_counts())
     ELIGIBLE_HOUSEHOLDS = sizes[(sizes == 2)].index.to_list()
     # print("Size of Eligible Households: ", len(ELIGIBLE_HOUSEHOLDS))
     # print("Eligible households for divorce are", len(ELIGIBLE_HOUSEHOLDS))
-    divorce_model = mm.get_step("divorce")
     list_ids = str(ELIGIBLE_HOUSEHOLDS)
-    divorce_model.filters = "index in " + list_ids
-    divorce_model.out_filters = "index in " + list_ids
 
-    print("Running divorce model...")
-    divorce_model.run()
-    divorce_list = divorce_model.choices.astype(int)
-    # if divorce_list.shape[0] !=  len(ELIGIBLE_HOUSEHOLDS):
-    #     breakpoint()
-    # print("Number of divorces:")
-    # print(divorce_list.value_counts())
     # # breakpoint()
     # predicted_num = (2*divorce_list.sum() + (persons_df[persons_df["age"]>=15]["MAR"]==3).sum())
     # predicted_share = predicted_num / persons_df.shape[0]
@@ -3272,56 +3492,27 @@ def households_reorg(persons, households, year):
     #     print(error)
         
     #########################################
-    
-    # COHABITATION_TO_X Model
-    hh_df = households.to_frame(columns=["lcm_county_id"])
-    hh_df.reset_index(inplace=True)
+    return list_ids
 
+def cohabitation_data(persons, households):
+    #
+    # COHABITATION_TO_X Model
+    hh_df = households.to_frame()[["lcm_county_id"]].copy()
+
+    # hh_df = orca.get_table("households").to_frame(columns=["lcm_county_id"])
+    hh_df.reset_index(inplace=True)
+    
     persons_df = persons.local
+
+    # persons_df = orca.get_table("persons").local
     ELIGIBLE_HOUSEHOLDS = (
         persons_df[(persons_df["relate"] == 13) & \
                    (persons_df["MAR"]!=1) & \
                    ((persons_df["age"]>=15))]["household_id"].unique().astype(int)
     )
-    data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
-    # Run Model
-    print("Running cohabitation model...")
-    cohabitation = mm.get_step("cohabitation")
-    cohabitate_x_list = cohabitation.run(data)
-    # print("Cohabitation outcomes:")
-    # print(cohabitate_x_list.value_counts())
-    
-    ######### UPDATING
-    print("Restructuring households:")
-    print("Cohabitations..")
-    update_cohabitating_households(persons, households, cohabitate_x_list)
-    print_household_stats()
-    
-    print("Marriages..")
-    update_married_households_random(persons, households, marriage_list)
-    print_household_stats()
-    fix_erroneous_households(persons, households)
-    print_household_stats()
-    
-    print("Divorces..")
-    update_divorce(divorce_list)
-    print_household_stats()
-    
-    marrital = orca.get_table("marrital").to_frame()
-    persons_df = orca.get_table("persons").local
-    persons_local_columns = orca.get_injectable("persons_local_cols")
-    persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
-    orca.add_table("persons", persons_df[persons_local_columns])
-    if marrital.empty:
-        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
-        marrital = pd.DataFrame(persons_stats)
-        marrital["year"] = year
-    else:
-        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
-        new_marrital = pd.DataFrame(persons_stats)
-        new_marrital["year"] = year
-        marrital = pd.concat([marrital, new_marrital])
-    orca.add_table("marrital", marrital)
+    # cohab_data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
+    cohab_data = orca.get_table("households").to_frame().loc[ELIGIBLE_HOUSEHOLDS]
+    return cohab_data
 
 @orca.step("print_household_stats")
 def print_household_stats():
@@ -3400,57 +3591,57 @@ def household_transition(households, persons, year, metadata):
     orca.add_table('metadata', metadata_df)
     # breakpoint()
 
-# @orca.step("job_transition")
-# def job_transition(jobs, year):
-#     if ("annual_employment_control_totals" in orca.list_tables()) and (
-#         "use_database_control_totals" not in orca.list_injectables()
-#     ):
-#         control_totals = orca.get_table("annual_employment_control_totals").to_frame()
-#         full_transition(jobs, control_totals, "total", year, "block_id")
-#     elif ("employment_growth_rate" in orca.list_injectables()) and (
-#         "use_database_control_totals" not in orca.list_injectables()
-#     ):
-#         rate = orca.get_injectable("employment_growth_rate")
-#         simple_transition(jobs, rate, "block_id", set_year_built=True)
-#     else:
-#         control_totals = orca.get_table("ect").to_frame()
-#         if "agg_sector" in control_totals.columns:
-#             if control_totals[control_totals.index == year].agg_sector.min() == -1:
-#                 control_totals = control_totals[["total_number_of_jobs"]]
-#         full_transition(jobs, control_totals, "total_number_of_jobs", year, "block_id")
-#     jobs = orca.get_table("jobs").local
-#     jobs.loc[jobs["block_id"] == "-1", "lcm_county_id"] = "-1"
-#     jobs.index.rename("job_id", inplace=True)
-#     orca.add_table("jobs", jobs)
+@orca.step("job_transition")
+def job_transition(jobs, year):
+    if ("annual_employment_control_totals" in orca.list_tables()) and (
+        "use_database_control_totals" not in orca.list_injectables()
+    ):
+        control_totals = orca.get_table("annual_employment_control_totals").to_frame()
+        full_transition(jobs, control_totals, "total", year, "block_id")
+    elif ("employment_growth_rate" in orca.list_injectables()) and (
+        "use_database_control_totals" not in orca.list_injectables()
+    ):
+        rate = orca.get_injectable("employment_growth_rate")
+        simple_transition(jobs, rate, "block_id", set_year_built=True)
+    else:
+        control_totals = orca.get_table("ect").to_frame()
+        if "agg_sector" in control_totals.columns:
+            if control_totals[control_totals.index == year].agg_sector.min() == -1:
+                control_totals = control_totals[["total_number_of_jobs"]]
+        full_transition(jobs, control_totals, "total_number_of_jobs", year, "block_id")
+    jobs = orca.get_table("jobs").local
+    jobs.loc[jobs["block_id"] == "-1", "lcm_county_id"] = "-1"
+    jobs.index.rename("job_id", inplace=True)
+    orca.add_table("jobs", jobs)
 
 
-# @orca.step("supply_transition")
-# def supply_transition(households, residential_units, vacancy):
-#     agents = len(households)
-#     agent_spaces = len(residential_units)
-#     if "residential_vacancy_rate" in orca.list_injectables():
-#         target_vacancy = orca.get_injectable("residential_vacancy_rate")
-#     else:
-#         target_vacancy = vacancy
-#     target = developer.Developer.compute_units_to_build(
-#         agents, agent_spaces, target_vacancy
-#     )
-#     if target > 0:
-#         growth_rate = target * 1.0 / agent_spaces
-#         print("Growth rate implied by target vacancy rate: %s" % growth_rate)
-#         simple_transition(
-#             residential_units, growth_rate, "block_id", set_year_built=True
-#         )
+@orca.step("supply_transition")
+def supply_transition(households, residential_units, vacancy):
+    agents = len(households)
+    agent_spaces = len(residential_units)
+    if "residential_vacancy_rate" in orca.list_injectables():
+        target_vacancy = orca.get_injectable("residential_vacancy_rate")
+    else:
+        target_vacancy = vacancy
+    target = developer.Developer.compute_units_to_build(
+        agents, agent_spaces, target_vacancy
+    )
+    if target > 0:
+        growth_rate = target * 1.0 / agent_spaces
+        print("Growth rate implied by target vacancy rate: %s" % growth_rate)
+        simple_transition(
+            residential_units, growth_rate, "block_id", set_year_built=True
+        )
 
-#         units = orca.get_table("residential_units").local
-#         units.index.rename("unit_id", inplace=True)
-#         units.loc[units["block_id"] == "-1", "lcm_county_id"] = "-1"
-#         orca.add_table("residential_units", units)
-#     else:
-#         print(
-#             "No new residential units to construct; current vacancy > target vacancy (%s)."
-#             % vacancy
-#         )
+        units = orca.get_table("residential_units").local
+        units.index.rename("unit_id", inplace=True)
+        units.loc[units["block_id"] == "-1", "lcm_county_id"] = "-1"
+        orca.add_table("residential_units", units)
+    else:
+        print(
+            "No new residential units to construct; current vacancy > target vacancy (%s)."
+            % vacancy
+        )
 
 
 def full_transition(
@@ -3685,14 +3876,6 @@ def full_transition(
             orca.add_table(table_name, updated_links[table_name])
     print("Total agents after transition: {}".format(len(updated)))
     orca.add_table(agents.name, updated[agents.local_columns])
-
-    # # output
-    # forecast_year = orca.get_injectable("forecast_year")
-    # updated.to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/updated_%s.csv" % (region_code, forecast_year, year), index=False)
-    # pd.DataFrame(added).to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/added_%s.csv" % (region_code, forecast_year, year), index=False)
-    # pd.DataFrame(copied).to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/copied_%s.csv" % (region_code, forecast_year, year), index=False)
-    # pd.DataFrame(removed).to_csv("outputs/simulation/%s_hhcalitest_newinput_wrongwidow_noaging_updinc_samecali_%s/removed_%s.csv" % (region_code, forecast_year, year), index=False)
-    
     return updated, added, copied, removed
 
 
@@ -4072,173 +4255,173 @@ def generate_metrics(year, persons, households):
 
 all_local = orca.get_injectable("all_local")
 if orca.get_injectable("running_calibration_routine") == False:
-    '''region_code = orca.get_injectable("region_code")
+    region_code = orca.get_injectable("region_code")
 
-    if not all_local:
-        storage_client = storage.Client("swarm-test-1470707908646")
-        bucket = storage_client.get_bucket("national_block_v2")
+    # if not all_local:
+    #     storage_client = storage.Client("swarm-test-1470707908646")
+    #     bucket = storage_client.get_bucket("national_block_v2")
 
-    county_ids = orca.get_table("blocks").county_id.unique()
-    rdplcm_segments = ["sf", "mf"]
-    hlcm_segments = [
-        "own_1p_54less",
-        "own_1p_55plus",
-        "own_2p_54less",
-        "own_2p_55plus",
-        "rent_1p_54less",
-        "rent_1p_55plus",
-        "rent_2p_54less",
-        "rent_2p_55plus",
-    ]
-    elcm_segments = ["0", "1", "2", "3", "4", "5"]
+    # county_ids = orca.get_table("blocks").county_id.unique()
+    # rdplcm_segments = ["sf", "mf"]
+    # hlcm_segments = [
+    #     "own_1p_54less",
+    #     "own_1p_55plus",
+    #     "own_2p_54less",
+    #     "own_2p_55plus",
+    #     "rent_1p_54less",
+    #     "rent_1p_55plus",
+    #     "rent_2p_54less",
+    #     "rent_2p_55plus",
+    # ]
+    # elcm_segments = ["0", "1", "2", "3", "4", "5"]
 
-    if orca.get_injectable("calibrated") == True:
-        rdplcm_models = []
-        hlcm_models = []
-        elcm_models = []
-        price_models = []
-        if orca.get_injectable("multi_level_lcms") == True:
-            if orca.get_injectable("segmented_lcms") == True:
-                for county_id in county_ids:
-                    rdplcm_models += [
-                        "rdplcm_%s_blocks_%s_pf" % (county_id, segment)
-                        for segment in rdplcm_segments
-                    ]
-                    hlcm_models += [
-                        "hlcm_%s_blocks_%s_pf" % (county_id, segment)
-                        for segment in hlcm_segments
-                    ]
-                    elcm_models += [
-                        "elcm_%s_blocks_%s_pf" % (county_id, segment)
-                        for segment in elcm_segments
-                    ]
-                if len(county_ids) > 1:
-                    rdplcm_models = [
-                        "rdplcm_county_%s_pf" % segment for segment in rdplcm_segments
-                    ] + rdplcm_models
-                    hlcm_models = [
-                        "hlcm_county_%s_pf" % segment for segment in hlcm_segments
-                    ] + hlcm_models
-                    elcm_models = [
-                        "elcm_county_%s_pf" % segment for segment in elcm_segments
-                    ] + elcm_models
-            else:
-                rdplcm_models += [
-                    "rdplcm_%s_blocks_pf" % county_id for county_id in county_ids
-                ]
-                hlcm_models += [
-                    "hlcm_%s_blocks_pf" % county_id for county_id in county_ids
-                ]
-                elcm_models += [
-                    "elcm_%s_blocks_pf" % county_id for county_id in county_ids
-                ]
-                if len(county_ids) > 1:
-                    rdplcm_models = ["rdplcm_county_pf"] + rdplcm_models
-                    hlcm_models = ["hlcm_county_pf"] + hlcm_models
-                    elcm_models = ["elcm_county_pf"] + elcm_models
-        else:
-            if orca.get_injectable("segmented_lcms") == True:
-                rdplcm_models += ["rdplcm_pf_" + segment for segment in rdplcm_segments]
-                hlcm_models += ["hlcm_pf_" + segment for segment in hlcm_segments]
-                elcm_models += ["elcm_pf_" + segment for segment in elcm_segments]
-            else:
-                rdplcm_models += ["rdplcm_pf"]
-                hlcm_models += ["hlcm_pf"]
-                elcm_models += ["elcm_pf"]
+    # if orca.get_injectable("calibrated") == True:
+    #     rdplcm_models = []
+    #     hlcm_models = []
+    #     elcm_models = []
+    #     price_models = []
+    #     if orca.get_injectable("multi_level_lcms") == True:
+    #         if orca.get_injectable("segmented_lcms") == True:
+    #             for county_id in county_ids:
+    #                 rdplcm_models += [
+    #                     "rdplcm_%s_blocks_%s_pf" % (county_id, segment)
+    #                     for segment in rdplcm_segments
+    #                 ]
+    #                 hlcm_models += [
+    #                     "hlcm_%s_blocks_%s_pf" % (county_id, segment)
+    #                     for segment in hlcm_segments
+    #                 ]
+    #                 elcm_models += [
+    #                     "elcm_%s_blocks_%s_pf" % (county_id, segment)
+    #                     for segment in elcm_segments
+    #                 ]
+    #             if len(county_ids) > 1:
+    #                 rdplcm_models = [
+    #                     "rdplcm_county_%s_pf" % segment for segment in rdplcm_segments
+    #                 ] + rdplcm_models
+    #                 hlcm_models = [
+    #                     "hlcm_county_%s_pf" % segment for segment in hlcm_segments
+    #                 ] + hlcm_models
+    #                 elcm_models = [
+    #                     "elcm_county_%s_pf" % segment for segment in elcm_segments
+    #                 ] + elcm_models
+    #         else:
+    #             rdplcm_models += [
+    #                 "rdplcm_%s_blocks_pf" % county_id for county_id in county_ids
+    #             ]
+    #             hlcm_models += [
+    #                 "hlcm_%s_blocks_pf" % county_id for county_id in county_ids
+    #             ]
+    #             elcm_models += [
+    #                 "elcm_%s_blocks_pf" % county_id for county_id in county_ids
+    #             ]
+    #             if len(county_ids) > 1:
+    #                 rdplcm_models = ["rdplcm_county_pf"] + rdplcm_models
+    #                 hlcm_models = ["hlcm_county_pf"] + hlcm_models
+    #                 elcm_models = ["elcm_county_pf"] + elcm_models
+    #     else:
+    #         if orca.get_injectable("segmented_lcms") == True:
+    #             rdplcm_models += ["rdplcm_pf_" + segment for segment in rdplcm_segments]
+    #             hlcm_models += ["hlcm_pf_" + segment for segment in hlcm_segments]
+    #             elcm_models += ["elcm_pf_" + segment for segment in elcm_segments]
+    #         else:
+    #             rdplcm_models += ["rdplcm_pf"]
+    #             hlcm_models += ["hlcm_pf"]
+    #             elcm_models += ["elcm_pf"]
 
-        developer_models = ["supply_transition"] + rdplcm_models
-        household_models = ["household_transition"] + ["households_relocation_basic"] + hlcm_models
-        employment_models = ["job_transition"] + elcm_models
-        location_models = rdplcm_models + hlcm_models + elcm_models
-        calibrated_folder = orca.get_injectable("calibrated_folder")
-        region_type = orca.get_injectable("region_type")
-        remote_configs_path = "calibrated_configs/%s/%s" % (
-            calibrated_folder,
-            region_code,
-        )
-        if calibrated_folder == "custom":
-            remote_configs_path = "calibrated_configs/custom/custom_%s_%s" % (
-                region_type,
-                region_code,
-            )
-        local_configs_path = "calibrated_configs"
-        if orca.get_injectable("local_simulation") is True:
-            local_configs_path = os.path.join(
-                local_configs_path, calibrated_folder, region_code
-            )
-            skim_source = orca.get_injectable("skim_source")
-            if os.path.exists(os.path.join("configs", local_configs_path, skim_source)):
-                local_configs_path = os.path.join(local_configs_path, skim_source)
-        if not os.path.exists("configs/" + local_configs_path):
-            os.makedirs("./configs/" + local_configs_path)
-        for f in location_models:
-            if not all_local:
-                print(
-                    "Downloading %s config from calibrated_configs/%s"
-                    % (f, calibrated_folder)
-                )
-                blob = bucket.get_blob("%s/%s.yaml" % (remote_configs_path, f))
-                blob.download_to_filename(
-                    "./configs/%s/%s.yaml" % (local_configs_path, f)
-                )
-            else:
-                if not os.path.exists("./configs/%s/%s.yaml" % (local_configs_path, f)):
-                    raise OSError(
-                        "No model config found at ./configs/%s/%s.yaml"
-                        % (local_configs_path, f)
-                    )
+    #     developer_models = ["supply_transition"] + rdplcm_models
+    #     household_models = ["household_transition"] # + ["households_relocation_basic"] + hlcm_models
+    #     employment_models = ["job_transition"] # + elcm_models
+    #     location_models = rdplcm_models + hlcm_models + elcm_models
+    #     calibrated_folder = orca.get_injectable("calibrated_folder")
+    #     region_type = orca.get_injectable("region_type")
+    #     remote_configs_path = "calibrated_configs/%s/%s" % (
+    #         calibrated_folder,
+    #         region_code,
+    #     )
+    #     if calibrated_folder == "custom":
+    #         remote_configs_path = "calibrated_configs/custom/custom_%s_%s" % (
+    #             region_type,
+    #             region_code,
+    #         )
+    #     local_configs_path = "calibrated_configs"
+    #     if orca.get_injectable("local_simulation") is True:
+    #         local_configs_path = os.path.join(
+    #             local_configs_path, calibrated_folder, region_code
+    #         )
+    #         skim_source = orca.get_injectable("skim_source")
+    #         if os.path.exists(os.path.join("configs", local_configs_path, skim_source)):
+    #             local_configs_path = os.path.join(local_configs_path, skim_source)
+    #     if not os.path.exists("configs/" + local_configs_path):
+    #         os.makedirs("./configs/" + local_configs_path)
+    #     """ for f in location_models:
+    #         if not all_local:
+    #             print(
+    #                 "Downloading %s config from calibrated_configs/%s"
+    #                 % (f, calibrated_folder)
+    #             )
+    #             blob = bucket.get_blob("%s/%s.yaml" % (remote_configs_path, f))
+    #             blob.download_to_filename(
+    #                 "./configs/%s/%s.yaml" % (local_configs_path, f)
+    #             )
+    #         else:
+    #             if not os.path.exists("./configs/%s/%s.yaml" % (local_configs_path, f)):
+    #                 raise OSError(
+    #                     "No model config found at ./configs/%s/%s.yaml"
+    #                     % (local_configs_path, f)
+    #                 ) """
 
-        for model in ["value", "rent"]:
-            print("Checking if %s configs exist" % model)
-            model_name = "repm_residential_%s" % model
-            if not all_local:
-                blob = bucket.blob("%s/%s.yaml" % (remote_configs_path, model_name))
-                if blob.exists():
-                    print("Downloading %s" % model_name)
-                    blob.download_to_filename(
-                        "./configs/%s/%s.yaml" % (local_configs_path, model_name)
-                    )
-                    price_models += [model_name]
-            else:
-                if os.path.exists(
-                    "./configs/%s/%s.yaml" % (local_configs_path, model_name)
-                ):
-                    price_models += [model_name]
+    #     for model in ["value", "rent"]:
+    #         print("Checking if %s configs exist" % model)
+    #         model_name = "repm_residential_%s" % model
+    #         if not all_local:
+    #             blob = bucket.blob("%s/%s.yaml" % (remote_configs_path, model_name))
+    #             if blob.exists():
+    #                 print("Downloading %s" % model_name)
+    #                 blob.download_to_filename(
+    #                     "./configs/%s/%s.yaml" % (local_configs_path, model_name)
+    #                 )
+    #                 price_models += [model_name]
+    #         else:
+    #             if os.path.exists(
+    #                 "./configs/%s/%s.yaml" % (local_configs_path, model_name)
+    #             ):
+    #                 price_models += [model_name]
 
-    else:
-        rdplcm_models = ["rdplcm" + segment for segment in rdplcm_segments]
-        hlcm_models = ["hlcm" + segment for segment in hlcm_segments]
-        elcm_models = ["elcm" + segment for segment in elcm_segments]
-        developer_models = ["supply_transition"] + [
-            "rdplcm" + str(segment) for segment in range(0, 4)
-        ]
-        household_models = ["household_transition"] + ["households_relocation_basic"] + ["household_stats"], [
-            "hlcm" + str(segment) for segment in range(1, 11)
-        ]
-        employment_models = ["job_transition"] + [
-            "elcm" + str(segment) for segment in range(0, 6)
-        ]
-        location_models = rdplcm_models + hlcm_models + elcm_models
-        price_models = [
-            region_code + "_pred_bg_median_rent",
-            region_code + "_pred_bg_median_value",
-        ]
+    # else:
+    #     rdplcm_models = ["rdplcm" + segment for segment in rdplcm_segments]
+    #     hlcm_models = ["hlcm" + segment for segment in hlcm_segments]
+    #     elcm_models = ["elcm" + segment for segment in elcm_segments]
+    #     developer_models = ["supply_transition"] + [
+    #         "rdplcm" + str(segment) for segment in range(0, 4)
+    #     ]
+    #     household_models = ["household_transition"] + ["households_relocation_basic"] + ["household_stats"] #, [
+    #     #    "hlcm" + str(segment) for segment in range(1, 11)
+    #     # ]
+    #     employment_models = ["job_transition"] + [
+    #         "elcm" + str(segment) for segment in range(0, 6)
+    #     ]
+    #     location_models = rdplcm_models + hlcm_models + elcm_models
+    #     price_models = [
+    #         region_code + "_pred_bg_median_rent",
+    #         region_code + "_pred_bg_median_value",
+    #     ]
 
-        if not os.path.exists("configs/estimated_configs"):
-            os.makedirs("./configs/estimated_configs")
-        for f in location_models:
-            if not all_local:
-                print("Downloading %s config from estimated_configs" % f)
-                blob = bucket.get_blob(
-                    "estimated_configs/us/%s/%s.yaml" % (region_code, f)
-                )
-                blob.download_to_filename("./configs/estimated_configs/%s.yaml" % f)
-            else:
-                if not os.path.exists("./configs/estimated_configs/%s.yaml" % f):
-                    raise OSError(
-                        "No model config found at ./configs/estimated_configs/%s.yaml"
-                        % f
-                    )'''
+    #     if not os.path.exists("configs/estimated_configs"):
+    #         os.makedirs("./configs/estimated_configs")
+    #     """ for f in location_models:
+    #         if not all_local:
+    #             print("Downloading %s config from estimated_configs" % f)
+    #             blob = bucket.get_blob(
+    #                 "estimated_configs/us/%s/%s.yaml" % (region_code, f)
+    #             )
+    #             blob.download_to_filename("./configs/estimated_configs/%s.yaml" % f)
+    #         else:
+    #             if not os.path.exists("./configs/estimated_configs/%s.yaml" % f):
+    #                 raise OSError(
+    #                     "No model config found at ./configs/estimated_configs/%s.yaml"
+    #                     % f
+    #                 ) """
 
     if orca.get_injectable("local_simulation") == True:
         # add_variables = ["add_temp_variables"]
@@ -4252,17 +4435,16 @@ if orca.get_injectable("running_calibration_routine") == False:
             "birth_model",
             "education_model",
             "update_income",
-            "household_transition",
-            "export_demo_stats",
         ]
         '''rem_variables = ["remove_temp_variables"]
-        export_demo_steps = ["export_demo_stats"]
         household_stats = ["household_stats"]
         school_models = ["school_location"]
         end_of_year_models = ["generate_outputs"]
         work_models = ["work_location"]
         mlcm_postprocessing = ["mlcm_postprocessing"]
         update_income = ["update_income"]'''
+        export_demo_steps = ["export_demo_stats"]
+        
         steps_all_years = (
             #start_of_year_models
             demo_models
@@ -4276,12 +4458,14 @@ if orca.get_injectable("running_calibration_routine") == False:
             # + household_models
             # + ["work_location_stats"]
             # + employment_models
+            # + ["update_income"]
             # + ["work_location_stats"]
             # + end_of_year_models
             # + ["income_stats"]
             # + mlcm_postprocessing
             # + ["work_location_stats"]
-            # + export_demo_steps
+            + ["household_transition"]
+             + export_demo_steps
         )
     '''else:
         start_of_year_models = [

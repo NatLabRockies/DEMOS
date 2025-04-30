@@ -91,7 +91,7 @@ if __name__ == '__main__':
     skim_source = args.travel_model if args.travel_model else 'beam'
     scenario_name = args.scenario_name if args.scenario_name else False
     output_fname = args.output_fname if args.output_fname \
-        else "data/model_data_{0}.h5".format(forecast_year)
+        else "data/model_data_{0}_fixed_simucali_2.h5".format(forecast_year)
 
     run(
         region_code, initial_run, base_year, forecast_year, random_seed,
