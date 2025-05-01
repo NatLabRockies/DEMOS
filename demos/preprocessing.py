@@ -12,8 +12,9 @@ import os
 
 pd.set_option('display.max_columns', None)
 
-synpop_hh = pd.read_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_hh_2019.csv")
-synpop_pp = pd.read_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_pp_2019.csv")
+synpop_hh = pd.read_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_hh_2019.csv")
+synpop_pp = pd.read_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/expand_pp_2019.csv")
+addnm_pinc = pd.read_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/addnm_pinc_2019.csv")
 
 synpop_hh = synpop_hh.rename(columns={"hhid": "household_id", 
                                       "hhsize": "persons",
@@ -27,6 +28,9 @@ synpop_pp = synpop_pp.rename(columns={"hhid": "household_id",
                                       "mar": "MAR",
                                       "pnum": "member_id",
                                       })
+addnm_pinc = addnm_pinc.rename(columns={"pid": "person_id",
+                                        "pinc": "earning", # personal "earning" in DEMOS acutally means personal "income"
+                                        })
 
 age_of_head = synpop_pp[synpop_pp['relshipp']==20][['household_id', 'age']].rename(columns={"age": "age_of_head"})
 synpop_hh = synpop_hh.merge(age_of_head, on=["household_id"])
@@ -59,52 +63,56 @@ synpop_pp = synpop_pp.drop(columns=['serialno'])
 
 synpop_pp['hispanic'] = np.where(synpop_pp['race']==1, 1, 0)
 
-# -----------------------------------------------------------------------------------------
-### no earning column in persons table. temporary solution:
 hh_worker = synpop_pp.groupby('household_id').agg({'worker': 'sum'}).rename(columns={"worker": "workers"})
-
-# Count people age >= 16
-count_16 = synpop_pp[synpop_pp['age'] >= 16].groupby('household_id').size()
-
-# Count people age >= 15 (fallback)
-count_15 = synpop_pp[synpop_pp['age'] >= 15].groupby('household_id').size()
-
-# Use count_16 if exists, otherwise fallback to count_15
-hh_adult = count_16.combine_first(count_15).astype(int)
-hh_adult.name = "adults"
-hh_adult = hh_adult.reset_index()
-
 synpop_hh = synpop_hh.merge(hh_worker, how="left", on=["household_id"]).fillna(0)
-synpop_hh = synpop_hh.merge(hh_adult, how="left", on=["household_id"]).fillna(0)
 
-synpop_hh["worker_earning"] = np.where(
-    synpop_hh["workers"] > 0, 
-    synpop_hh["income"] / synpop_hh["workers"], 
-    0
-)
-synpop_hh["adult_earning"] = np.where(
-    (synpop_hh["workers"] == 0) & (synpop_hh["adults"] > 0),
-    synpop_hh["income"] / synpop_hh["adults"],
-    0
-)
+synpop_pp = synpop_pp.merge(addnm_pinc[["person_id", "earning"]], how="left", on=["person_id"]).fillna(0)
 
-synpop_pp = synpop_pp.merge(
-    synpop_hh[["household_id", "worker_earning", "adult_earning"]],
-    how="left",
-    on="household_id"
-)
+# # -----------------------------------------------------------------------------------------
+# ### if no earning column in persons table. temporary solution:
 
-synpop_pp["earning"] = 0  # initialize
-synpop_pp.loc[synpop_pp["worker"] == 1, "earning"] = synpop_pp["worker_earning"].astype(int)
-synpop_pp.loc[(synpop_pp["worker"] != 1) & (synpop_pp["age"] >= 16), "earning"] = synpop_pp["adult_earning"].astype(int)
+# # Count people age >= 16
+# count_16 = synpop_pp[synpop_pp['age'] >= 16].groupby('household_id').size()
 
-synpop_pp = synpop_pp.drop(columns=["worker_earning", "adult_earning"])
-synpop_hh = synpop_hh.drop(columns=["worker_earning", "adult_earning"])
+# # Count people age >= 15 (fallback)
+# count_15 = synpop_pp[synpop_pp['age'] >= 15].groupby('household_id').size()
 
-###
-# -----------------------------------------------------------------------------------------
+# # Use count_16 if exists, otherwise fallback to count_15
+# hh_adult = count_16.combine_first(count_15).astype(int)
+# hh_adult.name = "adults"
+# hh_adult = hh_adult.reset_index()
 
-synpop_hh['lcm_county_id'] = synpop_hh['lcm_county_id'].astype(str)
+# synpop_hh = synpop_hh.merge(hh_adult, how="left", on=["household_id"]).fillna(0)
+
+# synpop_hh["worker_earning"] = np.where(
+#     synpop_hh["workers"] > 0, 
+#     synpop_hh["income"] / synpop_hh["workers"], 
+#     0
+# )
+# synpop_hh["adult_earning"] = np.where(
+#     (synpop_hh["workers"] == 0) & (synpop_hh["adults"] > 0),
+#     synpop_hh["income"] / synpop_hh["adults"],
+#     0
+# )
+
+# synpop_pp = synpop_pp.merge(
+#     synpop_hh[["household_id", "worker_earning", "adult_earning"]],
+#     how="left",
+#     on="household_id"
+# )
+
+# synpop_pp["earning"] = 0  # initialize
+# synpop_pp.loc[synpop_pp["worker"] == 1, "earning"] = synpop_pp["worker_earning"].astype(int)
+# synpop_pp.loc[(synpop_pp["worker"] != 1) & (synpop_pp["age"] >= 16), "earning"] = synpop_pp["adult_earning"].astype(int)
+
+# synpop_pp = synpop_pp.drop(columns=["worker_earning", "adult_earning"])
+# synpop_hh = synpop_hh.drop(columns=["worker_earning", "adult_earning", "adults"])
+
+# ###
+# # -----------------------------------------------------------------------------------------
+
+synpop_hh['lcm_county_id'] = synpop_hh['lcm_county_id'].astype(str).str.zfill(3)
+synpop_hh['lcm_county_id'] = '06' + synpop_hh['lcm_county_id']
 synpop_hh['block_id'] = synpop_hh['htier2tazid'].astype(str)
 synpop_hh['TAZ'] = synpop_hh['block_id']
 
@@ -120,5 +128,5 @@ synpop_hh["hh_size"] = np.where(
 
 synpop_hh = synpop_hh.drop(columns=['puma10', 'htier2tazid', 'htier2tazseq', 'rt', 'htype', 'ten', 'hht', 'hht2']) 
 
-synpop_hh.to_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/households.csv", index=False)
-synpop_pp.to_csv("./DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/persons.csv", index=False)
+synpop_hh.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/households.csv", index=False)
+synpop_pp.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/persons.csv", index=False)
