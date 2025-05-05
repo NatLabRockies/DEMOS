@@ -26,6 +26,7 @@
     - Household 382474 has 4 people labeled as relate == 1 and some of them have MAR == 5
         - This means the outputs will not be exactly the same after the refactoring
     - `hh_income` is incorrectly computed: There is a hard-coded 30_000 and the rest are 60, 100, etc (not thousands)
+    - `income_bin`s are inconsistent (income bin 1 is less than 250_000 instead of 25_000)
     - I believe the only reason `fix_erroneous_households` exists is in case people are flagged by two models at once
 
 - `marriage.py`
