@@ -81,12 +81,12 @@ def update_married_households_random(persons, households, marriage_list):
         None
     """
     # print("Updating persons and households...")
-    p_df = persons.local
+    p_df = orca.get_table('persons').local
     household_cols = households.local_columns
-    household_df = households.local
+    household_df = orca.get_table('households').local
     persons_cols = persons.local_columns
     persons_local_cols = persons.local_columns
-    hh_df = households.to_frame(columns=["lcm_county_id"])
+    hh_df = orca.get_table('households').to_frame(columns=["lcm_county_id"])
     hh_df.reset_index(inplace=True)
     # print("Indices duplicated:",p_df.index.duplicated().sum())
     p_df["new_mar"] = marriage_list

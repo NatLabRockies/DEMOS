@@ -415,9 +415,9 @@ def update_cohabitating_households(persons, households, cohabitate_list):
 def fix_erroneous_households(persons, households):
     """ YE: *** """
     print("Fixing erroneous households")
-    p_df = persons.local
-    household_cols = households.local_columns
-    household_df = households.local
+    p_df = orca.get_table('persons').local
+    household_cols = orca.get_table('households').local_columns
+    household_df = orca.get_table('households').local
     persons_cols = persons.local_columns
     # print("Hh size: ", household_df.shape)
     # print("Persons size: ", p_df.shape)
