@@ -319,11 +319,11 @@ def update_cohabitating_households(persons, cohabitate_list, get_new_households,
     newly_married_persons_index = persons["household_id"].isin(married_hh)
     newly_brokeup_persons_index = persons["household_id"].isin(breakup_hh)
     unmarried_partner_index = persons["relate"] == 13
-    married_or_reference_index = persons["relate"].isin([0, 1])
+    head_index = persons["relate"] == 0
 
     # Perform update for people that got married
     persons.local.loc[newly_married_persons_index & unmarried_partner_index, "relate",] = 1
-    persons.local.loc[newly_married_persons_index & married_or_reference_index, "MAR"] = 1
+    persons.local.loc[newly_married_persons_index & (head_index | unmarried_partner_index), "MAR"] = 1
 
     # Perform update for people that broke up
     leaving_person_index = newly_brokeup_persons_index & unmarried_partner_index
