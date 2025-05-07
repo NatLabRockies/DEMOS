@@ -149,3 +149,10 @@ def hh_workers(persons):
            .sum()["worker"] \
            .apply(lambda r: "none" if r == 0 else
                   ("one" if r == 1 else "two or more"))
+
+
+@orca.column(table_name="households")
+def income(persons):
+    return persons.to_frame(["household_id", "earning"]) \
+                  .groupby("household_id") \
+                  .sum()["earning"]
