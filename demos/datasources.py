@@ -68,7 +68,7 @@ print("The input file is: ", data_name)
 
 # Downloading the household totals, income rates, and move in rates
 print("Load household size counting table and register it as 'hsize_ct'.")
-hhsize_data_name = "data/scag_rtp24/calibration/hsize_TAZ.csv"
+hhsize_data_name = "data/scag_rtp24/calibration/hsize_TAZ_SCAG_upto50.csv"
 hhsize_data = pd.read_csv(hhsize_data_name,
                           dtype={"TAZ": object,
                                  "year": int,
@@ -77,13 +77,14 @@ hhsize_data = pd.read_csv(hhsize_data_name,
 hhsize_data = hhsize_data.set_index("year")
 orca.add_table("hsize_ct", hhsize_data)
 
-# print("Load income rate and register it as 'income_rates'.")
-# income_rates_data_name = "data/income_rates_%s.csv" % region_code
-# income_rates_data = pd.read_csv(income_rates_data_name,
-#                                 dtype={"lcm_county_id": object,
-#                                        "year": int,
-#                                        "rate": float})
-# orca.add_table("income_rates", income_rates_data)
+print("Load income rate and register it as 'income_rates'.")
+income_rates_data_name = "data/scag_rtp24/calibration/income_rates_SCAG.csv"
+income_rates_data = pd.read_csv(income_rates_data_name,
+                                dtype={"lcm_county_id": object,
+                                       "year": int,
+                                       "rate": float})
+income_rates_data['lcm_county_id'] = income_rates_data['lcm_county_id'].map(lambda x: f'{x:0>5}')
+orca.add_table("income_rates", income_rates_data)
 
 print("Load relmap and register it as 'rel_map'.")
 rel_map_data_name = "data/relmap_%s.csv" % region_code
@@ -92,17 +93,17 @@ orca.add_table("rel_map", rel_map_data)
 
 #read the calibration data
 print("Read calibration data for birth model.")
-observed_births_data_name = "data/scag_rtp24/calibration/births_over_time_obs_TAZ.csv"
+observed_births_data_name = "data/scag_rtp24/calibration/births_over_time_obs_TAZ_SCAG_upto50.csv"
 observed_births_data = pd.read_csv(observed_births_data_name) 
 orca.add_table("observed_births_data", observed_births_data)
 
 print("Read calibration data for fatality model.")
-observed_fatalities_data_name = "data/scag_rtp24/calibration/mortalities_over_time_obs_TAZ.csv"
+observed_fatalities_data_name = "data/scag_rtp24/calibration/mortalities_over_time_obs_TAZ_SCAG_upto50.csv"
 observed_fatalities_data = pd.read_csv(observed_fatalities_data_name)
 orca.add_table("observed_fatalities_data", observed_fatalities_data)
 
 print("Read calibration data for marriage model.")
-observed_marrital_data_name = "data/scag_rtp24/calibration/marrital_status_over_time_obs.csv"
+observed_marrital_data_name = "data/scag_rtp24/calibration/marrital_status_over_time_obs_SCAG_19_23.csv"
 observed_marrital_data = pd.read_csv(observed_marrital_data_name)
 orca.add_table("observed_marrital_data", observed_marrital_data)
 
@@ -567,7 +568,7 @@ orca.add_injectable("households_local_cols", orca.get_table("households").local.
 # ADD OUTPUT FOLDER
 # -----------------------------------------------------------------------------------------
 forecast_year = orca.get_injectable("forecast_year")
-output_folder = "outputs/simulation/%s_%s_hhcali/" % (region_code, forecast_year)
+output_folder = "outputs/simulation/%s_%s_hhcali_marcali23_coefupd/" % (region_code, forecast_year)
 if not os.path.exists(output_folder):
     print("Creating output folder")
     os.makedirs(output_folder)

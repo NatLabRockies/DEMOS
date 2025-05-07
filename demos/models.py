@@ -212,34 +212,38 @@ def fatality_model(persons, households, year):
     # print("Persons shape: ", persons_df.shape[0])
     # Running fatality Model
     mortality = mm.get_step("mortality")
-    # mortality.run()
-    # fatality_list = mortality.choices.astype(int)
-    # print(fatality_list.sum(), " fatalities")
-
+    if orca.is_injectable("fatality_asc"):
+        mortality.fitted_parameters[0] = orca.get_injectable("fatality_asc")
     mortality.run()
     fatality_list = mortality.choices.astype(int)
     predicted_share = fatality_list.sum() / persons_df.shape[0]
     observed_fatalities = orca.get_table("observed_fatalities_data").to_frame()
-    target = observed_fatalities[observed_fatalities["year"]==year]["count"].sum()
-    target_share = target / persons_df.shape[0]
-    print(f"The observed mortalities in {year}:, {target}")
+    target_data = observed_fatalities[observed_fatalities["year"] == year]
 
-    error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
-    print("The Fatality Model Calibration:")
-    calibrate_time = 0
-    while error >= 1000:
-        print(f"{calibrate_time} time: {error}")
-        mortality.fitted_parameters[0] += np.log(target.sum()/fatality_list.sum())
-        mortality.run()
-        fatality_list = mortality.choices.astype(int)
-        predicted_share = fatality_list.sum() / persons_df.shape[0]
+    if not target_data.empty:
+        target = target_data["count"].sum()
+        target_share = target / persons_df.shape[0]
+        print(f"The observed mortalities in {year}: {target}")
+
         error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
-    # print("Fatality list count: ", fatality_list.value_counts())
-    # print(fatality_list.sum(), " fatalities")
-    # print("Fatality list shape: ", fatality_list.shape)
-    # Updating the households and persons tables
+        print("The Fatality Model Calibration:")
+        calibrate_time = 0
+
+        while error >= 1000:
+            print(f"{calibrate_time} time: {error}")
+            mortality.fitted_parameters[0] += np.log(target / fatality_list.sum())
+            mortality.run()
+            fatality_list = mortality.choices.astype(int)
+            predicted_share = fatality_list.sum() / persons_df.shape[0]
+            error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
+            calibrate_time += 1
+        print(f"{calibrate_time} time: {error}")
+        
+        # Persist calibrated parameter for reuse
+        orca.add_injectable("fatality_asc", mortality.fitted_parameters[0])
+    else:
+        print(f"No observed data available for year {year}, skipping calibration.")
+
     households = orca.get_table("households")
     persons = orca.get_table("persons")
     remove_dead_persons(persons, households, fatality_list, year)
@@ -278,12 +282,17 @@ def update_income(persons, households, year):
     persons_local_cols = persons_df.columns
     # print(persons_local_cols)
     hh_counties = households_df["lcm_county_id"].copy()
-
+    print("hh_counties: ", hh_counties.unique())
     income_rates = orca.get_table("income_rates").to_frame()
     income_rates = income_rates[income_rates["year"] == year]
+    print("income_rates counties: ", income_rates["lcm_county_id"].unique())
 
+    print("Households size before merging: ", persons_df["household_id"].unique().shape[0])
     persons_df = (persons_df.reset_index().merge(hh_counties.reset_index(), on=["household_id"]).set_index("person_id"))
+    print("Households size after merging 1: ", persons_df["household_id"].unique().shape[0])
     persons_df = (persons_df.reset_index().merge(income_rates, on=["lcm_county_id"]).set_index("person_id"))
+    print("Households size after merging 2: ", persons_df["household_id"].unique().shape[0])
+
     persons_df["earning"] = persons_df["earning"] * (1 + persons_df["rate"])
 
     new_incomes = persons_df.groupby("household_id").agg(income=("earning", "sum"))
@@ -294,7 +303,7 @@ def update_income(persons, households, year):
     persons_local_columns = orca.get_injectable("persons_local_cols")
     orca.add_table("persons", persons_df[persons_local_columns])
     orca.add_table("households", households_df[households_local_cols])
-    orca.add_table("persons", persons_df[persons_local_cols])
+    # orca.add_table("persons", persons_df[persons_local_cols])
     # Update income stats at the persons level
     income_over_time = orca.get_table("income_over_time").to_frame()
     if income_over_time.empty:
@@ -1050,27 +1059,35 @@ def birth_model(persons, households, year):
     # print(len(eligible_hh_df.index.to_list()))
     birth.filters = "index in " + list_ids
     birth.out_filters = "index in " + list_ids
-
+    if orca.is_injectable("birth_asc"):
+        birth.fitted_parameters[0] = orca.get_injectable("birth_asc")
     birth.run()
     birth_list = birth.choices.astype(int)
     predicted_share = birth_list.sum() / eligible_hh_df.shape[0]
     observed_births = orca.get_table("observed_births_data").to_frame()
-    target = observed_births[observed_births["year"]==year]["count"].sum()
-    target_share = target / eligible_hh_df.shape[0]
-    print(f"The observed births in {year}:, {target}")
+    target_data = observed_births[observed_births["year"] == year]
+    if not target_data.empty:
+        target = target_data["count"].sum()
+        target_share = target / eligible_hh_df.shape[0]
+        print(f"The observed births in {year}:, {target}")
 
-    error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-    print("The Birth Model Calibration:")
-    calibrate_time = 0
-    while error >= 1000:
-        print(f"{calibrate_time} time: {error}")
-        birth.fitted_parameters[0] += np.log(target.sum()/birth_list.sum())
-        birth.run()
-        birth_list = birth.choices.astype(int)
-        predicted_share = birth_list.sum() / eligible_hh_df.shape[0]
         error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+        print("The Birth Model Calibration:")
+        calibrate_time = 0
+        while error >= 1000:
+            print(f"{calibrate_time} time: {error}")
+            birth.fitted_parameters[0] += np.log(target.sum()/birth_list.sum())
+            birth.run()
+            birth_list = birth.choices.astype(int)
+            predicted_share = birth_list.sum() / eligible_hh_df.shape[0]
+            error = np.sqrt(np.mean((birth_list.sum() - target)**2))
+            calibrate_time += 1
+        print(f"{calibrate_time} time: {error}")
+        
+        # Persist calibrated parameter for reuse
+        orca.add_injectable("birth_asc", birth.fitted_parameters[0])
+    else:
+        print(f"No observed data available for year {year}, skipping calibration.")
 
     # breakpoint()
     # print("Eligible households >45",
@@ -3035,6 +3052,9 @@ def update_divorce(divorce_list):
         children=("child", "sum"),
         persons=("person", "sum"),
     )
+    household_agg["lcm_county_id"] = np.random.choice(
+        households_df["lcm_county_id"].unique(), size=household_agg.shape[0]
+    )#GZ
 
     # household_agg["lcm_county_id"] = household_agg["lcm_county_id"]
     household_agg["gt55"] = np.where(household_agg["persons_age_gt55"] > 0, 1, 0)
@@ -3103,7 +3123,7 @@ def update_divorce(divorce_list):
     # )
     household_agg["block_id"] = "-1"
     household_agg["TAZ"] = "-1"
-    household_agg["lcm_county_id"] = "-1"
+    # household_agg["lcm_county_id"] = "-1"
     # household_agg["puma10"] = -1
     # household_agg["htier2tazid"] = -1
     # household_agg["htier2tazseq"] = -1
@@ -3118,10 +3138,10 @@ def update_divorce(divorce_list):
     households_df.update(staying_household_agg)
 
     # print(staying_house["household_id"].unique().shape[0] + leaving_house["household_id"].unique().shape[0])
-    hh_ids_p_table = np.hstack((staying_house["household_id"].unique(), leaving_house["household_id"].unique()))
-    df_p = persons_df.combine_first(staying_house[persons_local_cols])
-    df_p = df_p.combine_first(leaving_house[persons_local_cols])
-    hh_ids_hh_table = np.hstack((households_df.index, household_agg.index))
+    # hh_ids_p_table = np.hstack((staying_house["household_id"].unique(), leaving_house["household_id"].unique()))
+    # df_p = persons_df.combine_first(staying_house[persons_local_cols])
+    # df_p = df_p.combine_first(leaving_house[persons_local_cols])
+    # hh_ids_hh_table = np.hstack((households_df.index, household_agg.index))
     # if  df_p["household_id"].unique().shape[0] != np.unique(hh_ids_hh_table).shape[0]:
     #     breakpoint()
     # merge all in one persons and households table
@@ -3225,8 +3245,8 @@ def household_divorce(persons, households):
 @orca.step("households_reorg")
 def households_reorg(persons, households, year):
     #
-    persons_original = persons.to_frame()
-    households_original = households.to_frame()
+    persons_original = persons.local.copy()
+    households_original = households.local.copy()
     print("Initial marital status...")
     print_marr_stats()
     # MARRIAGE MODEL
@@ -3237,6 +3257,9 @@ def households_reorg(persons, households, year):
     print("Running marriage model...")
     # breakpoint()
     marriage = mm.get_step("marriage")
+    # Use previously calibrated ASC if available
+    if orca.is_injectable("marriage_asc"):
+        marriage.coeffs.loc[0, 'married'] = orca.get_injectable("marriage_asc")
     marriage_list = marriage.run(data.copy())
     print("Number of marriages and cohabitations:")
     print(marriage_list.value_counts())
@@ -3247,7 +3270,8 @@ def households_reorg(persons, households, year):
     divorce = mm.get_step("divorce")
     divorce.filters = "index in " + list_ids
     divorce.out_filters = "index in " + list_ids
-
+    if orca.is_injectable("divorce_asc"):
+        divorce.fitted_parameters[0] = orca.get_injectable("divorce_asc")
     print("Running divorce model...")
     divorce.run()
     divorce_list = divorce.choices.astype(int)
@@ -3260,6 +3284,8 @@ def households_reorg(persons, households, year):
     # Run Model
     print("Running cohabitation model...")
     cohabitation = mm.get_step("cohabitation")
+    if orca.is_injectable("cohabitation_asc"):
+        cohabitation.coeffs.loc[0, 'marriage'] = orca.get_injectable("cohabitation_asc")
     cohabitate_x_list = cohabitation.run(cohab_data)
     print("Cohabitation outcomes:")
     print(cohabitate_x_list.value_counts())
@@ -3268,96 +3294,108 @@ def households_reorg(persons, households, year):
     
     persons_df = orca.get_table("persons").local
     predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
-    predicted_married_share = predicted_married_count / persons_df.shape[0]
+    # predicted_married_share = predicted_married_count / persons_df.shape[0]
     
     predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
-    predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
+    # predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
 
     observed_marrital = orca.get_table("observed_marrital_data").to_frame()
-    target_married_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==1)]["count"].values[0]
-    target_married_share = target_married_count / persons_df.shape[0] # observed_marrital[observed_marrital["year"] == year]["count"].sum()
+    target_data = observed_marrital[observed_marrital["year"] == year]
+    if not target_data.empty:
+        target_married_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==1)]["count"].values[0]
+        # target_married_share = target_married_count / persons_df.shape[0] # observed_marrital[observed_marrital["year"] == year]["count"].sum()
 
-    target_divorced_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==3)]["count"].values[0]
-    target_divorced_share = target_divorced_count / persons_df.shape[0]
+        target_divorced_count = observed_marrital[(observed_marrital["year"]==year) & (observed_marrital["MAR"]==3)]["count"].values[0]
+        # target_divorced_share = target_divorced_count / persons_df.shape[0]
 
-    print(f"predicted_married_share - target_married_share: {predicted_married_share - target_married_share}")
-    print(f"predicted_divorced_share - target_divorced_share: {predicted_divorced_share - target_divorced_share}")
+        print(f"predicted_married_count - target_married_count: {predicted_married_count - target_married_count}")
+        print(f"predicted_divorced_count - target_divorced_count: {predicted_divorced_count - target_divorced_count}")
 
-    total_error = np.sqrt(np.mean((predicted_married_share - target_married_share) ** 2 + (predicted_divorced_share - target_divorced_share) ** 2))
+        total_error = np.sqrt(((predicted_married_count - target_married_count) ** 2 + (predicted_divorced_count - target_divorced_count) ** 2) / 2)
 
-    scaling_factor = 1.5
-    momentum = 0.9
-    p_update_divorce = 0
-    p_update_marriage = 0
-    p_update_cohabitation = 0
-    max_iterations = 20
-    married_weight = target_married_count / (target_married_count + target_divorced_count)
-    divorced_weight = target_divorced_count / (target_married_count + target_divorced_count)
-    print("The Household Restructuring Calibration:")
-    calibrate_time = 0
-    while total_error > 0.06 and calibrate_time < max_iterations:
+        scaling_factor = 1.5
+        momentum = 0.9
+        p_update_divorce = 0
+        p_update_marriage = 0
+        p_update_cohabitation = 0
+        max_iterations = 20
+        married_weight = target_married_count / (target_married_count + target_divorced_count)
+        divorced_weight = target_divorced_count / (target_married_count + target_divorced_count)
+        print("The Household Restructuring Calibration:")
+        calibrate_time = 0
+        while total_error > 100000 and calibrate_time < max_iterations:
+            print(f"{calibrate_time} time: {total_error}")
+            
+            # Calculate updates with momentum
+            p_update_divorce = momentum * p_update_divorce + scaling_factor * divorced_weight * np.log(target_divorced_count / predicted_divorced_count)
+            p_update_marriage = momentum * p_update_marriage + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
+            p_update_cohabitation = momentum * p_update_cohabitation + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
+            
+            # Apply updates
+            divorce.fitted_parameters[0] += p_update_divorce
+            marriage.coeffs.loc[0, 'married'] += p_update_marriage
+            cohabitation.coeffs.loc[0, 'marriage'] += p_update_cohabitation
+
+            # Reset Orca tables properly
+            orca.add_table("persons", persons_original.copy())
+            orca.add_table("households", households_original.copy())
+
+            # Reload Orca tables for next iteration
+            persons = orca.get_table("persons")
+            households = orca.get_table("households")
+            
+            print(f"{calibrate_time} time input: marital status...")
+            print_marr_stats()
+            print("original input: marital status...")
+            print(persons_original[persons_original["age"]>=15]["MAR"].value_counts().sort_values())
+            data = marriage_data(persons)
+            marriage_list = marriage.run(data.copy())
+            random_match = orca.get_injectable("random_match")
+            print("Number of marriages and cohabitations:")
+            print(marriage_list.value_counts())
+
+            list_ids = divorce_data(persons, households)
+            divorce.filters = "index in " + list_ids
+            divorce.out_filters = "index in " + list_ids
+            divorce.run()
+            divorce_list = divorce.choices.astype(int)
+            print("Number of divorces:")
+            print(divorce_list.value_counts())
+
+            cohab_data = cohabitation_data(persons, households)
+            cohabitate_x_list = cohabitation.run(cohab_data)
+
+            updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list)
+            
+            persons_df = orca.get_table("persons").local
+            predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
+            # predicted_married_share = predicted_married_count / persons_df.shape[0]
+            
+            predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
+            # predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
+
+            # target_married_share = target_married_count / persons_df.shape[0]
+            # target_divorced_share = target_divorced_count / persons_df.shape[0]
+            
+            print(f"predicted_married_count - target_married_count: {predicted_married_count - target_married_count}")
+            print(f"predicted_divorced_count - target_divorced_count: {predicted_divorced_count - target_divorced_count}")
+            prev_total_error = total_error
+            total_error = np.sqrt(((predicted_married_count - target_married_count) ** 2 + (predicted_divorced_count - target_divorced_count) ** 2) / 2)
+
+            calibrate_time += 1
+
+            if abs(prev_total_error - total_error) < 5000 and calibrate_time > 3:
+                print("Stopping adjustments due to minimal error reduction.")
+                break
+        
         print(f"{calibrate_time} time: {total_error}")
-        
-        # Calculate updates with momentum
-        p_update_divorce = momentum * p_update_divorce + scaling_factor * divorced_weight * np.log(target_divorced_count / predicted_divorced_count)
-        p_update_marriage = momentum * p_update_marriage + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
-        p_update_cohabitation = momentum * p_update_cohabitation + scaling_factor * married_weight * np.log(target_married_count / predicted_married_count)
-        
-        # Apply updates
-        divorce.fitted_parameters[0] += p_update_divorce
-        marriage.coeffs.loc[0, 'married'] += p_update_marriage
-        cohabitation.coeffs.loc[0, 'marriage'] += p_update_cohabitation
+        # Persist calibrated parameter for reuse
+        orca.add_injectable("divorce_asc", divorce.fitted_parameters[0])    
+        orca.add_injectable("marriage_asc", marriage.coeffs.loc[0, 'married'])    
+        orca.add_injectable("cohabitation_asc", cohabitation.coeffs.loc[0, 'marriage'])    
 
-        persons = persons_original
-        households = households_original
-        orca.add_table("households", households_original)
-        orca.add_table("persons", persons_original)
-        
-        print(f"{calibrate_time} time input: marital status...")
-        print_marr_stats()
-        print("original input: marital status...")
-        print(persons_original[persons_original["age"]>=15]["MAR"].value_counts().sort_values())
-        data = marriage_data(persons)
-        marriage_list = marriage.run(data.copy())
-        random_match = orca.get_injectable("random_match")
-        print("Number of marriages and cohabitations:")
-        print(marriage_list.value_counts())
-
-        list_ids = divorce_data(persons, households)
-        divorce.filters = "index in " + list_ids
-        divorce.out_filters = "index in " + list_ids
-        divorce.run()
-        divorce_list = divorce.choices.astype(int)
-        print("Number of divorces:")
-        print(divorce_list.value_counts())
-
-        cohab_data = cohabitation_data(persons, households)
-        cohabitate_x_list = cohabitation.run(cohab_data)
-
-        updating_p_hh(persons, households, marriage_list, divorce_list, cohabitate_x_list)
-        
-        persons_df = orca.get_table("persons").local
-        predicted_married_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 1).sum()
-        predicted_married_share = predicted_married_count / persons_df.shape[0]
-        
-        predicted_divorced_count = (persons_df[persons_df["age"] >= 15]["MAR"] == 3).sum()
-        predicted_divorced_share = predicted_divorced_count / persons_df.shape[0]
-
-        target_married_share = target_married_count / persons_df.shape[0]
-        target_divorced_share = target_divorced_count / persons_df.shape[0]
-        
-        print(f"predicted_married_share - target_married_share: {predicted_married_share - target_married_share}")
-        print(f"predicted_divorced_share - target_divorced_share: {predicted_divorced_share - target_divorced_share}")
-        prev_total_error = total_error
-        total_error = np.sqrt(np.mean((predicted_married_share - target_married_share) ** 2 + (predicted_divorced_share - target_divorced_share) ** 2))
-
-        calibrate_time += 1
-
-        if abs(prev_total_error - total_error) < 0.002 and calibrate_time > 3:
-            print("Stopping adjustments due to minimal error reduction.")
-            break
-        
-    print(f"{calibrate_time} time: {total_error}")
+    else:
+        print(f"No observed data available for year {year}, skipping calibration.")
 
     # print("Updating married table...")
     married_table = orca.get_table("marriage_table").to_frame()
@@ -3554,7 +3592,10 @@ def household_transition(households, persons, year, metadata):
         simple_transition(households, rate, 'block_id', set_year_built=True, linked_tables=linked_tables)
     elif 'hsize_ct' in orca.list_tables():
         control_totals = orca.get_table('hsize_ct').to_frame()
-        full_transition(households, control_totals, 'total_number_of_households', year, 'block_id')
+        if not control_totals[control_totals.index == year].empty:
+            full_transition(households, control_totals, 'total_number_of_households', year, 'block_id')
+        else:
+            print(f"No observed hsize_ct data available for year {year}, skipping rebalancing.")
     else:
         control_totals = orca.get_table('hct').to_frame()
         if 'hh_type' in control_totals.columns:
@@ -4424,6 +4465,7 @@ if orca.get_injectable("running_calibration_routine") == False:
             "fatality_model",
             "birth_model",
             "education_model",
+            "update_income",
             "household_transition",
             "export_demo_stats",
         ]

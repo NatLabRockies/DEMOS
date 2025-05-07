@@ -563,12 +563,13 @@ def married_before(persons):
     p = persons.to_frame(columns=['MAR'])
     return p['MAR'].between(2, 4) * 1
 
+# single/widow
 @orca.column('persons')
 def marital25(persons):
     p = persons.to_frame(columns=['MAR'])
-    # print(persons.local.columns)
     return p.isin([2,5]).astype(int)
 
+# divoced/seperated
 @orca.column('persons')
 def marital34(persons):
     p = persons.to_frame(columns=['MAR'])
