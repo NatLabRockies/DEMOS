@@ -8,8 +8,9 @@ from .marriage import update_married_households_random, update_married_household
 def households_reorg(persons, households, year):
     """ YE: *** """
     #
+    marriage = mm.get_step("marriage")
     # MARRIAGE MODEL
-    persons_df = persons.to_frame()
+    persons_df = persons.to_frame(marriage.variable_names + ["relate", "household_id", "MAR", "age"])
     # get persons cohabitating and heads of their households
     COHABS_PERSONS = persons_df["relate"] == 13
     cohab_persons_df = persons_df.loc[COHABS_PERSONS].copy()
@@ -27,7 +28,6 @@ def households_reorg(persons, households, year):
     ###############################################################
     print("Running marriage model...")
     # breakpoint()
-    marriage = mm.get_step("marriage")
     marriage_list = marriage.run(data.copy())
     # print("Number of marriages and cohabitations:")
     # print(marriage_list.value_counts())
@@ -93,10 +93,10 @@ def households_reorg(persons, households, year):
                    (persons_df["MAR"]!=1) & \
                    ((persons_df["age"]>=15))]["household_id"].unique().astype(int)
     )
-    data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
+    cohabitation = mm.get_step("cohabitation")
+    data = households.to_frame(cohabitation.variable_names).loc[ELIGIBLE_HOUSEHOLDS]
     # Run Model
     print("Running cohabitation model...")
-    cohabitation = mm.get_step("cohabitation")
     cohabitate_x_list = cohabitation.run(data)
     # print("Cohabitation outcomes:")
     # print(cohabitate_x_list.value_counts())

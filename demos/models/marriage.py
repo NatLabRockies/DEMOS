@@ -936,7 +936,7 @@ def update_divorce(divorce_list):
         staying_house["relate"],
     )
     staying_house["MAR"] = np.where(
-        staying_house["MAR"] == 1, 3, staying_house["MAR"]
+        (staying_house["MAR"] == 1) & (staying_house["relate"].isin([0, 1])), 3, staying_house["MAR"]
     )
 
     # initiate new households with individuals leaving house
