@@ -42,6 +42,7 @@ def run(
         out_tables = datasources.hdf_tables + ["graveyard"] #TODO: FIX THIS
     iter_vars = list(range(
         base_year + freq_interval, forecast_year + freq_interval, freq_interval))
+    orca.run(["fix_persons_table"])
     orca.run(
         orca.get_injectable('sim_steps'),
         data_out=output_fname,
