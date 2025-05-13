@@ -37,9 +37,14 @@ def fix_persons_table(persons):
     ### Handling of married households
     hhs_with_wrong_MAR_idx = persons.local.loc[married_hh_idx & head_or_spouse_idx].groupby(["household_id", "MAR"]).size().loc[:, 1] != 2
     hhs_with_wrong_MAR = hhs_with_wrong_MAR_idx[hhs_with_wrong_MAR_idx].index
+    married_head_no_spouse = ~married_hh_idx & head_or_spouse_idx & (persons.MAR == 1)
+
+    if married_head_no_spouse.sum() > 0:
+        print(f"{married_head_no_spouse.sum()} heads have MAR == 1 but no spouse in house. Changing to MAR = 0")
+        persons.local.loc[~married_hh_idx & head_or_spouse_idx & (persons.MAR == 1), "MAR"] = 0
 
     if len(hhs_with_wrong_MAR) > 0:
-        print(f"{len(hhs_with_wrong_MAR)} households have married people but the number of MAR == 1 is different that 2. Spouses were flagged with MAR = 1")
+        print(f"{len(hhs_with_wrong_MAR)} households have married people but the number of MAR == 1 is different than 2. Spouses were flagged with MAR = 1")
         
         problematic_hh_idx = persons["household_id"].isin(hhs_with_wrong_MAR)
         persons.local.loc[problematic_hh_idx & head_or_spouse_idx, "MAR"] = 1
