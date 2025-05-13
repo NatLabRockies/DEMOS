@@ -27,6 +27,7 @@ def fix_persons_table(persons):
         persons.local = persons.local[~persons.household_id.isin(multi_partner_hh)]
     
     ## Then, sanitize `MAR` column
+    head_or_spouse_idx = (persons["relate"] == 0) | (persons["relate"] == 1)
     married_hhs = persons.local.loc[persons["relate"] == 1]["household_id"].values
     cohabitating_hhs = persons.local.loc[persons["relate"] == 13]["household_id"].values
 
@@ -34,16 +35,15 @@ def fix_persons_table(persons):
     cohabitating_hh_idx = persons.household_id.isin(cohabitating_hhs)
 
     ### Handling of married households
-    hhs_with_wrong_MAR_idx = persons.local.loc[married_hh_idx].groupby(["household_id", "MAR"]).size().loc[:, 1] != 2
+    hhs_with_wrong_MAR_idx = persons.local.loc[married_hh_idx & head_or_spouse_idx].groupby(["household_id", "MAR"]).size().loc[:, 1] != 2
     hhs_with_wrong_MAR = hhs_with_wrong_MAR_idx[hhs_with_wrong_MAR_idx].index
 
     if len(hhs_with_wrong_MAR) > 0:
-        print(f"{len(hhs_with_wrong_MAR)} households have married people but the number of MAR == 1 is different that 2. Spouses were flagged with MAR = 1, the rest with MAR = 0")
+        print(f"{len(hhs_with_wrong_MAR)} households have married people but the number of MAR == 1 is different that 2. Spouses were flagged with MAR = 1")
         
-        head_or_spouse_idx = (persons["relate"] == 0) | (persons["relate"] == 1)
         problematic_hh_idx = persons["household_id"].isin(hhs_with_wrong_MAR)
         persons.local.loc[problematic_hh_idx & head_or_spouse_idx, "MAR"] = 1
-        persons.local.loc[problematic_hh_idx & ~head_or_spouse_idx, "MAR"] = 0
+        # persons.local.loc[problematic_hh_idx & ~head_or_spouse_idx, "MAR"] = 0
     
     ### Handling of cohabitating households
     cohabitating_people_married_idx = cohabitating_hh_idx & (persons.relate.isin([0, 13])) & (persons.MAR == 1)
@@ -52,8 +52,8 @@ def fix_persons_table(persons):
         persons.local.loc[cohabitating_people_married_idx, "MAR"] = 0
 
     ### Handling of people with MAR == 1 but not spouse or head
-    incorrect_MAR_label = ~persons.relate.isin([0, 1]) & (persons.MAR == 1)
-    if incorrect_MAR_label.sum() > 0:
-        print(f"{incorrect_MAR_label.sum()} people are flagged as married (MAR == 1) but are neither head not spouse in relate column. Changing MAR to 0")
-        persons.local.loc[incorrect_MAR_label, "MAR"] = 0
+    # incorrect_MAR_label = ~persons.relate.isin([0, 1]) & (persons.MAR == 1)
+    # if incorrect_MAR_label.sum() > 0:
+    #     print(f"{incorrect_MAR_label.sum()} people are flagged as married (MAR == 1) but are neither head not spouse in relate column. Changing MAR to 0")
+    #     persons.local.loc[incorrect_MAR_label, "MAR"] = 0
     ...
