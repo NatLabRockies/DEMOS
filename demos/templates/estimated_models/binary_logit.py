@@ -230,6 +230,8 @@ class BinaryLogitStep(TemplateStep):
         dm = patsy.dmatrices(data=df, formula_like=self.model_expression,
                              return_type='dataframe')[1]  # right-hand-side design matrix
         
+        dm.sort_index(axis=0, inplace=True)
+
         beta_X = np.dot(dm, self.fitted_parameters)
         probs = np.divide(np.exp(beta_X), 1 + np.exp(beta_X))
         

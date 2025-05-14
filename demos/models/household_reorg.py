@@ -100,6 +100,8 @@ def households_reorg(persons, households, year):
     cohabitate_x_list = cohabitation.run(data)
     # print("Cohabitation outcomes:")
     # print(cohabitate_x_list.value_counts())
+
+    np.random.seed(year)
     
     ######### UPDATING
     print("Restructuring households:")
