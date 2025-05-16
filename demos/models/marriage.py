@@ -41,10 +41,10 @@ def update_married_households_random(persons, marriage_list, get_new_households,
         return
     
     ## Selecting individuals for marriage and cohabitation
-    female_newmarried = persons.local.loc[(married_reindexed == 2) & female_index][["age", "household_id", "earning", "relate"]].sample(n_weddings).copy()
-    male_newmarried   = persons.local.loc[(married_reindexed == 2) &   male_index][["age", "household_id", "earning", "relate"]].sample(n_weddings).copy()
-    female_newcohab = persons.local.loc[(married_reindexed == 1) & female_index][["age", "household_id", "earning", "relate"]].sample(n_newcohabs).copy()
-    male_newcohab   = persons.local.loc[(married_reindexed == 1) &   male_index][["age", "household_id", "earning", "relate"]].sample(n_newcohabs).copy()
+    female_newmarried = persons.local.loc[(married_reindexed == 2) & female_index][["age", "household_id", "earning", "relate"]].sort_index(axis=0).sample(n_weddings, random_state=orca.get_injectable("year") + 100).copy()
+    male_newmarried   = persons.local.loc[(married_reindexed == 2) &   male_index][["age", "household_id", "earning", "relate"]].sort_index(axis=0).sample(n_weddings, random_state=orca.get_injectable("year") + 110).copy()
+    female_newcohab = persons.local.loc[(married_reindexed == 1) & female_index][["age", "household_id", "earning", "relate"]]  .sort_index(axis=0).sample(n_newcohabs, random_state=orca.get_injectable("year") + 120).copy()
+    male_newcohab   = persons.local.loc[(married_reindexed == 1) &   male_index][["age", "household_id", "earning", "relate"]]  .sort_index(axis=0).sample(n_newcohabs, random_state=orca.get_injectable("year") + 130).copy()
     
     ## Modifying auxiliary dataframe to compute new relation and household_id
     ### Pairs are selected by age
@@ -52,7 +52,12 @@ def update_married_households_random(persons, marriage_list, get_new_households,
     male_newmarried.sort_values("age", inplace=True)
     newmarried = pd.concat([male_newmarried, female_newmarried], axis=0)         # NOTE: This order is important, relate = 0 is assigned to male
     newmarried["hh_group"] = np.arange(len(newmarried)) % (len(newmarried) // 2) # [0, 1, 2, ..., n_weddings -1, 0, 1, ..., n_weddings - 1]
-    newmarried.sort_values(by=["hh_group", "earning"], ascending=[True, False], inplace=True)
+    
+    # TODO: This part is for comparison to other experiments
+    np.random.seed(orca.get_injectable("year") + 140)
+    newmarried["rnd"] = np.random.random(len(newmarried))
+    
+    newmarried.sort_values(by=["hh_group", "earning", "rnd"], ascending=[True, False, True], inplace=True)
     newmarried["new_relate"] = np.arange(len(newmarried)) % 2                    # [0, 1, 0, 1, ...]
     newmarried["did_marry"] = True
 
@@ -60,7 +65,11 @@ def update_married_households_random(persons, marriage_list, get_new_households,
     male_newcohab.sort_values("age", inplace=True)
     newcohab = pd.concat([male_newcohab, female_newcohab], axis=0) # NOTE: This order is important, relate = 0 is assigned to female
     newcohab["hh_group"] = (np.arange(len(newcohab)) % (len(newcohab) // 2)) + newmarried["hh_group"].max() + 1
-    newcohab.sort_values(by=["hh_group", "earning"], ascending=[True, False], inplace=True)
+
+    np.random.seed(orca.get_injectable("year") + 150)
+    newcohab["rnd"] = np.random.random(len(newcohab))
+
+    newcohab.sort_values(by=["hh_group", "earning", "rnd"], ascending=[True, False, True], inplace=True)
     newcohab["new_relate"] = (np.arange(len(newcohab)) % 2) * 13 # [0, 13, 0, 13, ...]
     newcohab["did_marry"] = False
 
@@ -78,6 +87,9 @@ def update_married_households_random(persons, marriage_list, get_new_households,
     all_df["partner_id"] = swap_index.values
     all_df["partner_house_id"] = all_df.loc[swap_index]["household_id"].values # NOTE: The `.values` part is very important
     all_df["partner_relate"] = all_df.loc[swap_index]["relate"].values
+
+    #### NOTE: This prevents members of the same family to be partners. There must be a better way
+    all_df = all_df[~(all_df["household_id"] == all_df["partner_house_id"])]
 
     ## Update household information
     ### We are going to store the new household id of each person in the `new_hh_id` column of the auxiliary df
@@ -578,10 +590,10 @@ def update_divorce(persons, divorce_list, get_new_households, graveyard):
     person_in_divorced_household_index = persons["household_id"].isin(divorced_household_ids)
     head_and_spose_index = ((persons["relate"] == 0) | (persons["relate"] == 1)) & (persons["MAR"] == 1)
 
-    people_divorcing_groupby = persons.local.loc[person_in_divorced_household_index & head_and_spose_index].groupby("household_id")
+    people_divorcing_groupby = persons.local.loc[person_in_divorced_household_index & head_and_spose_index].sort_index().groupby("household_id")
     assert (people_divorcing_groupby.size() != 2).sum() == 0, "Some divorcing households have more than 2 people eligible for divorce"
 
-    person_leaving_ids = people_divorcing_groupby.sample(n=1).index
+    person_leaving_ids = people_divorcing_groupby.sample(n=1, random_state=orca.get_injectable("year") + 250).index
     person_leaving_index = persons.local.index.isin(person_leaving_ids)
     person_staying_index = person_in_divorced_household_index & head_and_spose_index & ~person_leaving_index
 

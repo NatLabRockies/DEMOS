@@ -186,7 +186,7 @@ def households_reorg(persons, households, year, get_new_households, graveyard):
     marriage = mm.get_step("marriage")
     # TODO: The marriage.variable_names part was necessary because the Multinomial logit does not
     #       call .to_frame() inside. This is inconsistent with the binary logit interface
-    marriage_list = marriage.run(persons.to_frame(marriage.variable_names).loc[single_noncohab_index])
+    marriage_list = marriage.run(persons.to_frame(marriage.variable_names).loc[single_noncohab_index].sort_index(axis=0))
 
     # Divorce model
     married_household_sizes = persons.local\
