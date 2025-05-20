@@ -28,7 +28,7 @@ def households_reorg(persons, households, year):
     ###############################################################
     print("Running marriage model...")
     # breakpoint()
-    marriage_list = marriage.run(data.copy())
+    marriage_list = marriage.run(data.sort_index(axis=0).copy())
     # print("Number of marriages and cohabitations:")
     # print(marriage_list.value_counts())
     random_match = orca.get_injectable("random_match")

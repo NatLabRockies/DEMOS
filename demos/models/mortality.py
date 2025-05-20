@@ -23,6 +23,8 @@ def fatality_model(persons, households, year):
     # fatality_list = mortality.choices.astype(int)
     # print(fatality_list.sum(), " fatalities")
 
+    np.random.seed(year + 300)
+
     mortality.run()
     fatality_list = mortality.choices.astype(int)
     predicted_share = fatality_list.sum() / persons_df.shape[0]

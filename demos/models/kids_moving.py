@@ -106,6 +106,7 @@ def update_households_after_kids(persons, households, kids_moving):
     persons_df.loc[persons_df["moveoutkid"] == 1, "household_id"] = (
         np.arange(persons_df["moveoutkid"].sum()) + current_max_household_id + 1
     )
+    persons_df.loc[persons_df["moveoutkid"] == 1, "relate"] = 0
 
     new_hh = persons_df.loc[persons_df["moveoutkid"] == 1].copy()
 

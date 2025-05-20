@@ -47,6 +47,10 @@ def laborforce_model(persons,
     # TODO: Make sure that the actual workers don't get restorted due to difference in indexing
     # TODO: Make sure there is a better way to do this
 
+    agg_households = persons.local.groupby("household_id").agg(
+        sum_workers = ("worker", "sum"), income = ("earning", "sum"))
+    orca.get_table("households").local.update(agg_households)
+
     # Update entering and exiting workforce tables (Seems to be just for records)
     orca.add_table("entering_workforce", 
                    pd.concat([entering_workforce.local,
@@ -68,7 +72,7 @@ def run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, y
 
     # Dummy value for output column
     persons["stay_out"] = -99
-
+    np.random.seed(year + 200)
     # Get estimated model object and run it
     in_workforce_model = mm.get_step("enter_labor_force")
     in_workforce_model.run()
@@ -99,6 +103,7 @@ def run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, y
 
     # Dummy value for output column
     persons["leaving_workforce"] = -99
+    np.random.seed(year + 210)
 
     # Get estimated model object and run it
     out_workforce_model = mm.get_step("exit_labor_force")
@@ -151,8 +156,8 @@ def hh_workers(persons):
                   ("one" if r == 1 else "two or more"))
 
 
-@orca.column(table_name="households")
-def income(persons):
-    return persons.to_frame(["household_id", "earning"]) \
-                  .groupby("household_id") \
-                  .sum()["earning"]
+# @orca.column(table_name="households")
+# def income(persons):
+#     return persons.to_frame(["household_id", "earning"]) \
+#                   .groupby("household_id") \
+#                   .sum()["earning"]

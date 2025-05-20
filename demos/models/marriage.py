@@ -152,10 +152,10 @@ def update_married_households_random(persons, households, marriage_list):
         return None
 
     # breakpoint()
-    female_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "female")].sample(min_mar)
-    male_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "male")].sample(min_mar)
-    female_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "female")].sample(min_cohab)
-    male_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "male")].sample(min_cohab)
+    female_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "female")].sort_index(axis=0).sample(min_mar, random_state=orca.get_injectable("year") + 100)
+    male_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "male")]    .sort_index(axis=0).sample(min_mar, random_state=orca.get_injectable("year") + 110)
+    female_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "female")].sort_index(axis=0).sample(min_cohab, random_state=orca.get_injectable("year") + 120)
+    male_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "male")]    .sort_index(axis=0).sample(min_cohab, random_state=orca.get_injectable("year") + 130)
     
     # print("Printing family sizes:")
     # print(female_mar.shape[0])
@@ -172,14 +172,20 @@ def update_married_households_random(persons, households, marriage_list):
     male_coh["number"] = np.arange(male_coh.shape[0])
     married = pd.concat([male_mar, female_mar])
     cohabitate = pd.concat([male_coh, female_coh])
+
+    np.random.seed(orca.get_injectable("year") + 140)
+    married["rnd"] = np.random.random(len(married))
+    np.random.seed(orca.get_injectable("year") + 150)
+    cohabitate["rnd"] = np.random.random(len(cohabitate))
+
     married = married.sort_values(by=["number"])
     cohabitate = cohabitate.sort_values(by=["number"])
 
     married["household_group"] = np.repeat(np.arange(len(married.index) / 2), 2)
     cohabitate["household_group"] = np.repeat(np.arange(len(cohabitate.index) / 2), 2)
 
-    married = married.sort_values(by=["household_group", "earning"], ascending=[True, False])
-    cohabitate = cohabitate.sort_values(by=["household_group", "earning"], ascending=[True, False])
+    married = married.sort_values(by=["household_group", "earning", "rnd"], ascending=[True, False, True])
+    cohabitate = cohabitate.sort_values(by=["household_group", "earning", "rnd"], ascending=[True, False, True])
 
     cohabitate["household_group"] = (cohabitate["household_group"] + married["household_group"].max() + 1)
 
@@ -194,7 +200,6 @@ def update_married_households_random(persons, households, marriage_list):
 
     final["new_household_id"] = -99
     final["stay"] = -99
-
     final = final[~(final["household_id"] == final["partner_house"])].copy()
 
     # print("Pair people.")
@@ -257,7 +262,7 @@ def update_married_households_random(persons, households, marriage_list):
     households_restructuring = p_df.loc[p_df["household_id"].isin(household_ids_reorganized)]
 
     households_restructuring = households_restructuring.sort_values(by=["household_id", "earning"], ascending=False)
-    households_restructuring.loc[households_restructuring.groupby(["household_id"]).head(1).index, "relate"] = 0
+    p_df.loc[households_restructuring.groupby(["household_id"]).head(1).index, "relate"] = 0
 
     household_df = household_df.loc[household_df.index.isin(p_df["household_id"])]
 
@@ -901,7 +906,7 @@ def update_divorce(divorce_list):
     # print("")
     persons_divorce = persons_df[
         persons_df["household_id"].isin(divorce_households.index)
-    ].copy()
+    ].copy().sort_index()
     # print("divorced persons: ", persons_divorce.shape[0])
     # print("Min hh size:", persons_divorce.groupby("household_id").size().min())
     # print("Max hh size:", persons_divorce.groupby("household_id").size().max())
@@ -912,7 +917,7 @@ def update_divorce(divorce_list):
 
     # print("Min parents size:", divorced_parents.groupby("household_id").size().min())
     # print("Max parents size:", divorced_parents.groupby("household_id").size().max())
-    leaving_house = divorced_parents.groupby("household_id").sample(n=1)
+    leaving_house = divorced_parents.groupby("household_id").sample(n=1, random_state=orca.get_injectable("year") + 250)
 
     staying_house = persons_divorce[~(persons_divorce.index.isin(leaving_house.index))].copy()
 

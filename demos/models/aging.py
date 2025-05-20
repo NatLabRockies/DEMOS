@@ -21,7 +21,7 @@ def update_age(persons, households):
         None
     """
     persons["age"] += 1
-    households["age_of_head"] += 1
+    # households["age_of_head"] += 1
 
 
 @orca.column(table_name="persons", cache=True, cache_scope="iteration")
