@@ -97,6 +97,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     #### With both of these we can now get the new relate values
     #### (This step also replaces the relate value of the new heads,
     ####  we take care of that after this processing)
+    #### TODO: Here we can create spouses without correct marital status
     persons.local.loc[rest_to_head_all_filter, "relate"] = rel_map.to_frame().values[old_person_relate_index, old_head_relate_index]
 
     ## Update relate of new heads
@@ -108,6 +109,8 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     persons.local = persons.local[~fatality_list_idx]
 
     # TODO: This needs to be reevaluated after the refactoring
+    spouses_per_hh = (persons.relate == 1).groupby(persons.household_id).sum()
+    persons.local = persons.local.loc[~persons.household_id.isin(spouses_per_hh[spouses_per_hh > 1].index)]
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
 
 
