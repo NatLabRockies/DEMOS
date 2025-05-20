@@ -21,6 +21,8 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
         persons (DataFrameWrapper): DataFrameWrapper of persons table
         households (DataFrameWrapper): DataFrameWrapper of households table
     """
+    # np.random.seed(year + 300)
+
     persons["dead"] = -99
     fatality_list = run_and_calibrate_mortality_model(persons, observed_fatalities_data, year)
 

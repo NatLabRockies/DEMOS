@@ -961,6 +961,8 @@ def hd_race_wht(persons):
     df = df[df['relate'] == 0]
     df.sort_values('household_id',inplace=True)
     return df.set_index('household_id')['race_wht']
+    # # TODO: This is hiding an error that needs to be fixed!
+    # return df.groupby("household_id").first()["race_wht"]
 
 @orca.column('households')
 def hd_agebin1(households):

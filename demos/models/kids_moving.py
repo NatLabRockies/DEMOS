@@ -67,3 +67,4 @@ def update_households_after_kids(persons, kids_moving, get_new_households, grave
     kids_moving_index = kids_moving.reindex(persons.local.index).fillna(0).astype(bool) & eligeble_households_index
 
     persons.local.loc[kids_moving_index, "household_id"] = get_new_households(kids_moving_index.sum(), persons, graveyard)
+    persons.local.loc[kids_moving_index, "relate"] = 0
