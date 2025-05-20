@@ -105,12 +105,6 @@ def gt55(persons_grouped_household):
 
 
 @orca.column(table_name="households")
-def gt2(persons_grouped_household):
-    agg_df = persons_grouped_household.size() > 2
-    return agg_df.astype(int)
-
-
-@orca.column(table_name="households")
 def hh_income(persons_grouped_household):
     agg_df = persons_grouped_household\
         .agg(income=("earning", "sum"))
