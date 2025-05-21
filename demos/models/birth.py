@@ -88,6 +88,9 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
     babies.loc[one_race_hh_filter, "race_id"] = hh_races.loc[babies.loc[one_race_hh_filter, "household_id"], "hh_race_id_of_head"].values
     babies["race"] = babies["race_id"].map({1: "white", 2: "black"})
     babies["race"].fillna("other", inplace=True)
+    
+    # Finally add babies to persons table
+    persons.local = pd.concat([persons.local, babies])
 
 
 # TODO: Refactor this
