@@ -8,8 +8,7 @@ from .mortality import *
 from .birth import *
 from .education import *
 from .rebalancing import *
+from .income_adjustment import *
 from .export import *
-
-# Income model - update_income
 
 from .main import * # TODO: Refactor this
