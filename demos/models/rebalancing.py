@@ -4,6 +4,50 @@ import pandas as pd
 from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
 
+from templates.utils import transition
+from templates.utils.transition import GrowthRateTransition
+
+@orca.step('household_transition')
+def household_transition(households, persons, year, metadata):
+    # breakpoint()
+    # at this breakpoint, look at the persons table
+    linked_tables = {'persons': (persons, 'household_id')}
+    if ('annual_household_control_totals' in orca.list_tables()) and ('use_database_control_totals' not in orca.list_injectables()):
+        control_totals = orca.get_table('annual_household_control_totals').to_frame()
+        full_transition(households, control_totals, 'total', year, 'block_id', linked_tables=linked_tables)
+    elif ('household_growth_rate' in orca.list_injectables()) and ('use_database_control_totals' not in orca.list_injectables()):
+        rate = orca.get_injectable('household_growth_rate')
+        simple_transition(households, rate, 'block_id', set_year_built=True, linked_tables=linked_tables)
+    elif 'hsize_ct' in orca.list_tables():
+        control_totals = orca.get_table('hsize_ct').to_frame()
+        full_transition(households, control_totals, 'total_number_of_households', year, 'block_id')
+    else:
+        control_totals = orca.get_table('hct').to_frame()
+        if 'hh_type' in control_totals.columns:
+            if control_totals[control_totals.index == year].hh_type.min() == -1:
+                control_totals = control_totals[['total_number_of_households']]
+        full_transition(households, control_totals, 'total_number_of_households', year, 'block_id', linked_tables=linked_tables)
+    households_df = orca.get_table('households').local
+    households_df.loc[households_df['block_id'] == "-1", 'lcm_county_id'] = "-1"
+    households_df.index.rename('household_id', inplace=True)
+    persons_df = orca.get_table('persons').local
+    # persons = persons.loc[persons['household_id'].isin(households.index.unique())]
+    orca.add_table('households', households_df)
+    orca.add_table('persons', persons_df)
+    # orca.add_injectable(
+    #     'max_hh_id', max(orca.get_injectable("max_hh_id"), households.index.max())
+    # )
+    metadata_df = orca.get_table('metadata').to_frame()
+    max_hh_id = metadata_df.loc['max_hh_id', 'value']
+    max_p_id = metadata_df.loc['max_p_id', 'value']
+    if households_df.index.max() > max_hh_id:
+        metadata_df.loc['max_hh_id', 'value'] = households_df.index.max()
+    if persons_df.index.max() > max_p_id:
+        metadata_df.loc['max_p_id', 'value'] = persons_df.index.max()
+    orca.add_table('metadata', metadata_df)
+    # breakpoint()
+
+
 def full_transition(
     agents,
     ct,
@@ -237,3 +281,118 @@ def full_transition(
     print("Total agents after transition: {}".format(len(updated)))
     orca.add_table(agents.name, updated[agents.local_columns])
     return updated, added, copied, removed
+
+
+def simple_transition(
+    tbl, rate, location_fname, linked_tables={}, set_year_built=False
+):
+    """
+    Run a simple growth rate transition model
+
+    Parameters
+    ----------
+    tbl : DataFrameWrapper
+        Table to be transitioned
+    rate : float
+        Growth rate
+    linked_tables : dict, optional
+        Sets the tables linked to new or removed agents to be updated with dict of
+        {'table_name':(DataFrameWrapper, 'link_id')}
+    location_fname : str
+        The field name in the resulting dataframe to set to -1 (to unplace
+        new agents)
+    Returns
+    -------
+    Nothing
+    """
+    print("Running simple transition with ", rate * 100, "% rate")
+    transition = GrowthRateTransition(rate)
+    df_base = tbl.to_frame(tbl.local_columns)
+    print("%d agents before transition" % len(df_base.index))
+    df, added, copied, removed = transition.transition(df_base, None)
+    print("%d agents after transition" % len(df.index))
+    if (len(added) > 0) & (tbl.name == "households"):
+        metadata = orca.get_table("metadata").to_frame()
+        max_hh_id = metadata.loc["max_hh_id", "value"]
+        if added.min() < max_hh_id:
+            # breakpoint()
+            # reset "added" row IDs so that new rows do not assign
+            # IDs of previously removed rows.
+            new_max = max(df_base.index.max(), df.index.max())
+            new_added = np.arange(len(added)) + new_max + 1
+            idx_name = df.index.name
+            df["new_idx"] = None
+            df.loc[added, "new_idx"] = new_added
+            not_added = df["new_idx"].isnull()
+            # breakpoint()
+            df.loc[not_added, "new_idx"] = df.loc[not_added].index.values
+            df.set_index("new_idx", inplace=True, drop=True)
+            df.index.name = idx_name
+            added = new_added
+
+    df.loc[added, location_fname] = "-1"
+
+    if set_year_built:
+        df.loc[added, "year_built"] = orca.get_injectable("year")
+    updated_links = {}
+    for table_name, (table, col) in linked_tables.items():
+        updated_links[table_name] = update_linked_table(
+            table, col, added, copied, removed
+        )
+        orca.add_table(table_name, updated_links[table_name])
+    orca.add_table(tbl.name, df)
+
+
+def update_linked_table(tbl, col_name, added, copied, removed):
+    """
+    Copy and update rows in a table that has a column referencing another
+    table that has had rows added via copying.
+    Parameters
+    ----------
+    tbl : DataFrameWrapper
+        Table to update with new or removed rows.
+    col_name : str
+        Name of column in `table` that corresponds to the index values
+        in `copied` and `removed`.
+    added : pandas.Index
+        Indexes of rows that are new in the linked table.
+    copied : pandas.Index
+        Indexes of rows that were copied to make new rows in linked table.
+    removed : pandas.Index
+        Indexes of rows that were removed from the linked table.
+    Returns
+    -------
+    updated : pandas.DataFrame
+    """
+    # max ID should be preserved before rows are removed
+    # otherwise new rows could have ID of what was removed.
+    max_id = tbl.index.values.max()
+
+    # max ID should be preserved before rows are removed
+    # otherwise new rows could have ID of what was removed.
+    max_id = tbl.index.values.max()
+
+    # handle removals
+    table = tbl.local
+    table = table.loc[~table[col_name].isin(set(removed))]
+    removed = table.loc[table[col_name].isin(set(removed))]
+    if added is None or len(added) == 0:
+        return table
+
+    # map new IDs to the IDs from which they were copied
+    id_map = pd.concat(
+        [pd.Series(copied, name=col_name), pd.Series(added, name="temp_id")], axis=1
+    )
+
+    # join to linked table and assign new id
+    new_rows = id_map.merge(table, on=col_name)
+    new_rows.drop(col_name, axis=1, inplace=True)
+    new_rows.rename(columns={"temp_id": col_name}, inplace=True)
+
+    # index the new rows
+    starting_index = max_id + 1
+    new_rows.index = np.arange(
+        starting_index, starting_index + len(new_rows), dtype=np.int)
+    new_rows.index.name = table.index.name
+
+    return pd.concat([table, new_rows])

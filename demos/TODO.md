@@ -61,6 +61,12 @@
 
 - `transition`
     - If we need to increase the number of household and have none, skip
+    - What are all the `yaml` configuration files that were updated in the other branch? (They start with elcm)
+    - Are we using estimated models that are specific for each area?
+
+### Transition model summary
+- We get as input a dataframe with tuples (year, geoID (county/TAZ), hh_size (1-4+), # of households)
+- We randomly select households in each geoID to be added / removed **randomly**.
 
 ## Ideas for cheking sanity of input data
 - Check there is only one head of household
