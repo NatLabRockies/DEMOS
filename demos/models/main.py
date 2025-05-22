@@ -325,8 +325,8 @@ if orca.get_injectable("running_calibration_routine") == False:
             "households_reorg",
             "kids_moving_model",
             "fatality_model",
-            # "birth_model",
-            # "education_model",
+            "birth_model",
+            "education_model",
             # "export_demo_stats",
         ]
         steps_all_years = (
