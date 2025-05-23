@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
-from .marriage import update_married_households_random, update_married_households, update_divorce
+from .marriage import update_married_households_random, update_divorce
 
 @orca.injectable(autocall=False)
 def get_new_households(n, persons, graveyard):
@@ -210,17 +210,17 @@ def households_reorg(persons, households, year, get_new_households, graveyard):
     ######### UPDATING
     print("Restructuring households:")
     print("Cohabitations..")
-    update_cohabitating_households(persons, cohabitate_x_list, get_new_households, graveyard)
+    update_cohabitating_households(persons, households, cohabitate_x_list, get_new_households, graveyard)
     print_household_stats()
     
     print("Marriages..")
-    update_married_households_random(persons, marriage_list, get_new_households, graveyard)
+    update_married_households_random(persons, households, marriage_list, get_new_households, graveyard)
     print_household_stats()
     fix_erroneous_households(persons)
     print_household_stats()
     
     print("Divorces..")
-    update_divorce(persons, divorce_list, get_new_households, graveyard)
+    update_divorce(persons, households, divorce_list, get_new_households, graveyard)
     print_household_stats()
 
     # TODO: This needs to be reevaluated after the refactoring
@@ -297,7 +297,7 @@ def household_stats(persons, households):
     print("Households with 1 and 13: ", ((persons_df_sum["relate_1"] * persons_df_sum["relate_13"])>0).sum())
 
 
-def update_cohabitating_households(persons, cohabitate_list, get_new_households, graveyard):
+def update_cohabitating_households(persons, households, cohabitate_list, get_new_households, graveyard):
     """
     Updating households and persons after cohabitation model.
 
@@ -324,11 +324,17 @@ def update_cohabitating_households(persons, cohabitate_list, get_new_households,
     # Perform update for people that broke up
     leaving_person_index = newly_brokeup_persons_index & unmarried_partner_index
 
+    # Get the old household_id for the leaving person to retrieve the county_id
+    old_household_id = persons.local.loc[leaving_person_index, "household_id"].values
+    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+
     ## Person leaving is now head of household
     persons.local.loc[leaving_person_index, "relate"] = 0
 
     ### Assign new household_id to people leaving
-    persons.local.loc[leaving_person_index, "household_id"] = get_new_households(leaving_person_index.sum(), persons, graveyard)
+    new_households = get_new_households(leaving_person_index.sum(), persons, graveyard)
+    persons.local.loc[leaving_person_index, "household_id"] = new_households
+    households.local.loc[new_households, "lcm_county_id"] = county_assignment
 
 
 def fix_erroneous_households(persons):

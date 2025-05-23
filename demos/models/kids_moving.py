@@ -4,7 +4,7 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 
 @orca.step("kids_moving_model")
-def kids_moving_model(persons, get_new_households, graveyard):
+def kids_moving_model(persons, households, get_new_households, graveyard):
     """
     Running the kids moving model and updating household
     stats.
@@ -25,14 +25,16 @@ def kids_moving_model(persons, get_new_households, graveyard):
     kids_moving_model.run()
     kids_moving = kids_moving_model.choices.astype(int)
 
-    update_households_after_kids(persons, kids_moving, get_new_households, graveyard)
+    update_households_after_kids(persons, households, kids_moving, get_new_households, graveyard)
 
-def update_households_after_kids(persons, kids_moving, get_new_households, graveyard):
+def update_households_after_kids(persons, households, kids_moving, get_new_households, graveyard):
     """
     Add and update households after kids move out.
 
     Modifies State Variables:
     - persons.household_id
+    - persons.relate
+    - households.lcm_county_id
 
     Args:
         persons (DataFrameWrapper): DataFrameWrapper of persons table
@@ -66,5 +68,12 @@ def update_households_after_kids(persons, kids_moving, get_new_households, grave
     # Finally combine all filters into one
     kids_moving_index = kids_moving.reindex(persons.local.index).fillna(0).astype(bool) & eligeble_households_index
 
-    persons.local.loc[kids_moving_index, "household_id"] = get_new_households(kids_moving_index.sum(), persons, graveyard)
+    # Get the old household_id for the moving kids to retrieve the county_id
+    # TODO: Parametrize county_id
+    old_household_id = persons.local.loc[kids_moving_index, "household_id"].values
+    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+
+    new_households = get_new_households(kids_moving_index.sum(), persons, graveyard)
+    persons.local.loc[kids_moving_index, "household_id"] = new_households
     persons.local.loc[kids_moving_index, "relate"] = 0
+    households.local.loc[new_households, "lcm_county_id"] = county_assignment

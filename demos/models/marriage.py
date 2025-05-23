@@ -6,7 +6,7 @@ from scipy.spatial.distance import cdist
 from templates import estimated_models, modelmanager as mm
 
 
-def update_married_households_random(persons, marriage_list, get_new_households, graveyard):
+def update_married_households_random(persons, households, marriage_list, get_new_households, graveyard):
     """
     Update the marriage status of individuals and create new households
 
@@ -113,6 +113,7 @@ def update_married_households_random(persons, marriage_list, get_new_households,
     neither_head_index = (all_df.relate != 0) & (all_df.partner_relate != 0)
     neither_head_not_first_index = all_df.loc[first_index & neither_head_index].partner_id.values
     new_hh_ids = get_new_households((first_index & neither_head_index).sum(), persons, graveyard)
+    new_hh_county = households.local.loc[all_df.loc[first_index & neither_head_index, "household_id"], "lcm_county_id"].values
 
     #### Set new households for heads and not heads
     all_df.loc[first_index & neither_head_index, "new_hh_id"] = new_hh_ids
@@ -121,10 +122,11 @@ def update_married_households_random(persons, marriage_list, get_new_households,
     ### This is an important sanity check
     assert all_df.new_hh_id.isnull().sum() == 0, "Some people were not assigned a household"
 
-    # Finally update values in persons table
+    # Finally update values in persons and households table
     persons.local.loc[all_df.index, "household_id"] = all_df["new_hh_id"]
     persons.local.loc[all_df.index, "relate"] = all_df["new_relate"]
     persons.local.loc[all_df[all_df.did_marry].index, "MAR"] = 1
+    households.local.loc[new_hh_ids, "lcm_county_id"] = new_hh_county
 
     ## Decide who is household head in the households where the head left
     head_left_index = (all_df.relate == 0) & (all_df.household_id != all_df.new_hh_id)
@@ -140,7 +142,7 @@ def update_married_households_random(persons, marriage_list, get_new_households,
     persons.local.loc[new_household_heads, "relate"] = 0
 
 
-def update_divorce(persons, divorce_list, get_new_households, graveyard):
+def update_divorce(persons, households, divorce_list, get_new_households, graveyard):
     """
     Updating stats for divorced households
 
@@ -163,12 +165,18 @@ def update_divorce(persons, divorce_list, get_new_households, graveyard):
     person_leaving_index = persons.local.index.isin(person_leaving_ids)
     person_staying_index = person_in_divorced_household_index & head_and_spose_index & ~person_leaving_index
 
+    # Get the old household_id for the leaving person to retrieve the county_id
+    old_household_id = persons.local.loc[person_leaving_index, "household_id"].values
+    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+
     # Update columns
     ## People leaving get a new household id
-    persons.local.loc[person_leaving_index, "household_id"] = get_new_households(person_leaving_index.sum(), persons, graveyard)
+    new_households = get_new_households(person_leaving_index.sum(), persons, graveyard)
+    persons.local.loc[person_leaving_index, "household_id"] = new_households
     persons.local.loc[person_leaving_index, "relate"] = 0
     persons.local.loc[person_leaving_index, "MAR"] = 3
     persons.local.loc[person_leaving_index, "member_id"] = 1 # TODO: Needed?
+    households.local.loc[new_households, "lcm_county_id"] = county_assignment
 
     ## Updates for people staying
     persons.local.loc[person_staying_index, "relate"] = 0
