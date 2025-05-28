@@ -28,7 +28,7 @@ def household_transition(households, persons, year, metadata):
                 control_totals = control_totals[['total_number_of_households']]
         full_transition(households, control_totals, 'total_number_of_households', year, 'block_id', linked_tables=linked_tables)
     households_df = orca.get_table('households').local
-    households_df.loc[households_df['block_id'] == "-1", 'lcm_county_id'] = "-1"
+    # households_df.loc[households_df['block_id'] == "-1", 'lcm_county_id'] = "-1"
     households_df.index.rename('household_id', inplace=True)
     persons_df = orca.get_table('persons').local
     # persons = persons.loc[persons['household_id'].isin(households.index.unique())]

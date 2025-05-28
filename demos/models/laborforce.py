@@ -140,7 +140,7 @@ def new_earning(persons, income_dist):
     merged_df = persons_df.merge(income_dist.local, on=['age_group', 'education_group'], how='left')
     return pd.Series(sample_income(merged_df["mu"], merged_df["sigma"]), index=persons_df.index)
 
-@orca.column(table_name="households", cache=True, cache_scope="iteration")
+@orca.column(table_name="households")
 def hh_workers(persons):
     return persons.to_frame(["household_id", "worker"]) \
            .groupby("household_id") \

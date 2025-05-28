@@ -119,12 +119,12 @@ def hh_income(persons_grouped_household):
     )
 
 
-@orca.column(table_name="households")
-def hh_workers(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(workers=("worker", "sum"))
-    return np.where(agg_df["workers"] == 0, "none",
-           np.where(agg_df["workers"] == 1, "one", "two or more"))
+# @orca.column(table_name="households")
+# def hh_workers(persons_grouped_household):
+#     agg_df = persons_grouped_household\
+#         .agg(workers=("worker", "sum"))
+#     return np.where(agg_df["workers"] == 0, "none",
+#            np.where(agg_df["workers"] == 1, "one", "two or more"))
 
 
 @orca.column(table_name="households")
