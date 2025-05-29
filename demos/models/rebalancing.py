@@ -7,8 +7,59 @@ from templates import estimated_models, modelmanager as mm
 from templates.utils import transition
 from templates.utils.transition import GrowthRateTransition
 
-@orca.step('household_transition')
-def household_transition(households, persons, year, metadata):
+@orca.step('household_rebalancing')
+def household_rebalancing(households, persons, year, get_new_households, get_new_person_id, rebalanced_households, rebalanced_persons):
+    CONTROL_TABLE = "hsize_ct"
+    GEOID_COL = "lcm_county_id"
+    CONTROL_COL = "hh_size"
+
+    control_table_wrapped = orca.get_table(CONTROL_TABLE)
+    assert GEOID_COL in control_table_wrapped.local_columns, f"{GEOID_COL} must be in {CONTROL_TABLE}"
+    assert CONTROL_COL in control_table_wrapped.local_columns, f"{CONTROL_COL} must be in {CONTROL_TABLE}"
+    assert control_table_wrapped.index.name == "year", f"The index of {CONTROL_TABLE} must be 'year'"
+    assert len(control_table_wrapped.local_columns) == 3, f"{CONTROL_TABLE} needs to have exactly 3 columns: {GEOID_COL}, {CONTROL_COL} and the value column"
+    assert persons.household_id.nunique() == households.index.nunique(), f"`persons` and `households` tables do not have coherent sizes. {persons.household_id.nunique()} vs. {households.index.nunique()}"
+
+    value_column = [c for c in control_table_wrapped.local_columns if c not in [GEOID_COL, CONTROL_COL]][0]
+    index_df = households.to_frame([GEOID_COL, CONTROL_COL])
+    current_count = index_df.groupby([GEOID_COL, CONTROL_COL]).size()
+    hh_difference = control_table_wrapped.local.loc[year].set_index([GEOID_COL, CONTROL_COL])[value_column].loc[current_count.index] - current_count
+    
+    # TODO: Add assertions about rows being enough to make the sampling
+
+    to_remove_hh = []
+    to_duplicate_hh = []
+    for (geo_id, hh_size), adjustment in hh_difference.items():
+        # TODO: Performance of this can be improved by pre-sorting the index_df and indexing via range instead of filter
+        selected_hh = np.random.choice(index_df[(index_df[GEOID_COL] == geo_id) & (index_df[CONTROL_COL] == hh_size)].index, size=abs(adjustment), replace=False).tolist()
+        if adjustment < 0:
+            to_remove_hh += selected_hh
+        if adjustment > 0:
+            to_duplicate_hh += selected_hh
+    
+    # Duplicate the households accordingly
+    ## We duplicate first to reduce the chances of a household_id collision
+    to_duplicate_hh.sort()
+    new_hh_ids = get_new_households(len(to_duplicate_hh)) # Remeber that this creates household rows
+    new_hh_rows = households.local.loc[to_duplicate_hh].copy()
+    new_hh_rows.index = new_hh_ids
+    new_person_rows = persons.local[persons.household_id.isin(to_duplicate_hh)].copy()
+    new_person_rows.household_id = new_person_rows.household_id.map(dict(zip(to_duplicate_hh, new_hh_ids)))
+    new_person_rows.index = get_new_person_id(len(new_person_rows))
+    households.local.loc[new_hh_ids] = new_hh_rows
+    persons.local = pd.concat([persons.local, new_person_rows])
+    
+    # Remove the households accordingly
+    to_remove_hh.sort()
+    rebalanced_households.local = pd.concat([rebalanced_households.local, households.local.loc[to_remove_hh]])
+    rebalanced_persons.local = pd.concat([rebalanced_persons.local, persons.local[persons.household_id.isin(to_remove_hh)]])
+    persons.local = persons.local[~persons.household_id.isin(to_remove_hh)]
+    households.local = households.local[~households.index.isin(to_remove_hh)]
+
+    ...
+
+
+def household_transition_old(households, persons, year, metadata):
     # breakpoint()
     # at this breakpoint, look at the persons table
     linked_tables = {'persons': (persons, 'household_id')}

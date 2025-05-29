@@ -523,8 +523,13 @@ demos_tables = [
     "school_locations",
     "work_locations"
 ]
+# TODO: This apparently does nothing
 for table in demos_tables:
     orca.add_table(table, pd.DataFrame())
+
+# Tables for rebalancing process
+orca.add_table("rebalanced_households", pd.DataFrame(columns=orca.get_table("households").local_columns))
+orca.add_table("rebalanced_persons", pd.DataFrame(columns=orca.get_table("persons").local_columns))
 
 print("Register persons and households columns.")
 orca.add_injectable("persons_local_cols", orca.get_table("persons").local.columns)
