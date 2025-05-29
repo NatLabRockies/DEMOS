@@ -4,7 +4,7 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 
 @orca.step("kids_moving_model")
-def kids_moving_model(persons, households, get_new_households, graveyard):
+def kids_moving_model(persons, households, get_new_households):
     """
     Running the kids moving model and updating household
     stats.
@@ -25,9 +25,9 @@ def kids_moving_model(persons, households, get_new_households, graveyard):
     kids_moving_model.run()
     kids_moving = kids_moving_model.choices.astype(int)
 
-    update_households_after_kids(persons, households, kids_moving, get_new_households, graveyard)
+    update_households_after_kids(persons, households, kids_moving, get_new_households)
 
-def update_households_after_kids(persons, households, kids_moving, get_new_households, graveyard):
+def update_households_after_kids(persons, households, kids_moving, get_new_households):
     """
     Add and update households after kids move out.
 
@@ -73,7 +73,7 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     old_household_id = persons.local.loc[kids_moving_index, "household_id"].values
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
 
-    new_households = get_new_households(kids_moving_index.sum(), persons, graveyard)
+    new_households = get_new_households(kids_moving_index.sum())
     persons.local.loc[kids_moving_index, "household_id"] = new_households
     persons.local.loc[kids_moving_index, "relate"] = 0
     households.local.loc[new_households, "lcm_county_id"] = county_assignment

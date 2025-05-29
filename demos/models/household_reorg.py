@@ -7,8 +7,12 @@ from templates.utils.models import columns_in_formula
 from .marriage import update_married_households_random, update_divorce
 
 @orca.injectable(autocall=False)
-def get_new_households(n, persons, graveyard):
-    current_max = pd.concat([persons.local, graveyard.local], ignore_index=True).household_id.max()
+def get_new_households(n):
+    persons = orca.get_table("persons")
+    graveyard = orca.get_table("graveyard")
+    rebalanced_persons = orca.get_table("rebalanced_persons")
+
+    current_max = pd.concat([persons.local, graveyard.local, rebalanced_persons.local], ignore_index=True).household_id.max()
     new_hh_ids = (
         np.arange(n)    # = [0, 1, 2 ...] up to the number of households
         + current_max   # = [max_hh_id, max_household_id + 1, ...]
@@ -52,7 +56,7 @@ def age_head(persons):
 def hispanic_head(persons):
     return persons["is_head"] * persons["hispanic"]
 
-@orca.injectable(cache=True, cache_scope="step")
+@orca.injectable()
 def persons_grouped_household(persons):
     return persons.to_frame().groupby("household_id")
 
@@ -119,14 +123,6 @@ def hh_income(persons_grouped_household):
     )
 
 
-# @orca.column(table_name="households")
-# def hh_workers(persons_grouped_household):
-#     agg_df = persons_grouped_household\
-#         .agg(workers=("worker", "sum"))
-#     return np.where(agg_df["workers"] == 0, "none",
-#            np.where(agg_df["workers"] == 1, "one", "two or more"))
-
-
 @orca.column(table_name="households")
 def hh_race_of_head(data="households.hh_race_id_of_head"):
     return data.map({
@@ -147,17 +143,12 @@ def hh_race_id_of_head(persons_grouped_household):
 @orca.column(table_name="households")
 def hh_size(persons_grouped_household):
     agg_df = persons_grouped_household.size()
-    return np.where(
-        agg_df == 1, "one",
-        np.where(agg_df == 2, "two",
-            np.where(agg_df == 3, "three", "four or more"),
-        ),
-    )
+    return agg_df.map({1: "one", 2: "two", 3: "three"}).fillna("four or more")
 
 
 
 @orca.step("households_reorg")
-def households_reorg(persons, households, year, get_new_households, graveyard):
+def households_reorg(persons, households, year, get_new_households):
     """
     Households reorganization module
 
@@ -210,17 +201,17 @@ def households_reorg(persons, households, year, get_new_households, graveyard):
     ######### UPDATING
     print("Restructuring households:")
     print("Cohabitations..")
-    update_cohabitating_households(persons, households, cohabitate_x_list, get_new_households, graveyard)
+    update_cohabitating_households(persons, households, cohabitate_x_list, get_new_households)
     print_household_stats()
     
     print("Marriages..")
-    update_married_households_random(persons, households, marriage_list, get_new_households, graveyard)
+    update_married_households_random(persons, households, marriage_list, get_new_households)
     print_household_stats()
     fix_erroneous_households(persons)
     print_household_stats()
     
     print("Divorces..")
-    update_divorce(persons, households, divorce_list, get_new_households, graveyard)
+    update_divorce(persons, households, divorce_list, get_new_households)
     print_household_stats()
 
     # TODO: This needs to be reevaluated after the refactoring
@@ -297,7 +288,7 @@ def household_stats(persons, households):
     print("Households with 1 and 13: ", ((persons_df_sum["relate_1"] * persons_df_sum["relate_13"])>0).sum())
 
 
-def update_cohabitating_households(persons, households, cohabitate_list, get_new_households, graveyard):
+def update_cohabitating_households(persons, households, cohabitate_list, get_new_households):
     """
     Updating households and persons after cohabitation model.
 
@@ -332,7 +323,7 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     persons.local.loc[leaving_person_index, "relate"] = 0
 
     ### Assign new household_id to people leaving
-    new_households = get_new_households(leaving_person_index.sum(), persons, graveyard)
+    new_households = get_new_households(leaving_person_index.sum())
     persons.local.loc[leaving_person_index, "household_id"] = new_households
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
 

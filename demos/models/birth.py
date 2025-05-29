@@ -5,8 +5,12 @@ from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
 
 @orca.injectable(autocall=False)
-def get_new_person_id(n, persons, graveyard):
-    current_max = max([persons.local.index.max(), graveyard.local.index.max()])
+def get_new_person_id(n):
+    persons = orca.get_table("persons")
+    graveyard = orca.get_table("graveyard")
+    rebalanced_persons = orca.get_table("rebalanced_persons")
+
+    current_max = max([persons.local.index.max(), graveyard.local.index.max(), rebalanced_persons.local.index.max()])
     return (
         np.arange(n)    # = [0, 1, 2 ...] up to the number of people
         + current_max   # = [max_person_id, max_person_id + 1, ...]
@@ -38,7 +42,7 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
 
     # Initialize babies variables in the persons table.
     babies = pd.DataFrame(house_indices, columns=["household_id"])
-    babies.index = get_new_person_id(len(babies), persons, graveyard)
+    babies.index = get_new_person_id(len(babies))
     babies.index.name = "person_id"
 
     # Set default values

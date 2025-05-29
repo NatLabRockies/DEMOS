@@ -6,7 +6,7 @@ from scipy.spatial.distance import cdist
 from templates import estimated_models, modelmanager as mm
 
 
-def update_married_households_random(persons, households, marriage_list, get_new_households, graveyard):
+def update_married_households_random(persons, households, marriage_list, get_new_households):
     """
     Update the marriage status of individuals and create new households
 
@@ -112,7 +112,7 @@ def update_married_households_random(persons, households, marriage_list, get_new
     ### If neither is head, form a new household
     neither_head_index = (all_df.relate != 0) & (all_df.partner_relate != 0)
     neither_head_not_first_index = all_df.loc[first_index & neither_head_index].partner_id.values
-    new_hh_ids = get_new_households((first_index & neither_head_index).sum(), persons, graveyard)
+    new_hh_ids = get_new_households((first_index & neither_head_index).sum())
     new_hh_county = households.local.loc[all_df.loc[first_index & neither_head_index, "household_id"], "lcm_county_id"].values
 
     #### Set new households for heads and not heads
@@ -142,7 +142,7 @@ def update_married_households_random(persons, households, marriage_list, get_new
     persons.local.loc[new_household_heads, "relate"] = 0
 
 
-def update_divorce(persons, households, divorce_list, get_new_households, graveyard):
+def update_divorce(persons, households, divorce_list, get_new_households):
     """
     Updating stats for divorced households
 
@@ -171,7 +171,7 @@ def update_divorce(persons, households, divorce_list, get_new_households, gravey
 
     # Update columns
     ## People leaving get a new household id
-    new_households = get_new_households(person_leaving_index.sum(), persons, graveyard)
+    new_households = get_new_households(person_leaving_index.sum())
     persons.local.loc[person_leaving_index, "household_id"] = new_households
     persons.local.loc[person_leaving_index, "relate"] = 0
     persons.local.loc[person_leaving_index, "MAR"] = 3
