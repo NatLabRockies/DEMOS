@@ -216,22 +216,6 @@ def households_reorg(persons, households, year, get_new_households):
 
     # TODO: This needs to be reevaluated after the refactoring
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
-    
-    marrital = orca.get_table("marrital").to_frame()
-    persons_df = orca.get_table("persons").local
-    persons_local_columns = orca.get_injectable("persons_local_cols")
-    # persons_df["member_id"] = persons_df.groupby("household_id")["relate"].rank(method="first", ascending=True).astype(int)
-    orca.add_table("persons", persons_df[persons_local_columns])
-    if marrital.empty:
-        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
-        marrital = pd.DataFrame(persons_stats)
-        marrital["year"] = year
-    else:
-        persons_stats = persons_df[persons_df["age"]>=15]["MAR"].value_counts().reset_index()
-        new_marrital = pd.DataFrame(persons_stats)
-        new_marrital["year"] = year
-        marrital = pd.concat([marrital, new_marrital])
-    orca.add_table("marrital", marrital)
 
 
 @orca.step("print_household_stats")
