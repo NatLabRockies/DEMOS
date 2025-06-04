@@ -894,8 +894,9 @@ def update_divorce(divorce_list):
     persons_df = orca.get_table("persons").local
 
     households_df.loc[divorce_list.index,"divorced"] = divorce_list
-
-    divorce_households = households_df[households_df["divorced"] == 1].copy()
+    # TODO: This patches a weird error
+    # intersection_ids = set(households_df.index).intersection(set(divorce_list[divorce_list.astype(bool)].index))
+    divorce_households = households_df.loc[intersection_ids].copy()
     DIVORCED_HOUSEHOLDS_ID = divorce_households.index.to_list()
 
     sizes = persons_df[persons_df["household_id"].isin(divorce_list.index) & (persons_df["relate"].isin([0, 1]))].groupby("household_id").size()
