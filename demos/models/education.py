@@ -1,6 +1,8 @@
 import orca
 import numpy as np
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("education_model")
 def education_model(persons,
@@ -20,6 +22,7 @@ def education_model(persons,
     Returns:
         None
     """
+    start_time = time.time()
     # Run education model
     ## Add temporary variable
     persons_df = persons.local
@@ -71,6 +74,9 @@ def education_model(persons,
     ### Students with one year of college move to the next
     college_index = persons["edu"] == 18
     persons.local.loc[stayed_index & college_index, "edu"] = 19
+
+
+    log_execution_time(start_time, orca.get_injectable("year"), "education")
 
 
 def run_education_model():

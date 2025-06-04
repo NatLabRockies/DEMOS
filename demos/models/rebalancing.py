@@ -3,12 +3,16 @@ import numpy as np
 import pandas as pd
 from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
-
 from templates.utils import transition
 from templates.utils.transition import GrowthRateTransition
 
+import time
+from datasources import log_execution_time
+
 @orca.step('household_rebalancing')
 def household_rebalancing(households, persons, year, get_new_households, get_new_person_id, rebalanced_households, rebalanced_persons):
+    start_time = time.time()
+
     CONTROL_TABLE = "hsize_ct"
     GEOID_COL = "lcm_county_id"
     CONTROL_COL = "hh_size"
@@ -56,7 +60,7 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     persons.local = persons.local[~persons.household_id.isin(to_remove_hh)]
     households.local = households.local[~households.index.isin(to_remove_hh)]
 
-    ...
+    log_execution_time(start_time, orca.get_injectable("year"), "rebalancing")
 
 
 def household_transition_old(households, persons, year, metadata):

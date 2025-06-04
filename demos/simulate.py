@@ -3,6 +3,7 @@ import argparse
 
 import numpy as np
 import orca
+import pandas as pd
 from templates import modelmanager as mm
 
 
@@ -26,6 +27,9 @@ def run(
     orca.add_injectable('skim_source', skim_source)
     orca.add_injectable('random_match', random_match)
     orca.add_injectable('scenario_name', scenario_name)
+
+    orca.add_table('run_times', pd.DataFrame())
+    orca.add_table('marital_rebalanced', pd.DataFrame())
 
     import datasources
     import models

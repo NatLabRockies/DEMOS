@@ -6,6 +6,8 @@ from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
 from .marriage import update_married_households_random, update_divorce
 
+from datasources import log_execution_time
+
 @orca.injectable(autocall=False)
 def get_new_households(n):
     persons = orca.get_table("persons")
@@ -164,6 +166,7 @@ def households_reorg(persons, households, year, get_new_households):
     Returns:
         None
     """
+    start_time = time.time()
     # Marriage Model
     single_noncohab_index = ~persons["cohabitate"] & persons["is_not_married"]
 
@@ -216,6 +219,7 @@ def households_reorg(persons, households, year, get_new_households):
 
     # TODO: This needs to be reevaluated after the refactoring
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
+    log_execution_time(start_time, orca.get_injectable("year"), "household_reorg")
 
 
 @orca.step("print_household_stats")

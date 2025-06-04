@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.injectable(autocall=False)
 def get_new_person_id(n):
@@ -34,10 +36,10 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
     Returns:
         None
     """
-
+    start_time = time.time()
     birth_list = run_and_calibrate_mortality_model(persons, households, observed_births_data, year)
 
-    # Get indices of househ olds with babies
+    # Get indices of households with babies
     house_indices = list(birth_list[birth_list == 1].index)
 
     # Initialize babies variables in the persons table.
@@ -95,6 +97,8 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
     
     # Finally add babies to persons table
     persons.local = pd.concat([persons.local, babies])
+
+    log_execution_time(start_time, orca.get_injectable("year"), "birth")
 
 
 # TODO: Refactor this

@@ -2,6 +2,8 @@ import orca
 import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("laborforce_model")
 def laborforce_model(persons,
@@ -25,6 +27,7 @@ def laborforce_model(persons,
     Returns:
         None
     """
+    start_time = time.time()
     stay_unemployed_list = run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, year)
     exit_workforce_list = run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, year)
     
@@ -52,6 +55,8 @@ def laborforce_model(persons,
                    pd.concat([exiting_workforce.local,
                               pd.DataFrame(data={"year": [year], "count": [(exit_workforce_list == 1).sum()]})
                               ]))
+    
+    log_execution_time(start_time, orca.get_injectable("year"), "laborforce")
 
 def sample_income(mean, std):
     return np.random.lognormal(mean, std)

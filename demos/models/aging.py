@@ -2,6 +2,8 @@ import orca
 import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("update_age")
 def update_age(persons):
@@ -19,7 +21,9 @@ def update_age(persons):
     Returns:
         None
     """
+    start_time = time.time()
     persons["age"] += 1
+    log_execution_time(start_time, orca.get_injectable("year"), "aging")
 
 
 @orca.column(table_name="persons", cache=True, cache_scope="iteration")

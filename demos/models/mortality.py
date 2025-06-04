@@ -2,7 +2,8 @@ import orca
 import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
-
+import time
+from datasources import log_execution_time
 
 @orca.step("fatality_model")
 def fatality_model(persons, households, observed_fatalities_data, rel_map, graveyard, year):
@@ -21,6 +22,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
         persons (DataFrameWrapper): DataFrameWrapper of persons table
         households (DataFrameWrapper): DataFrameWrapper of households table
     """
+    start_time = time.time()
     np.random.seed(year + 300)
 
     persons["dead"] = -99
@@ -112,6 +114,8 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     spouses_per_hh = (persons.relate == 1).groupby(persons.household_id).sum()
     persons.local = persons.local.loc[~persons.household_id.isin(spouses_per_hh[spouses_per_hh > 1].index)]
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
+
+    log_execution_time(start_time, orca.get_injectable("year"), "mortality")
 
 
 # TODO: Refactor this

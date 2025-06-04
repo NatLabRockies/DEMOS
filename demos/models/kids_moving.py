@@ -2,6 +2,8 @@ import orca
 import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("kids_moving_model")
 def kids_moving_model(persons, households, get_new_households):
@@ -16,6 +18,7 @@ def kids_moving_model(persons, households, get_new_households):
     Returns:
         None
     """
+    start_time = time.time()
     persons_df = orca.get_table("persons").local
     persons_df["kid_moves"] = -99
     orca.add_table("persons", persons_df)
@@ -26,6 +29,7 @@ def kids_moving_model(persons, households, get_new_households):
     kids_moving = kids_moving_model.choices.astype(int)
 
     update_households_after_kids(persons, households, kids_moving, get_new_households)
+    log_execution_time(start_time, orca.get_injectable("year"), "kids_moving")
 
 def update_households_after_kids(persons, households, kids_moving, get_new_households):
     """
