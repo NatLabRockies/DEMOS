@@ -198,8 +198,6 @@ def households_reorg(persons, households, year, get_new_households):
     )
     cohabitation = mm.get_step("cohabitation")
     cohabitate_x_list = cohabitation.run(households.to_frame(cohabitation.variable_names).loc[ELIGIBLE_HOUSEHOLDS])
-    
-    np.random.seed(year)
 
     ######### UPDATING
     print("Restructuring households:")

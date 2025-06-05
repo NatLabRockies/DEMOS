@@ -69,7 +69,6 @@ def run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, y
 
     # Dummy value for output column
     persons["stay_out"] = -99
-    np.random.seed(year + 200)
 
     # Get estimated model object and run it
     in_workforce_model = mm.get_step("enter_labor_force")
@@ -101,7 +100,6 @@ def run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, y
 
     # Dummy value for output column
     persons["leaving_workforce"] = -99
-    np.random.seed(year + 210)
 
     # Get estimated model object and run it
     out_workforce_model = mm.get_step("exit_labor_force")
