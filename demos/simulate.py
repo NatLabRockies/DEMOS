@@ -52,7 +52,7 @@ def run(
         data_out=output_fname,
         iter_vars=iter_vars,
         out_base_tables=[],
-        out_run_tables=out_tables,
+        out_run_tables=out_tables + ["run_times", "marital_rebalanced"],
         out_run_local=True,
         out_interval= 1
     )

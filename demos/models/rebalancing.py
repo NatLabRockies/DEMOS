@@ -12,6 +12,10 @@ from datasources import log_execution_time
 @orca.step('household_rebalancing')
 def household_rebalancing(households, persons, year, get_new_households, get_new_person_id, rebalanced_households, rebalanced_persons):
     start_time = time.time()
+    marital_rebalanced = orca.get_table("marital_rebalanced")
+    marital_rebalanced.local = pd.concat([marital_rebalanced.local,
+                                          pd.DataFrame([[year, (orca.get_table("persons").local.MAR == 1).sum(), (orca.get_table("persons").local.MAR == 3).sum()]],
+                                                       columns=["year", "married_original", "divorced_original"])])
 
     CONTROL_TABLE = "hsize_ct"
     GEOID_COL = "lcm_county_id"
@@ -61,6 +65,10 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     households.local = households.local[~households.index.isin(to_remove_hh)]
 
     log_execution_time(start_time, orca.get_injectable("year"), "rebalancing")
+    marital_rebalanced = orca.get_table("marital_rebalanced")
+    marital_rebalanced.local = pd.concat([marital_rebalanced.local,
+                                          pd.DataFrame([[year, (orca.get_table("persons").local.MAR == 1).sum(), (orca.get_table("persons").local.MAR == 3).sum()]],
+                                                       columns=["year", "married_after", "divorced_after"])])
 
 
 def household_transition_old(households, persons, year, metadata):
