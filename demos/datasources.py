@@ -2,6 +2,7 @@ import glob
 import os
 from itertools import product
 
+import time
 import numpy as np
 import openmatrix as omx
 import orca
@@ -587,3 +588,11 @@ configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable(
 print("Models' folder: ", configs_folder)
 
 print("********** End importing datasources **********")
+
+def log_execution_time(start_time, year, module_name):
+    now = time.time()
+    run_table = orca.get_table('run_times')
+    run_table.local = pd.concat([run_table.local,
+                                 pd.DataFrame([[year, module_name, now - start_time]],
+                                              columns=["year", "module", "walltime"])
+                                 ])

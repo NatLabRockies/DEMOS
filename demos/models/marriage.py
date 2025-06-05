@@ -152,10 +152,10 @@ def update_married_households_random(persons, households, marriage_list):
         return None
 
     # breakpoint()
-    female_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "female")].sort_index(axis=0).sample(min_mar, random_state=orca.get_injectable("year") + 100)
-    male_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "male")]    .sort_index(axis=0).sample(min_mar, random_state=orca.get_injectable("year") + 110)
-    female_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "female")].sort_index(axis=0).sample(min_cohab, random_state=orca.get_injectable("year") + 120)
-    male_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "male")]    .sort_index(axis=0).sample(min_cohab, random_state=orca.get_injectable("year") + 130)
+    female_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "female")].sort_index(axis=0).sample(min_mar)
+    male_mar = relevant[(relevant["new_mar"] == 2) & (relevant["person_sex"] == "male")]    .sort_index(axis=0).sample(min_mar)
+    female_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "female")].sort_index(axis=0).sample(min_cohab)
+    male_coh = relevant[(relevant["new_mar"] == 1) & (relevant["person_sex"] == "male")]    .sort_index(axis=0).sample(min_cohab)
     
     # print("Printing family sizes:")
     # print(female_mar.shape[0])
@@ -173,9 +173,7 @@ def update_married_households_random(persons, households, marriage_list):
     married = pd.concat([male_mar, female_mar])
     cohabitate = pd.concat([male_coh, female_coh])
 
-    np.random.seed(orca.get_injectable("year") + 140)
     married["rnd"] = np.random.random(len(married))
-    np.random.seed(orca.get_injectable("year") + 150)
     cohabitate["rnd"] = np.random.random(len(cohabitate))
 
     married = married.sort_values(by=["number"])
@@ -893,11 +891,10 @@ def update_divorce(divorce_list):
 
     persons_df = orca.get_table("persons").local
 
-    households_df.loc[divorce_list.index,"divorced"] = divorce_list
-    # TODO: This patches a weird error
-    # intersection_ids = set(households_df.index).intersection(set(divorce_list[divorce_list.astype(bool)].index))
-    divorce_households = households_df.loc[intersection_ids].copy()
-    DIVORCED_HOUSEHOLDS_ID = divorce_households.index.to_list()
+    # households_df.loc[divorce_list.index,"divorced"] = divorce_list
+
+    # divorce_households = households_df[households_df["divorced"] == 1].copy()
+    # DIVORCED_HOUSEHOLDS_ID = divorce_households.index.to_list()
 
     sizes = persons_df[persons_df["household_id"].isin(divorce_list.index) & (persons_df["relate"].isin([0, 1]))].groupby("household_id").size()
 
@@ -906,7 +903,7 @@ def update_divorce(divorce_list):
     # print("divorced households: ", len(DIVORCED_HOUSEHOLDS_ID))
     # print("")
     persons_divorce = persons_df[
-        persons_df["household_id"].isin(divorce_households.index)
+        persons_df["household_id"].isin(divorce_list[divorce_list.astype(bool)].index)
     ].copy().sort_index()
     # print("divorced persons: ", persons_divorce.shape[0])
     # print("Min hh size:", persons_divorce.groupby("household_id").size().min())
@@ -918,7 +915,7 @@ def update_divorce(divorce_list):
 
     # print("Min parents size:", divorced_parents.groupby("household_id").size().min())
     # print("Max parents size:", divorced_parents.groupby("household_id").size().max())
-    leaving_house = divorced_parents.groupby("household_id").sample(n=1, random_state=orca.get_injectable("year") + 250)
+    leaving_house = divorced_parents.groupby("household_id").sample(n=1)
 
     staying_house = persons_divorce[~(persons_divorce.index.isin(leaving_house.index))].copy()
 

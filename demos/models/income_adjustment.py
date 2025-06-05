@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("update_income")
 def update_income(persons, households, year):
@@ -14,6 +16,8 @@ def update_income(persons, households, year):
         households (DataFrameWrapper): DataFrameWrapper of households table
         year (int): simulation year
     """
+    start_time = time.time()
+
     # Pulling data, income rates, and county IDs
     persons_df = orca.get_table("persons").local
     households_df = orca.get_table("households").local
@@ -57,3 +61,4 @@ def update_income(persons, households, year):
                                       new_income_over_time],
                                      ignore_index=True)
     orca.add_table("income_over_time", income_over_time)
+    log_execution_time(start_time, orca.get_injectable("year"), "income_adjustment")

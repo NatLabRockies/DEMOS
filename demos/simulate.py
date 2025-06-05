@@ -1,6 +1,8 @@
 import argparse
 # import os
 
+import time
+import pandas as pd
 import numpy as np
 import orca
 from templates import modelmanager as mm
@@ -26,6 +28,10 @@ def run(
     orca.add_injectable('skim_source', skim_source)
     orca.add_injectable('random_match', random_match)
     orca.add_injectable('scenario_name', scenario_name)
+    
+    orca.add_injectable('start_time', time.time())
+    orca.add_table('run_times', pd.DataFrame())
+    orca.add_table('marital_rebalanced', pd.DataFrame())
 
     import datasources
     import models
@@ -48,7 +54,7 @@ def run(
         data_out=output_fname,
         iter_vars=iter_vars,
         out_base_tables=[],
-        out_run_tables=out_tables,
+        out_run_tables=out_tables + ["run_times", "marital_rebalanced"],
         out_run_local=True,
         out_interval= 1
     )

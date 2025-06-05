@@ -2,6 +2,8 @@ import orca
 import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("fatality_model")
 def fatality_model(persons, households, year):
@@ -13,6 +15,7 @@ def fatality_model(persons, households, year):
         persons (DataFrameWrapper): DataFrameWrapper of persons table
         households (DataFrameWrapper): DataFrameWrapper of households table
     """
+    start_time = time.time()
     persons_df = orca.get_table("persons").local
     persons_df["dead"] = -99
     orca.add_table("persons", persons_df)
@@ -22,8 +25,6 @@ def fatality_model(persons, households, year):
     # mortality.run()
     # fatality_list = mortality.choices.astype(int)
     # print(fatality_list.sum(), " fatalities")
-
-    np.random.seed(year + 300)
 
     mortality.run()
     fatality_list = mortality.choices.astype(int)
@@ -65,6 +66,8 @@ def fatality_model(persons, households, year):
 
         mortalities = pd.concat([mortalities, mortalities_new], ignore_index=True) 
     orca.add_table("mortalities", mortalities)
+
+    log_execution_time(start_time, orca.get_injectable("year"), "mortality")
 
 
 # Mortality model returns a list of 0s representing alive and 1 representing dead

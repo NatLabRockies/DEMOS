@@ -1,6 +1,8 @@
 import orca
 import numpy as np
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("education_model")
 def education_model(persons, year):
@@ -13,6 +15,7 @@ def education_model(persons, year):
     Returns:
         None
     """
+    start_time = time.time()
     # Add temporary variable
     persons_df = persons.local
     persons_df["stop"] = -99
@@ -27,6 +30,7 @@ def education_model(persons, year):
     # Update student status
     # print("Updating student status...")
     update_education_status(persons, student_list, year)
+    log_execution_time(start_time, orca.get_injectable("year"), "education")
 
 def update_education_status(persons, student_list, year):
     """

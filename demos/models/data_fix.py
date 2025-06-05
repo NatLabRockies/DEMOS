@@ -1,7 +1,7 @@
 import orca
 
 @orca.step()
-def fix_persons_table(persons):
+def fix_persons_table(persons, households):
     # TODO: Add identifiers to which hh are problematic
 
     # Check for households with no head
@@ -61,4 +61,7 @@ def fix_persons_table(persons):
     # if incorrect_MAR_label.sum() > 0:
     #     print(f"{incorrect_MAR_label.sum()} people are flagged as married (MAR == 1) but are neither head not spouse in relate column. Changing MAR to 0")
     #     persons.local.loc[incorrect_MAR_label, "MAR"] = 0
+
+    # TODO: This needs to be reevaluated after the refactoring
+    households.local = households.local.reindex(sorted(persons.household_id.unique()))
     ...

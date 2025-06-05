@@ -4,13 +4,17 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 from .marriage import update_married_households_random, update_married_households, update_divorce
 
+import time
+from datasources import log_execution_time
+
 @orca.step("households_reorg")
 def households_reorg(persons, households, year):
     """ YE: *** """
+    start_time = time.time()
     #
     marriage = mm.get_step("marriage")
     # MARRIAGE MODEL
-    persons_df = persons.to_frame(marriage.variable_names + ["relate", "household_id", "MAR", "age"])
+    persons_df = persons.to_frame()
     # get persons cohabitating and heads of their households
     COHABS_PERSONS = persons_df["relate"] == 13
     cohab_persons_df = persons_df.loc[COHABS_PERSONS].copy()
@@ -94,14 +98,16 @@ def households_reorg(persons, households, year):
                    ((persons_df["age"]>=15))]["household_id"].unique().astype(int)
     )
     cohabitation = mm.get_step("cohabitation")
-    data = households.to_frame(cohabitation.variable_names).loc[ELIGIBLE_HOUSEHOLDS]
+    data = households.to_frame().loc[ELIGIBLE_HOUSEHOLDS]
     # Run Model
     print("Running cohabitation model...")
     cohabitate_x_list = cohabitation.run(data)
     # print("Cohabitation outcomes:")
     # print(cohabitate_x_list.value_counts())
 
-    np.random.seed(year)
+    if year == 2017:
+        a = 1
+        ...
     
     ######### UPDATING
     print("Restructuring households:")
@@ -134,6 +140,7 @@ def households_reorg(persons, households, year):
         new_marrital["year"] = year
         marrital = pd.concat([marrital, new_marrital])
     orca.add_table("marrital", marrital)
+    log_execution_time(start_time, orca.get_injectable("year"), "household_reorg")
 
 
 @orca.step("print_household_stats")

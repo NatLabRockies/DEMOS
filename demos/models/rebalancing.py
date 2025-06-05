@@ -6,9 +6,18 @@ from templates import estimated_models, modelmanager as mm
 
 from templates.utils import transition
 from templates.utils.transition import GrowthRateTransition
+import time
+from datasources import log_execution_time
 
 @orca.step('household_transition')
 def household_transition(households, persons, year, metadata):
+    start_time = time.time()
+
+    marital_rebalanced = orca.get_table("marital_rebalanced")
+    marital_rebalanced.local = pd.concat([marital_rebalanced.local,
+                                          pd.DataFrame([[year, (orca.get_table("persons").local.MAR == 1).sum(), (orca.get_table("persons").local.MAR == 3).sum()]],
+                                                       columns=["year", "married_original", "divorced_original"])])
+    
     # breakpoint()
     # at this breakpoint, look at the persons table
     linked_tables = {'persons': (persons, 'household_id')}
@@ -46,6 +55,13 @@ def household_transition(households, persons, year, metadata):
         metadata_df.loc['max_p_id', 'value'] = persons_df.index.max()
     orca.add_table('metadata', metadata_df)
     # breakpoint()
+
+    marital_rebalanced = orca.get_table("marital_rebalanced")
+    marital_rebalanced.local = pd.concat([marital_rebalanced.local,
+                                          pd.DataFrame([[year, (orca.get_table("persons").local.MAR == 1).sum(), (orca.get_table("persons").local.MAR == 3).sum()]],
+                                                       columns=["year", "married_after", "divorced_after"])])
+
+    log_execution_time(start_time, orca.get_injectable("year"), "rebalancing")
 
 
 def full_transition(
@@ -86,6 +102,7 @@ def full_transition(
     -------
     Nothing
     """
+
     print("Running full transition")
     if "agg_sector" in ct.columns:
         ct["agg_sector"] = ct["agg_sector"].astype("str")

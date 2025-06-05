@@ -2,6 +2,8 @@ import orca
 import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
+import time
+from datasources import log_execution_time
 
 @orca.step("birth_model")
 def birth_model(persons, households, year):
@@ -16,7 +18,7 @@ def birth_model(persons, households, year):
     Returns:
         None
     """
-
+    start_time = time.time()
     households_df = households.local
     households_df["birth"] = -99
     orca.add_table("households", households_df)
@@ -110,6 +112,7 @@ def birth_model(persons, households, year):
 
         btable_df = pd.concat([btable_df, btable_df_new], ignore_index=True)
     orca.add_table("btable", btable_df)
+    log_execution_time(start_time, orca.get_injectable("year"), "birth")
 
 
 def update_birth(persons, households, birth_list):
