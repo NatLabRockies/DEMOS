@@ -49,14 +49,14 @@ def education_model(persons,
     tenth_grade_or_below_index = persons["edu"].between(4, 13, inclusive="both")
     persons.local.loc[stayed_index & tenth_grade_or_below_index, "edu"] += 1
 
-    ### Students in grade 11 move to either 15 or 16 based on weights
-    ### Proportion of 12th grade students to diploma highschool students is roughly maintained
-    eleventh_grade_index = persons["edu"] == 14
-    eleventh_grade_transition = np.random.choice([15, 16],
-                                                 size=(stayed_index & eleventh_grade_index).sum(),
-                                                 p=[edu_highschool_proportion[15],
-                                                    edu_highschool_proportion[16]])
-    persons.local.loc[stayed_index & eleventh_grade_index, "edu"] = eleventh_grade_transition
+    # NOTE: We perform the following operations in reverse order to avoid skipping years
+    ### Students with one year of college move to the next
+    college_index = persons["edu"] == 18
+    persons.local.loc[stayed_index & college_index, "edu"] = 19
+
+    ### Students with GED or HS Degree move to college
+    ged_or_hs_index = persons["edu"].isin([16, 17])
+    persons.local.loc[stayed_index & ged_or_hs_index, "edu"] = 18
 
     ### Students in grade 12 move to either 15 or 16 based on weights
     ### Proportion of no diploma to GED students is roughly maintained
@@ -67,14 +67,14 @@ def education_model(persons,
                                                     edu_highschool_grads_proportion[17]])
     persons.local.loc[stayed_index & twelveth_grade_index, "edu"] = twelveth_grade_transition
 
-    ### Students with GED or HS Degree move to college
-    ged_or_hs_index = persons["edu"].isin([16, 17])
-    persons.local.loc[stayed_index & ged_or_hs_index, "edu"] = 18
-
-    ### Students with one year of college move to the next
-    college_index = persons["edu"] == 18
-    persons.local.loc[stayed_index & college_index, "edu"] = 19
-
+    ### Students in grade 11 move to either 15 or 16 based on weights
+    ### Proportion of 12th grade students to diploma highschool students is roughly maintained
+    eleventh_grade_index = persons["edu"] == 14
+    eleventh_grade_transition = np.random.choice([15, 16],
+                                                 size=(stayed_index & eleventh_grade_index).sum(),
+                                                 p=[edu_highschool_proportion[15],
+                                                    edu_highschool_proportion[16]])
+    persons.local.loc[stayed_index & eleventh_grade_index, "edu"] = eleventh_grade_transition
 
     log_execution_time(start_time, orca.get_injectable("year"), "education")
 
