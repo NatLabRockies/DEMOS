@@ -699,12 +699,12 @@ def income_segment(households):
 @orca.column('households')
 def income_bin1(households):
     df = households.to_frame(columns=["income"])
-    return df.lt(250000) * 1
+    return df.lt(25_000) * 1
 
 @orca.column('households')
 def income_bin2(households):
     df = households.to_frame(columns=["income"])["income"]
-    return df.between(25000, 50000, inclusive='left') * 1
+    return df.between(25_000, 50_000, inclusive='left') * 1
 
 @orca.column('households')
 def income_bin3(households):

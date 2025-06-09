@@ -46,7 +46,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     ## Update widow heads that are still alive
     persons.local.loc[~fatality_list_idx &
                       persons["household_id"].isin(dead_partners_households) &
-                      (persons["relate"] == 0), "MAR"] = 3
+                      (persons["relate"] == 0), "MAR"] = 2
 
     # If dead person is head, spouse or partner is now widow
     dead_heads_households = dead_people_slice[dead_people_slice.relate == 0]["household_id"]
@@ -54,7 +54,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     persons.local.loc[~fatality_list_idx &
                       persons["household_id"].isin(dead_heads_households) &
                       ((persons["relate"] == 1) | (persons["relate"] == 13)),
-                      "MAR"] = 3
+                      "MAR"] = 2
 
     # Updates to `relate`
     ## Select all the person_id's of alive people where the head died
