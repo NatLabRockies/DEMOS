@@ -7,8 +7,8 @@ from datasources import log_execution_time
 
 @orca.step("laborforce_model")
 def laborforce_model(persons,
-                     observed_entering_workforce,
-                     observed_exiting_workforce,
+                    #  observed_entering_workforce,
+                    #  observed_exiting_workforce,
                      entering_workforce,
                      exiting_workforce,
                      year):
@@ -28,8 +28,8 @@ def laborforce_model(persons,
         None
     """
     start_time = time.time()
-    stay_unemployed_list = run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, year)
-    exit_workforce_list = run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, year)
+    stay_unemployed_list = run_and_calibrate_in_workforce_model(persons, year)
+    exit_workforce_list = run_and_calibrate_out_workforce_model(persons, year)
     
     # Re-index to help querying below
     reindexed_remain_unemployed = stay_unemployed_list.reindex(persons.local.index).fillna(2)
@@ -63,9 +63,9 @@ def sample_income(mean, std):
 
 
 # TODO: Refactor this
-def run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, year):
+def run_and_calibrate_in_workforce_model(persons, year):
     # Observed values for calibration
-    observed_stay_unemployed = observed_entering_workforce.to_frame()
+    # observed_stay_unemployed = observed_entering_workforce.to_frame()
 
     # Dummy value for output column
     persons["stay_out"] = -99
@@ -75,28 +75,28 @@ def run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, y
     in_workforce_model.run()
 
     stay_unemployed_list = in_workforce_model.choices.astype(int)
-    predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
-    target_share = observed_stay_unemployed[observed_stay_unemployed["year"]==year]["share"]
-    target = target_share * stay_unemployed_list.shape[0]
-    error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-    print("The Labor Force In Model Calibration:")
-    calibrate_time = 0
-    while error >= 0.01:
-        print(f"{calibrate_time} time: {error}")
-        in_workforce_model.fitted_parameters[0] += np.log(target.sum()/stay_unemployed_list.sum())
-        in_workforce_model.run()
-        stay_unemployed_list = in_workforce_model.choices.astype(int)
-        predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
-        error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+    # predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
+    # target_share = observed_stay_unemployed[observed_stay_unemployed["year"]==year]["share"]
+    # target = target_share * stay_unemployed_list.shape[0]
+    # error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+    # print("The Labor Force In Model Calibration:")
+    # calibrate_time = 0
+    # while error >= 0.01:
+    #     print(f"{calibrate_time} time: {error}")
+    #     in_workforce_model.fitted_parameters[0] += np.log(target.sum()/stay_unemployed_list.sum())
+    #     in_workforce_model.run()
+    #     stay_unemployed_list = in_workforce_model.choices.astype(int)
+    #     predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
+    #     error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+    #     calibrate_time += 1
+    # print(f"{calibrate_time} time: {error}")
 
     return stay_unemployed_list
 
 # TODO: Refactor this
-def run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, year):
+def run_and_calibrate_out_workforce_model(persons, year):
     # Observed values for calibration
-    observed_exit_workforce = observed_exiting_workforce.to_frame()
+    # observed_exit_workforce = observed_exiting_workforce.to_frame()
 
     # Dummy value for output column
     persons["leaving_workforce"] = -99
@@ -106,22 +106,22 @@ def run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, y
     out_workforce_model.run()
     
     exit_workforce_list = out_workforce_model.choices.astype(int)
-    predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
-    target_share = observed_exit_workforce[observed_exit_workforce["year"]==year]["share"]
-    target = target_share * exit_workforce_list.shape[0]
+    # predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
+    # target_share = observed_exit_workforce[observed_exit_workforce["year"]==year]["share"]
+    # target = target_share * exit_workforce_list.shape[0]
 
-    error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-    print("The Labor Force Out Model Calibration:")
-    calibrate_time = 0
-    while error >= 0.01:
-        print(f"{calibrate_time} time: {error}")
-        out_workforce_model.fitted_parameters[0] += np.log(target.sum()/exit_workforce_list.sum())
-        out_workforce_model.run()
-        exit_workforce_list = out_workforce_model.choices.astype(int)
-        predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
-        error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+    # error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+    # print("The Labor Force Out Model Calibration:")
+    # calibrate_time = 0
+    # while error >= 0.01:
+    #     print(f"{calibrate_time} time: {error}")
+    #     out_workforce_model.fitted_parameters[0] += np.log(target.sum()/exit_workforce_list.sum())
+    #     out_workforce_model.run()
+    #     exit_workforce_list = out_workforce_model.choices.astype(int)
+    #     predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
+    #     error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
+    #     calibrate_time += 1
+    # print(f"{calibrate_time} time: {error}")
 
     return exit_workforce_list
 

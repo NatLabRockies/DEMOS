@@ -304,6 +304,7 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     # Get the old household_id for the leaving person to retrieve the county_id
     old_household_id = persons.local.loc[leaving_person_index, "household_id"].values
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+    taz_assignment = households.local.loc[old_household_id, "TAZ"].values
 
     ## Person leaving is now head of household
     persons.local.loc[leaving_person_index, "relate"] = 0
@@ -312,6 +313,7 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     new_households = get_new_households(leaving_person_index.sum())
     persons.local.loc[leaving_person_index, "household_id"] = new_households
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
+    households.local.loc[new_households, "TAZ"] = taz_assignment
 
 
 def fix_erroneous_households(persons):

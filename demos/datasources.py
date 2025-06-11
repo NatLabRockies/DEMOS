@@ -88,9 +88,9 @@ income_rates_data['lcm_county_id'] = income_rates_data['lcm_county_id'].map(lamb
 orca.add_table("income_rates", income_rates_data)
 
 # print("Load relmap and register it as 'rel_map'.")
-# rel_map_data_name = "data/relmap_%s.csv" % region_code
-# rel_map_data = pd.read_csv(rel_map_data_name).set_index("index")
-# orca.add_table("rel_map", rel_map_data)
+rel_map_data_name = "data/relmap_06197001.csv"
+rel_map_data = pd.read_csv(rel_map_data_name).set_index("index")
+orca.add_table("rel_map", rel_map_data)
 
 #read the calibration data
 print("Read calibration data for birth model.")

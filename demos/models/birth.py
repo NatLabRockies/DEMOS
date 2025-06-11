@@ -111,22 +111,33 @@ def run_and_calibrate_mortality_model(persons, households, observed_births_data,
     birth_model = mm.get_step("birth")
     birth_model_variables = columns_in_formula(birth_model.model_expression)
     birth_model_data = households.to_frame(birth_model_variables).loc[ELIGIBLE_HH]
+    if orca.is_injectable("birth_asc"):
+        birth_model.fitted_parameters[0] = orca.get_injectable("birth_asc")
     birth_list = birth_model.run_with_data(birth_model_data).astype(int)
 
     predicted_share = birth_list.sum() / len(ELIGIBLE_HH)
-    observed_births = observed_births_data.to_frame()
-    target = observed_births[observed_births["year"]==year]["count"]
-    target_share = target / len(ELIGIBLE_HH)
+    observed_births = orca.get_table("observed_births_data").to_frame()
+    target_data = observed_births[observed_births["year"] == year]
+    if not target_data.empty:
+        target = target_data["count"].sum()
+        target_share = target / len(ELIGIBLE_HH)
+        print(f"The observed births in {year}:, {target}")
 
-    error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-    print("The Birth Model Calibration:")
-    calibrate_time = 0
-    while error >= 1000:
-        print(f"{calibrate_time} time: {error}")
-        birth_model.fitted_parameters[0] += np.log(target.sum()/birth_list.sum())
-        birth_list = birth_model.run_with_data(birth_model_data).astype(int)
-        predicted_share = birth_list.sum() / len(ELIGIBLE_HH)
         error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+        print("The Birth Model Calibration:")
+        calibrate_time = 0
+        while error >= 1000:
+            print(f"{calibrate_time} time: {error}")
+            birth_model.fitted_parameters[0] += np.log(target.sum()/birth_list.sum())
+            birth_list = birth_model.run_with_data(birth_model_data).astype(int)
+            predicted_share = birth_list.sum() / len(ELIGIBLE_HH)
+            error = np.sqrt(np.mean((birth_list.sum() - target)**2))
+            calibrate_time += 1
+        print(f"{calibrate_time} time: {error}")
+        
+        # Persist calibrated parameter for reuse
+        orca.add_injectable("birth_asc", birth_model.fitted_parameters[0])
+    else:
+        print(f"No observed data available for year {year}, skipping calibration.")
+
     return birth_list

@@ -112,6 +112,7 @@ def update_married_households_random(persons, households, marriage_list, get_new
     neither_head_not_first_index = all_df.loc[first_index & neither_head_index].partner_id.values
     new_hh_ids = get_new_households((first_index & neither_head_index).sum())
     new_hh_county = households.local.loc[all_df.loc[first_index & neither_head_index, "household_id"], "lcm_county_id"].values
+    new_hh_taz = households.local.loc[all_df.loc[first_index & neither_head_index, "household_id"], "TAZ"].values
 
     #### Set new households for heads and not heads
     all_df.loc[first_index & neither_head_index, "new_hh_id"] = new_hh_ids
@@ -125,6 +126,7 @@ def update_married_households_random(persons, households, marriage_list, get_new
     persons.local.loc[all_df.index, "relate"] = all_df["new_relate"]
     persons.local.loc[all_df[all_df.did_marry].index, "MAR"] = 1
     households.local.loc[new_hh_ids, "lcm_county_id"] = new_hh_county
+    households.local.loc[new_hh_ids, "TAZ"] = new_hh_taz
 
     ## Decide who is household head in the households where the head left
     head_left_index = (all_df.relate == 0) & (all_df.household_id != all_df.new_hh_id)
@@ -166,6 +168,7 @@ def update_divorce(persons, households, divorce_list, get_new_households):
     # Get the old household_id for the leaving person to retrieve the county_id
     old_household_id = persons.local.loc[person_leaving_index, "household_id"].values
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+    taz_assignment = households.local.loc[old_household_id, "TAZ"].values
 
     # Update columns
     ## People leaving get a new household id
@@ -175,6 +178,7 @@ def update_divorce(persons, households, divorce_list, get_new_households):
     persons.local.loc[person_leaving_index, "MAR"] = 3
     persons.local.loc[person_leaving_index, "member_id"] = 1 # TODO: Needed?
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
+    households.local.loc[new_households, "TAZ"] = taz_assignment
 
     ## Updates for people staying
     persons.local.loc[person_staying_index, "relate"] = 0

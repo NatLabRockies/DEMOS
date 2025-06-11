@@ -122,25 +122,40 @@ def run_and_calibrate_mortality_model(persons, observed_fatalities_data, year):
     # Observed values for calibration
     observed_fatalities = observed_fatalities_data.to_frame()
 
+    if orca.is_injectable("fatality_asc"):
+        mortality.fitted_parameters[0] = orca.get_injectable("fatality_asc")
+
     # Get estimated model object and run it
     mortality = mm.get_step("mortality")
     mortality.run()
 
     fatality_list = mortality.choices.astype(int)
-    predicted_share = fatality_list.sum() / fatality_list.shape[0]
-    target = observed_fatalities[observed_fatalities["year"]==year]["count"]
-    target_share = target / len(persons)
-    error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
-    print("The Fatality Model Calibration:")
-    calibrate_time = 0
-    while error >= 1000:
-        print(f"{calibrate_time} time: {error}")
-        mortality.fitted_parameters[0] += np.log(target.sum()/fatality_list.sum())
-        mortality.run()
-        fatality_list = mortality.choices.astype(int)
-        predicted_share = fatality_list.sum() / len(persons)
+    predicted_share = fatality_list.sum() / persons.local.shape[0]
+    observed_fatalities = orca.get_table("observed_fatalities_data").to_frame()
+    target_data = observed_fatalities[observed_fatalities["year"] == year]
+
+    if not target_data.empty:
+        target = target_data["count"].sum()
+        target_share = target / persons.local.shape[0]
+        print(f"The observed mortalities in {year}: {target}")
+
         error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+        print("The Fatality Model Calibration:")
+        calibrate_time = 0
+
+        while error >= 1000:
+            print(f"{calibrate_time} time: {error}")
+            mortality.fitted_parameters[0] += np.log(target / fatality_list.sum())
+            mortality.run()
+            fatality_list = mortality.choices.astype(int)
+            predicted_share = fatality_list.sum() / persons.local.shape[0]
+            error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
+            calibrate_time += 1
+        print(f"{calibrate_time} time: {error}")
+        
+        # Persist calibrated parameter for reuse
+        orca.add_injectable("fatality_asc", mortality.fitted_parameters[0])
+    else:
+        print(f"No observed data available for year {year}, skipping calibration.")
 
     return fatality_list

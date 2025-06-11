@@ -41,9 +41,9 @@ def run(
     mm.initialize(datasources.configs_folder)
 
     if table_save:
-        out_tables = datasources.hdf_tables + ["graveyard"]
+        out_tables = datasources.synpop_tables + ["graveyard"]
     else:
-        out_tables = datasources.hdf_tables + ["graveyard"] #TODO: FIX THIS
+        out_tables = datasources.synpop_tables + ["graveyard"] #TODO: FIX THIS
     iter_vars = list(range(
         base_year + freq_interval, forecast_year + freq_interval, freq_interval))
     orca.run(["fix_persons_table"])
