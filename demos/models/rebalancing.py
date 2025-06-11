@@ -18,7 +18,7 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
                                                        columns=["year", "married_original", "divorced_original"])])
 
     CONTROL_TABLE = "hsize_ct"
-    GEOID_COL = "lcm_county_id"
+    GEOID_COL = "TAZ"
     CONTROL_COL = "hh_size"
 
     control_table_wrapped = orca.get_table(CONTROL_TABLE)
@@ -29,30 +29,40 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     assert persons.household_id.nunique() == households.index.nunique(), f"`persons` and `households` tables do not have coherent sizes. {persons.household_id.nunique()} vs. {households.index.nunique()}"
 
     value_column = [c for c in control_table_wrapped.local_columns if c not in [GEOID_COL, CONTROL_COL]][0]
-    index_df = households.to_frame([GEOID_COL, CONTROL_COL])
+    index_df = households.to_frame([GEOID_COL, CONTROL_COL]).sort_values([GEOID_COL, CONTROL_COL])
+    indices = index_df.groupby([GEOID_COL, CONTROL_COL]).indices
     current_count = index_df.groupby([GEOID_COL, CONTROL_COL]).size()
     hh_difference = control_table_wrapped.local.loc[year].set_index([GEOID_COL, CONTROL_COL])[value_column].loc[current_count.index] - current_count
-    
-    # TODO: Add assertions about rows being enough to make the sampling
 
     to_remove_hh = []
     to_duplicate_hh = []
+    # for geo_id, sub_series in hh_difference.groupby(level=0):
+    #     geo_index = index_df[GEOID_COL] == geo_id
+    #     for sub_index, adjustment in sub_series.items():
     for (geo_id, hh_size), adjustment in hh_difference.items():
-        # TODO: Performance of this can be improved by pre-sorting the index_df and indexing via range instead of filter
-        selected_hh = np.random.choice(index_df[(index_df[GEOID_COL] == geo_id) & (index_df[CONTROL_COL] == hh_size)].index, size=abs(adjustment), replace=False).tolist()
-        if adjustment < 0:
-            to_remove_hh += selected_hh
-        if adjustment > 0:
-            to_duplicate_hh += selected_hh
-    
+            valid_indices = index_df.index[indices[(geo_id, hh_size)]]
+            selected_hh = np.random.choice(valid_indices, size=abs(adjustment), replace=(adjustment > 0) and (abs(adjustment) > len(valid_indices))).tolist()
+            if adjustment < 0:
+                to_remove_hh += selected_hh
+            if adjustment > 0:
+                to_duplicate_hh += selected_hh
+
     # Duplicate the households accordingly
     ## We duplicate first to reduce the chances of a household_id collision
     to_duplicate_hh.sort()
     new_hh_ids = get_new_households(len(to_duplicate_hh)) # Remeber that this creates household rows
     new_hh_rows = households.local.loc[to_duplicate_hh].copy()
     new_hh_rows.index = new_hh_ids
+
+    hh_mapping = pd.DataFrame({
+        "orig_hh":  to_duplicate_hh,
+        "new_hh":   new_hh_ids
+        })
     new_person_rows = persons.local[persons.household_id.isin(to_duplicate_hh)].copy()
-    new_person_rows.household_id = new_person_rows.household_id.map(dict(zip(to_duplicate_hh, new_hh_ids)))
+    new_person_rows = new_person_rows.merge(hh_mapping, left_on="household_id", right_on="orig_hh")
+    new_person_rows["household_id"] = new_person_rows["new_hh"]
+    new_person_rows.drop(["orig_hh", "new_hh"], inplace=True, axis=1)
+    # new_person_rows.household_id = new_person_rows.household_id.map(dict(zip(to_duplicate_hh, new_hh_ids)))
     new_person_rows.index = get_new_person_id(len(new_person_rows))
     households.local.loc[new_hh_ids] = new_hh_rows
     persons.local = pd.concat([persons.local, new_person_rows])
