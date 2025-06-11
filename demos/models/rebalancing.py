@@ -28,6 +28,9 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     assert len(control_table_wrapped.local_columns) == 3, f"{CONTROL_TABLE} needs to have exactly 3 columns: {GEOID_COL}, {CONTROL_COL} and the value column"
     assert persons.household_id.nunique() == households.index.nunique(), f"`persons` and `households` tables do not have coherent sizes. {persons.household_id.nunique()} vs. {households.index.nunique()}"
 
+    if year not in control_table_wrapped.local.index:
+        return
+
     value_column = [c for c in control_table_wrapped.local_columns if c not in [GEOID_COL, CONTROL_COL]][0]
     index_df = households.to_frame([GEOID_COL, CONTROL_COL]).sort_values([GEOID_COL, CONTROL_COL])
     indices = index_df.groupby([GEOID_COL, CONTROL_COL]).indices
