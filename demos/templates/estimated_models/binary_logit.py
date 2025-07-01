@@ -2,13 +2,14 @@ from __future__ import print_function
 
 import numpy as np
 import patsy
+import pandas as pd
 from statsmodels.api import Logit
 
 import orca
 
 from .. import modelmanager
 from ..utils.misc import get_data
-from .shared import TemplateStep
+from .template import TemplateStep
 
 @modelmanager.template
 class BinaryLogitStep(TemplateStep):
@@ -195,7 +196,16 @@ class BinaryLogitStep(TemplateStep):
         # for autospec), but we can add that when it's needed.      
         
         self.fitted_parameters = results.params.tolist()  # params is a pd.Series
+    
+    def predict(self, data: pd.DataFrame):
+        dm = patsy.dmatrices(data=data, formula_like=self.model_expression, return_type='dataframe')[1]  # right-hand-side design matrix
+
+        beta_X = np.dot(dm, self.fitted_parameters)
+        probs = np.divide(np.exp(beta_X), 1 + np.exp(beta_X))
         
+        rand = np.random.random(len(probs))
+        return np.less(rand, probs)
+
     
     def run(self):
         """
@@ -226,22 +236,8 @@ class BinaryLogitStep(TemplateStep):
                       filters = self.out_filters, 
                       model_expression = self.model_expression,
                       extra_columns = self.out_column)
-        df.sort_index(axis=0, inplace=True)
-        dm = patsy.dmatrices(data=df, formula_like=self.model_expression,
-                             return_type='dataframe')[1]  # right-hand-side design matrix
-        
-        # dm.sort_index(axis=0, inplace=True)
 
-        beta_X = np.dot(dm, self.fitted_parameters)
-        probs = np.divide(np.exp(beta_X), 1 + np.exp(beta_X))
-        
-        rand = np.random.random(len(probs))
-        choices = np.less(rand, probs)
-        
-        # Save results to the class object (via df to include index)
-        df['_probs'] = probs
-        self.probabilities = df._probs
-        df['_choices'] = choices
+        df['_choices'] = self.predict(df)
         self.choices = df._choices
                 
         # TO DO - generate column if it does not exist
@@ -271,23 +267,7 @@ class BinaryLogitStep(TemplateStep):
         None
         
         """
-        df.sort_index(axis=0, inplace=True)
-        # TO DO - verify that params are in place for prediction
-        dm = patsy.dmatrices(data=df, formula_like=self.model_expression,
-                             return_type='dataframe')[1]  # right-hand-side design matrix
-        
-        # dm.sort_index(axis=0, inplace=True)
-
-        beta_X = np.dot(dm, self.fitted_parameters)
-        probs = np.divide(np.exp(beta_X), 1 + np.exp(beta_X))
-        
-        rand = np.random.random(len(probs))
-        choices = np.less(rand, probs)
-        
-        # Save results to the class object (via df to include index)
-        df['_probs'] = probs
-        self.probabilities = df._probs
-        df['_choices'] = choices
+        df['_choices'] = self.predict(df)
         self.choices = df._choices
                 
         # TO DO - generate column if it does not exist

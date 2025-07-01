@@ -1,8 +1,9 @@
 from .. import modelmanager
-from .shared import TemplateStep
+from .template import TemplateStep
 from scipy.special import softmax
 import pandas as pd
 import numpy as np
+
 @modelmanager.template
 class MultinomialLogitStep(TemplateStep):
     def __init__(self, tables=None, model_expression=None, filters=None, out_tables=None,
@@ -29,16 +30,7 @@ class MultinomialLogitStep(TemplateStep):
         #TODO add training process
         pass
 
-    def run(self, data):
-        """Function to run simulation of the MNL model
-
-            Args:
-                data (_type_): _description_
-                coeffs (_type_): _description_
-
-            Returns:
-                Pandas Series: Pandas Series of the outcomes of the simulated model
-            """
+    def predict(self, data):
         if self.coeffs is None:
             raise Exception("coeffs in MNL fail to be loaded.")
         data = data.loc[:, self.variable_names]
@@ -50,3 +42,15 @@ class MultinomialLogitStep(TemplateStep):
         r = np.random.rand(probabilities.shape[0]).reshape((-1, 1))
         choices = (s < r).sum(axis=1)
         return pd.Series(index=data.index, data=choices)
+
+    def run(self, data):
+        """Function to run simulation of the MNL model
+
+            Args:
+                data (_type_): _description_
+                coeffs (_type_): _description_
+
+            Returns:
+                Pandas Series: Pandas Series of the outcomes of the simulated model
+            """
+        return self.predict(data)

@@ -5,6 +5,7 @@ from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
 import time
 from datasources import log_execution_time
+from config import DEMOSConfig
 
 @orca.injectable(autocall=False)
 def get_new_person_id(n):
@@ -37,7 +38,7 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
         None
     """
     start_time = time.time()
-    birth_list = run_and_calibrate_mortality_model(persons, households, observed_births_data, year)
+    birth_list = run_and_calibrate_birth_model(persons, households, observed_births_data, year)
 
     # Get indices of households with babies
     house_indices = list(birth_list[birth_list == 1].index)
@@ -101,32 +102,17 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
     log_execution_time(start_time, orca.get_injectable("year"), "birth")
 
 
-# TODO: Refactor this
-def run_and_calibrate_mortality_model(persons, households, observed_births_data, year):
+def run_and_calibrate_birth_model(persons, households, observed_births_data, year,):
     ELIGIBILITY_COND = (persons["sex"] == 2) & (persons["age"].between(14, 45))
     ELIGIBLE_HH = persons.local.loc[ELIGIBILITY_COND, "household_id"].unique()
 
     households["birth"] = -99
 
-    birth_model = mm.get_step("birth")
-    birth_model_variables = columns_in_formula(birth_model.model_expression)
-    birth_model_data = households.to_frame(birth_model_variables).loc[ELIGIBLE_HH]
-    birth_list = birth_model.run_with_data(birth_model_data).astype(int)
-
-    predicted_share = birth_list.sum() / len(ELIGIBLE_HH)
-    observed_births = observed_births_data.to_frame()
-    target = observed_births[observed_births["year"]==year]["count"]
-    target_share = target / len(ELIGIBLE_HH)
-
-    error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-    print("The Birth Model Calibration:")
-    calibrate_time = 0
-    while error >= 1000:
-        print(f"{calibrate_time} time: {error}")
-        birth_model.fitted_parameters[0] += np.log(target.sum()/birth_list.sum())
-        birth_list = birth_model.run_with_data(birth_model_data).astype(int)
-        predicted_share = birth_list.sum() / len(ELIGIBLE_HH)
-        error = np.sqrt(np.mean((birth_list.sum() - target)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
-    return birth_list
+    demos_config: DEMOSConfig = orca.get_injectable("demos_config")
+    calibration_procedure = demos_config.birth_module_config.calibration_procedure
+    if calibration_procedure is not None:
+        birth_model = mm.get_step("birth")
+        birth_model_variables = columns_in_formula(birth_model.model_expression)
+        birth_model_data = households.to_frame(birth_model_variables).loc[ELIGIBLE_HH]
+        
+        return calibration_procedure.calibrate_model(birth_model, birth_model_data)

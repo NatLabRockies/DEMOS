@@ -1,4 +1,5 @@
 from __future__ import print_function
+from abc import ABC, abstractmethod
 
 import numpy as np
 import pandas as pd
@@ -7,10 +8,10 @@ from datetime import datetime as dt
 
 import orca
 
-from ..__init__ import __version__
+from .. import __version__
 
 
-class TemplateStep(object):
+class TemplateStep(ABC):
     """
     Shared functionality for the template classes.
     
@@ -54,7 +55,9 @@ class TemplateStep(object):
         
         self.template = type(self).__name__  # class name
         self.template_version = __version__
-                
+    
+    @abstractmethod
+    def predict(self, data: pd.DataFrame):...
 
     @classmethod
     def from_dict(cls, d):

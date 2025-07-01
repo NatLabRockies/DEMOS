@@ -5,6 +5,7 @@ import numpy as np
 import orca
 import pandas as pd
 from templates import modelmanager as mm
+from config import load_config_file
 
 
 def run(
@@ -76,6 +77,8 @@ if __name__ == '__main__':
     parser.add_argument("-rm", "--random_matching", action="store_true", help="random matching in marriage")
     parser.add_argument("-sn", "--scenario_name", type=str, help="name of scenario of simulation")
 
+    parser.add_argument("-cfg", "--config_file", type=str, help="TOML config file")
+
     args = parser.parse_args()
     region_code = args.region_code
     initial_run = args.initial_run if args.initial_run else False
@@ -96,6 +99,9 @@ if __name__ == '__main__':
     scenario_name = args.scenario_name if args.scenario_name else False
     output_fname = args.output_fname if args.output_fname \
         else "data/model_data_{0}.h5".format(forecast_year)
+    
+    # Load config file
+    load_config_file(args.config_file)
 
     run(
         region_code, initial_run, base_year, forecast_year, random_seed,
