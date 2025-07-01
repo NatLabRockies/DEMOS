@@ -12,40 +12,9 @@ import yaml
 from templates.data import LoadTable
 
 print("********** Statrt importing datasources **********")
-
-# -----------------------------------------------------------------------------------------
-# UC SIMULATIONS: ADDS SPECIAL SCENARIO INJECTABLES FROM NOTES
-# -----------------------------------------------------------------------------------------
-scenario_data = glob.glob("./data/scenario_data*")
-if len(scenario_data) > 0:
-    with open(scenario_data[0]) as f:
-        scenario = yaml.load(f, Loader=yaml.FullLoader)
-    if scenario["notes"] is not None and scenario["notes"] != "":
-        print("Extracting relevant information from scenario notes")
-        settings = eval(scenario["notes"])["settings"]
-        if "calibrated_folder" in settings.keys():
-            orca.add_injectable("calibrated_folder", settings["calibrated_folder"])
-        if "initial_run" in settings.keys():
-            orca.add_injectable("initial_run", eval(settings["initial_run"]))
-        if "multi_level_lcms" in settings.keys():
-            orca.add_injectable("multi_level_lcms", eval(settings["multi_level_lcms"]))
-        if "segmented_lcms" in settings.keys():
-            orca.add_injectable("segmented_lcms", eval(settings["segmented_lcms"]))
-        if "capacity_boost" in settings.keys():
-            orca.add_injectable("capacity_boost", settings["capacity_boost"])
-        if "database_control_totals" in settings.keys():
-            orca.add_injectable(
-                "use_database_control_totals", eval(settings["database_control_totals"])
-            )
-
 # -----------------------------------------------------------------------------------------
 # DOWNLOADS DATA FOR REGION
 # -----------------------------------------------------------------------------------------
-all_local = orca.get_injectable("all_local")
-if not all_local:
-    # TODO: get the region code from cloud and register it into orca
-    pass
-
 region_code = orca.get_injectable("region_code")
 calibrated_folder = orca.get_injectable("calibrated_folder")
 print("Importing datasources for region %s" % region_code)
@@ -118,12 +87,9 @@ observed_exiting_workforce_data = pd.read_csv(observed_exiting_workforce_data_na
 orca.add_table("observed_exiting_workforce", observed_exiting_workforce_data)
 
 
-if not all_local:
-    # TODO: download the input file from the cloud to data folder.
-    pass
-else:
-    if not os.path.exists("data/%s" % data_name):
-        raise OSError("No input data found at data/%s" % data_name)
+
+if not os.path.exists("data/%s" % data_name):
+    raise OSError("No input data found at data/%s" % data_name)
 
 # -----------------------------------------------------------------------------------------
 # LOADS ORCA TABLES FROM H5 FILE
@@ -239,9 +205,6 @@ print("All registered tables: ", orca.list_tables())
 if calibrated_folder == "custom":
     # Custom settings, useful for the definition of time-based accessibility variables
     print("Checking if custom_settings.yaml file exists")
-    if not all_local:
-        # TODO: Download custom_settings.yaml to config folder
-        pass
     try:
         with open("configs/custom_settings.yaml") as f:
             custom_settings = yaml.load(f, Loader=yaml.FullLoader)
@@ -251,23 +214,8 @@ if calibrated_folder == "custom":
 
     # Custom output parameters, useful when variables change from default
     print("Checking if custom output_parameters.yaml file exists")
-    if not all_local:
-        # TODO: Download output_parameters to config folder
-        pass
-    else:
-        if not os.path.exists("configs/output_parameters.yaml"):
+    if not os.path.exists("configs/output_parameters.yaml"):
             raise OSError("No settings found at configs/output_parameters.yaml")
-
-    # Custom calibration settings, useful to refine specifications
-    if orca.get_injectable("running_calibration_routine") is True:
-        print("Checking if custom pf_vars.yaml file exists")
-
-        if not all_local:
-            # TODO: Download pf_vars.yaml to 'configs/calibrated_configs/custom/custom_%s_%s' folder
-            pass
-        else:
-            if not os.path.exists("pf_vars.yaml"):
-                raise OSError("No settings found at ./pf_vars.yaml")
 
 # -----------------------------------------------------------------------------------------
 # ADDS AGGREGATION TABLES
