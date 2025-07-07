@@ -125,19 +125,19 @@ def run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, y
 
     return exit_workforce_list
 
-@orca.column(table_name="persons", cache=True, cache_scope="iteration")
+@orca.column(table_name="persons")
 def age_group(data="persons.age"):
     age_intervals = [0, 20, 30, 40, 50, 65, 900]
-    age_labels = ['lte20', '21-29', '30-39', '40-49', '50-64', 'gte65']
+    age_labels = ['lte19', '20-29', '30-39', '40-49', '50-64', 'gte65']
     return pd.cut(data, bins=age_intervals, labels=age_labels, include_lowest=True).astype(str)
 
-@orca.column(table_name="persons", cache=True, cache_scope="iteration")
+@orca.column(table_name="persons")
 def education_group(data="persons.edu"):
     education_intervals = [0, 18, 22, 200]
     education_labels = ['lte17', '18-21', 'gte22']
     return pd.cut(data, bins=education_intervals, labels=education_labels, include_lowest=True).astype(str)
 
-@orca.column(table_name="persons", cache=True, cache_scope="iteration")
+@orca.column(table_name="persons")
 def new_earning(persons, income_dist):
     persons_df = persons.to_frame(["age_group", "education_group"])
     merged_df = persons_df.merge(income_dist.local, on=['age_group', 'education_group'], how='left')
