@@ -6,6 +6,10 @@ from templates.calibration import CalibrationConfig
 
 CONFIG = None
 
+class EmploymentModuleConfig(BaseModel):
+    enter_model_calibration_procedure: Optional[CalibrationConfig] = None
+    exit_model_calibration_procedure: Optional[CalibrationConfig] = None
+
 class BirthModuleConfig(BaseModel):
     calibration_procedure: Optional[CalibrationConfig] = None
 
@@ -19,6 +23,7 @@ class DEMOSConfig(BaseModel):
     calibrated_folder: str = "custom"
 
     # Module-specific config
+    employment_module_config: EmploymentModuleConfig
     birth_module_config: BirthModuleConfig
     
     def __init__(self, *args, **kwargs):

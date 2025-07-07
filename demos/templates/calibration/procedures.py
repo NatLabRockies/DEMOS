@@ -14,7 +14,7 @@ class AbsoluteErrorCalibration(BaseModel):
     tolerance: float
     max_iter: int = 20
     
-    def calibrate_model(self, model: BinaryLogitStep, data: pd.DataFrame):
+    def calibrate_and_run_model(self, model: BinaryLogitStep, data: pd.DataFrame):
         raise NotImplementedError("Absoulute Error Calibration has not yet been implemented")
 
 
@@ -28,7 +28,10 @@ class RMSECalibration(BaseModel):
     def calibration_step(self, model: BinaryLogitStep, update_delta: float):
         model.fitted_parameters[0] += update_delta
 
-    def calibrate_model(self, model: BinaryLogitStep, data: pd.DataFrame):
+    def calibrate_and_run_model(self, model: BinaryLogitStep, data: pd.DataFrame):
+        # Sort for reproducibility
+        data = data.sort_index(axis=0)
+
         # Retrive orca values
         year = orca.get_injectable("year")
         target_table = orca.get_table(self.observed_values_table).to_frame()

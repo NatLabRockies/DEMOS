@@ -22,7 +22,7 @@ def get_new_person_id(n):
 
 
 @orca.step("birth_model")
-def birth_model(persons, households, graveyard, observed_births_data, get_new_person_id, year):
+def birth_model(persons, households, observed_births_data, get_new_person_id, year):
     """
     Function to run the birth model at the household level.
     The function updates the persons table.
@@ -59,28 +59,6 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
     babies["worker"] = 0
     babies["work_at_home"] = 0
 
-
-    # TODO: Values not used in refactored code
-    # babies["hours"] = 0
-    # babies["person_age"] = "19 and under"
-    # babies["person_sex"] = babies["sex"].map({1: "male", 2: "female"})
-    # babies["work_at_home"] = 0
-    # babies["work_block_id"] = "-1"
-    # babies["work_zone_id"] = "-1"
-    # babies["workplace_taz"] = "-1"
-    # babies["school_block_id"] = "-1"
-    # babies["school_id"] = "-1"
-    # babies["school_taz"] = "-1"
-    # babies["school_zone_id"] = "-1"
-
-    # TODO: Values now defined by orca columns
-    # babies["child"] = 1
-    # babies["senior"] = 0
-    # babies["dead"] = -99
-    # babies["person"] = 1
-    # babies["education_group"] = "lte17"
-    # babies["age_group"] = "lte20"
-
     # Set race of babies
     # TODO: There is duplication of information between `race_id` and `race`
     hh_races = (persons.local.groupby("household_id")
@@ -102,17 +80,20 @@ def birth_model(persons, households, graveyard, observed_births_data, get_new_pe
     log_execution_time(start_time, orca.get_injectable("year"), "birth")
 
 
-def run_and_calibrate_birth_model(persons, households, observed_births_data, year,):
+def run_and_calibrate_birth_model(persons, households):
     ELIGIBILITY_COND = (persons["sex"] == 2) & (persons["age"].between(14, 45))
     ELIGIBLE_HH = persons.local.loc[ELIGIBILITY_COND, "household_id"].unique()
 
-    households["birth"] = -99
-
+    # Load calibration config
     demos_config: DEMOSConfig = get_config()
     calibration_procedure = demos_config.birth_module_config.calibration_procedure
+    
+    # Get model data
+    birth_model = mm.get_step("birth")
+    birth_model_variables = columns_in_formula(birth_model.model_expression)
+    birth_model_data = households.to_frame(birth_model_variables).loc[ELIGIBLE_HH]
+    
+    # Calibrate if needed
     if calibration_procedure is not None:
-        birth_model = mm.get_step("birth")
-        birth_model_variables = columns_in_formula(birth_model.model_expression)
-        birth_model_data = households.to_frame(birth_model_variables).loc[ELIGIBLE_HH]
-        
         return calibration_procedure.calibrate_model(birth_model, birth_model_data)
+    return birth_model.predict(birth_model_data)
