@@ -1,7 +1,7 @@
 # Global config
 region_code = "06197001"
 random_seed = 100
-base_year = 2011
+base_year = 2010
 forecast_year = 2020
 
 [birth_module_config.calibration_procedure]
