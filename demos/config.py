@@ -4,6 +4,8 @@ from pydantic import BaseModel
 from typing import Optional
 from templates.calibration import CalibrationConfig
 
+CONFIG = None
+
 class BirthModuleConfig(BaseModel):
     calibration_procedure: Optional[CalibrationConfig] = None
 
@@ -14,20 +16,29 @@ class DEMOSConfig(BaseModel):
     random_seed: int
     base_year: int
     output_fname: str = None
+    calibrated_folder: str = "custom"
 
     # Module-specific config
     birth_module_config: BirthModuleConfig
     
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         if self.output_fname is None:
             self.output_fname = "data/model_data_{0}.h5".format(self.forecast_year)
 
+
+    def update(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
 def load_config_file(dir: str) -> DEMOSConfig:
-    orca.add_injectable("demos_config", DEMOSConfig(**toml.load(dir)))
-
-
-def get_config():
-    return orca.get_injectable("demos_config")
+    global CONFIG
+    CONFIG = DEMOSConfig(**toml.load(dir))
 
 def set_config(params_dict: dict):
-    get_config().local.update(params_dict)
+    global CONFIG
+    CONFIG.update(**vars(params_dict))
+
+def get_config():
+    global CONFIG
+    return CONFIG

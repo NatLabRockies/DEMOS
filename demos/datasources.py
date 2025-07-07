@@ -10,13 +10,14 @@ import pandas as pd
 import yaml
 #from google.cloud import storage
 from templates.data import LoadTable
+from config import CONFIG
 
 print("********** Statrt importing datasources **********")
 # -----------------------------------------------------------------------------------------
 # DOWNLOADS DATA FOR REGION
 # -----------------------------------------------------------------------------------------
-region_code = orca.get_injectable("region_code")
-calibrated_folder = orca.get_injectable("calibrated_folder")
+region_code = CONFIG.region_code
+calibrated_folder = CONFIG.calibrated_folder
 print("Importing datasources for region %s" % region_code)
 
 if len(region_code) == 2:
@@ -199,29 +200,8 @@ orca.add_table("income_dist", income_dist)
 print("All registered tables: ", orca.list_tables())
 
 # -----------------------------------------------------------------------------------------
-# DOWNLOADS CUSTOM SETTINGS IF AVAILABLE
-# -----------------------------------------------------------------------------------------
-
-if calibrated_folder == "custom":
-    # Custom settings, useful for the definition of time-based accessibility variables
-    print("Checking if custom_settings.yaml file exists")
-    try:
-        with open("configs/custom_settings.yaml") as f:
-            custom_settings = yaml.load(f, Loader=yaml.FullLoader)
-        orca.add_injectable("custom_settings", custom_settings)
-    except OSError:
-        raise OSError("No settings found at configs/custom_settings.yaml")
-
-    # Custom output parameters, useful when variables change from default
-    print("Checking if custom output_parameters.yaml file exists")
-    if not os.path.exists("configs/output_parameters.yaml"):
-            raise OSError("No settings found at configs/output_parameters.yaml")
-
-# -----------------------------------------------------------------------------------------
 # ADDS AGGREGATION TABLES
 # -----------------------------------------------------------------------------------------
-
-
 def register_aggregation_table(table_name, table_id):
     """
     Generator function for tables representing aggregate geography.
@@ -263,7 +243,7 @@ for geog in aggregate_geos:
 print("Register current year of the current iteration")
 @orca.injectable("year")
 def year():
-    default_year = orca.get_injectable("base_year")
+    default_year = CONFIG.base_year
     iter_var = orca.get_injectable("iter_var")
     if iter_var is not None:
         return iter_var
@@ -531,13 +511,10 @@ def read_yaml(path):
         config = list(yaml.safe_load_all(f))[0]
 
     return config
-region_code = orca.get_injectable("region_code")
-calibrated_folder = orca.get_injectable("calibrated_folder")
-skim_source = orca.get_injectable("skim_source")
+region_code = CONFIG.region_code
+calibrated_folder = CONFIG.calibrated_folder
 calibrated_path = os.path.join('calibrated_configs', calibrated_folder, region_code)
-if os.path.exists(os.path.join('configs', calibrated_path, skim_source)):
-    calibrated_path = os.path.join(calibrated_path, skim_source)
-configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable('calibrated') else 'estimated_configs')
+configs_folder = os.path.join('configs', calibrated_path)
 print("Models' folder: ", configs_folder)
 
 print("********** End importing datasources **********")

@@ -5,7 +5,7 @@ from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
 import time
 from datasources import log_execution_time
-from config import DEMOSConfig
+from config import DEMOSConfig, get_config
 
 @orca.injectable(autocall=False)
 def get_new_person_id(n):
@@ -108,7 +108,7 @@ def run_and_calibrate_birth_model(persons, households, observed_births_data, yea
 
     households["birth"] = -99
 
-    demos_config: DEMOSConfig = orca.get_injectable("demos_config")
+    demos_config: DEMOSConfig = get_config()
     calibration_procedure = demos_config.birth_module_config.calibration_procedure
     if calibration_procedure is not None:
         birth_model = mm.get_step("birth")

@@ -204,7 +204,7 @@ class BinaryLogitStep(TemplateStep):
         probs = np.divide(np.exp(beta_X), 1 + np.exp(beta_X))
         
         rand = np.random.random(len(probs))
-        return np.less(rand, probs)
+        return pd.Series(np.less(rand, probs), index=data.index)
 
     
     def run(self):

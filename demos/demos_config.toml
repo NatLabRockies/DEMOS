@@ -1,3 +1,9 @@
+# Global config
+region_code = "06197001"
+random_seed = 100
+base_year = 2011
+forecast_year = 2020
+
 [birth_module_config.calibration_procedure]
 procedure_type = "rmse_error"
 observed_values_table = "observed_births_data"

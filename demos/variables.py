@@ -6,8 +6,9 @@ import numpy as np
 import orca
 import pandas as pd
 import yaml
+from config import CONFIG
 
-print('Importing variables for region', orca.get_injectable('region_code'))
+print('Importing variables for region', CONFIG.region_code)
 
 # ----------------------------------------------------------------------------------------
 # COMMON FUNCTIONS
@@ -2159,7 +2160,6 @@ def to_zone_id(job_flows, blocks):
 
 @orca.injectable()
 def mode_choice_template(region_code, calibrated_folder):
-    # region_code = orca.get_injectable("region_code")
     # calibrated_folder = orca.get_injectable("calibrated_folder")
     calibrated_path = os.path.join(
         'configs',
@@ -2468,17 +2468,7 @@ impedance_columns = ['euclidean', 'pandana']
 units = 'km'
 impedance_thresholds = [1, 5, 10, 15, 20, 30]
 zones_table = 'block_groups'
-region_code = orca.get_injectable('region_code')
-if 'custom_settings' in orca.list_injectables():
-    custom_settings = orca.get_injectable('custom_settings')
-    skim_source = orca.get_injectable('skim_source')
-    custom_settings = custom_settings[region_code]
-    if 'skims' in custom_settings.keys():
-        names_dict = custom_settings['skims'][skim_source]['impedance_names']
-        impedance_columns = [names_dict[col] for col in custom_settings['skims'][skim_source]['columns']]
-        units = custom_settings['skims'][skim_source]['impedance_units']
-        impedance_thresholds = custom_settings['skims'][skim_source]['impedance_thresholds']
-        zones_table = custom_settings['skims'][skim_source]['zones_table']
+region_code = CONFIG.region_code
 travel_data = orca.get_table('travel_data').local.copy()
 travel_data = travel_data.rename(columns=names_dict)
 orca.add_table('travel_data', travel_data)

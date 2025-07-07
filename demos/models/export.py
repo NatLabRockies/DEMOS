@@ -1,5 +1,6 @@
 import orca
 import pandas as pd
+from config import CONFIG
 
 orca.add_table("age_evolution", pd.DataFrame())
 
@@ -53,7 +54,7 @@ def export(table_name):
         table_name (string): Name of the orca table
     """
     
-    region_code = orca.get_injectable("region_code")
+    region_code = CONFIG.region_code
     output_folder = orca.get_injectable("output_folder")
     df = orca.get_table(table_name).to_frame()
     csv_name = table_name + "_" + region_code +".csv"
