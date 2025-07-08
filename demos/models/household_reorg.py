@@ -168,27 +168,24 @@ def households_reorg(persons, households, year, get_new_households):
     """
     start_time = time.time()
     # Marriage Model
-    single_noncohab_index = ~persons["cohabitate"] & persons["is_not_married"]
-
     print("Running marriage model...")
-    marriage = mm.get_step("marriage")
-    # TODO: The marriage.variable_names part was necessary because the Multinomial logit does not
-    #       call .to_frame() inside. This is inconsistent with the binary logit interface
-    marriage_list = marriage.run(persons.to_frame(marriage.variable_names).loc[single_noncohab_index].sort_index(axis=0))
+    single_noncohab_index = ~persons["cohabitate"] & persons["is_not_married"]
+    
+    marriage_model = mm.get_step("marriage")
+    marriage_model_data = persons.to_frame(marriage_model.variable_names).loc[single_noncohab_index]
+    marriage_list = marriage_model.predict(marriage_model_data)
 
     # Divorce model
+    print("Running divorce model...")
     married_household_sizes = persons.local\
         .loc[(persons["MAR"] == 1) & persons["relate"].isin([0, 1])] \
         .groupby("household_id").size()
     married_households_living_together = married_household_sizes[married_household_sizes == 2].index.tolist()
-
-    # TODO: Rethink how we are passing the fitlers here
-    print("Running divorce model...")
-    households["divorced"] = -99
+    
     divorce_model = mm.get_step("divorce")
     divorce_model_variables = columns_in_formula(divorce_model.model_expression)
     divorce_model_data = households.to_frame(divorce_model_variables).loc[married_households_living_together]
-    divorce_list = divorce_model.run_with_data(divorce_model_data).astype(int)
+    divorce_list = divorce_model.predict(divorce_model_data).astype(int)
     
     # Cohabitation to X Model
     print("Running cohabitation model...")
@@ -196,8 +193,9 @@ def households_reorg(persons, households, year, get_new_households):
         persons.local[(persons["relate"] == 13) & persons["is_not_married"]]["household_id"] \
             .unique().astype(int)
     )
-    cohabitation = mm.get_step("cohabitation")
-    cohabitate_x_list = cohabitation.run(households.to_frame(cohabitation.variable_names).loc[ELIGIBLE_HOUSEHOLDS])
+    cohabitation_model = mm.get_step("cohabitation")
+    cohabitation_model_data = households.to_frame(cohabitation_model.variable_names).loc[ELIGIBLE_HOUSEHOLDS]
+    cohabitate_x_list = cohabitation_model.predict(cohabitation_model_data)
 
     ######### UPDATING
     print("Restructuring households:")

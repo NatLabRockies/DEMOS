@@ -198,6 +198,7 @@ class BinaryLogitStep(TemplateStep):
         self.fitted_parameters = results.params.tolist()  # params is a pd.Series
     
     def predict(self, data: pd.DataFrame):
+        data.sort_index(axis=0, inplace=True)
         rhs = self.model_expression.split("~", 1)[1]
         dm = patsy.dmatrix(data=data, formula_like=rhs, return_type='dataframe')
 
@@ -237,8 +238,7 @@ class BinaryLogitStep(TemplateStep):
                       filters = self.out_filters, 
                       model_expression = self.model_expression,
                       extra_columns = self.out_column)
-
-        df.sort_index(axis=0, inplace=True)
+        
         df['_choices'] = self.predict(df)
         self.choices = df._choices
                 

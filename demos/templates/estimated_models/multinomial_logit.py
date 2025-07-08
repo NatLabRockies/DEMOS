@@ -33,7 +33,7 @@ class MultinomialLogitStep(TemplateStep):
     def predict(self, data):
         if self.coeffs is None:
             raise Exception("coeffs in MNL fail to be loaded.")
-        data = data.loc[:, self.variable_names]
+        data = data.loc[:, self.variable_names].sort_index(axis=0)
         utils = np.dot(data, self.coeffs)
         base_util = np.zeros(utils.shape[0])
         utils = np.column_stack((base_util, utils))

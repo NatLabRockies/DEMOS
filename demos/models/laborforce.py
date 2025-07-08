@@ -9,8 +9,6 @@ from templates.utils.models import columns_in_formula
 
 @orca.step("laborforce_model")
 def laborforce_model(persons,
-                     observed_entering_workforce,
-                     observed_exiting_workforce,
                      entering_workforce,
                      exiting_workforce,
                      year):
@@ -20,6 +18,8 @@ def laborforce_model(persons,
     Modifies State Variables:
         - persons.worker
         - persons.earning
+    
+    Modifies Reporting tables:
         - entering_workforce
         - exiting_workforce
 
@@ -60,7 +60,6 @@ def sample_income(mean, std):
     return np.random.lognormal(mean, std)
 
 
-# TODO: Refactor this
 def run_and_calibrate_in_workforce_model(persons):
     # Load calibration config
     demos_config: DEMOSConfig = get_config()
@@ -77,9 +76,9 @@ def run_and_calibrate_in_workforce_model(persons):
         return calibration_procedure.calibrate_and_run_model(model, model_data)
     return model.predict(model_data)
 
-# TODO: Refactor this
+
 def run_and_calibrate_out_workforce_model(persons):
-        # Load calibration config
+    # Load calibration config
     demos_config: DEMOSConfig = get_config()
     calibration_procedure = demos_config.employment_module_config.exit_model_calibration_procedure
     
