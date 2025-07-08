@@ -20,6 +20,7 @@ class AbsoluteErrorCalibration(BaseModel):
 
 class RMSECalibration(BaseModel):
     procedure_type: Literal["rmse_error"]
+    tolerance_type: Literal["relative", "absolute"] = "absolute"
     observed_values_table: str
     tolerance: float
     max_iter: int = 20
@@ -28,28 +29,40 @@ class RMSECalibration(BaseModel):
     def calibration_step(self, model: BinaryLogitStep, update_delta: float):
         model.fitted_parameters[0] += update_delta
 
+    def compute_error(self, prediction: pd.Series, target: float):
+        if self.tolerance_type == "relative":
+            return np.sqrt(np.mean((prediction.sum() / len(prediction) - target)**2))
+        
+        elif self.tolerance_type == "absolute":
+            return np.sqrt(np.mean((prediction.sum() - target)**2))
+        
+        raise NotImplementedError(f"Tolerance type {self.tolerance_type} not implemented")
+
     def calibrate_and_run_model(self, model: BinaryLogitStep, data: pd.DataFrame):
+        table_column = "count" if self.tolerance_type == "absolute" else "share"
+
         # Sort for reproducibility
         data = data.sort_index(axis=0)
 
         # Retrive orca values
         year = orca.get_injectable("year")
         target_table = orca.get_table(self.observed_values_table).to_frame()
-        target_value = target_table[target_table["year"] == year]["count"].sum() # TODO: Review
+        target_value = target_table[target_table["year"] == year][table_column].iloc[0]
 
         prediction = model.predict(data)
-        error = np.sqrt(np.mean((prediction.sum() - target_value)**2))
+        error = self.compute_error(prediction, target_value)
 
         total_iterations = 0
         while error > self.tolerance and total_iterations < self.max_iter:
             print(f"{total_iterations} iter: {error}")
+            target_for_update = target_value if self.tolerance_type == "absolute" else target_value * len(data)
             self.calibration_step(
                 model,
-                np.log(target_value / prediction.sum())
+                np.log(target_for_update / prediction.sum())
             )
             total_iterations += 1
 
             prediction = model.predict(data)
-            error = np.sqrt(np.mean((prediction.sum() - target_value)**2))
+            error = self.compute_error(prediction, target_value)
         print(f"{total_iterations} iter: {error}")
         return prediction

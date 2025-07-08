@@ -95,5 +95,5 @@ def run_and_calibrate_birth_model(persons, households):
     
     # Calibrate if needed
     if calibration_procedure is not None:
-        return calibration_procedure.calibrate_model(birth_model, birth_model_data)
+        return calibration_procedure.calibrate_and_run_model(birth_model, birth_model_data)
     return birth_model.predict(birth_model_data)
