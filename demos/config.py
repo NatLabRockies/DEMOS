@@ -6,6 +6,9 @@ from templates.calibration import CalibrationConfig
 
 CONFIG = None
 
+class MortalityModuleConfig(BaseModel):
+    calibration_procedure: Optional[CalibrationConfig] = None
+
 class EmploymentModuleConfig(BaseModel):
     enter_model_calibration_procedure: Optional[CalibrationConfig] = None
     exit_model_calibration_procedure: Optional[CalibrationConfig] = None
@@ -24,6 +27,7 @@ class DEMOSConfig(BaseModel):
 
     # Module-specific config
     employment_module_config: EmploymentModuleConfig
+    mortality_module_config: MortalityModuleConfig
     birth_module_config: BirthModuleConfig
     
     def __init__(self, *args, **kwargs):

@@ -38,7 +38,7 @@ def birth_model(persons, households, observed_births_data, get_new_person_id, ye
         None
     """
     start_time = time.time()
-    birth_list = run_and_calibrate_birth_model(persons, households, observed_births_data, year)
+    birth_list = run_and_calibrate_birth_model(persons, households)
 
     # Get indices of households with babies
     house_indices = list(birth_list[birth_list == 1].index)

@@ -7,15 +7,21 @@ forecast_year = 2020
 [employment_module_config.enter_model_calibration_procedure]
 procedure_type = "rmse_error"
 observed_values_table = "observed_entering_workforce"
-tolerance = 0.01
 tolerance_type = "relative"
+tolerance = 0.01
 max_iter = 1000
 
 [employment_module_config.exit_model_calibration_procedure]
 procedure_type = "rmse_error"
 observed_values_table = "observed_exiting_workforce"
-tolerance = 0.01
 tolerance_type = "relative"
+tolerance = 0.01
+max_iter = 1000
+
+[mortality_module_config.calibration_procedure]
+procedure_type = "rmse_error"
+observed_values_table = "observed_fatalities_data"
+tolerance = 1000
 max_iter = 1000
 
 [birth_module_config.calibration_procedure]

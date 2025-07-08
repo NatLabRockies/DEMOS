@@ -4,6 +4,8 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
 from datasources import log_execution_time
+from config import DEMOSConfig, get_config
+from templates.utils.models import columns_in_formula
 
 @orca.step("fatality_model")
 def fatality_model(persons, households, observed_fatalities_data, rel_map, graveyard, year):
@@ -35,7 +37,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     ###   Otherwise, oldest person is new head
     ###   In all cases, we need to use the `rel_map` table to map the rest of the relate columns
 
-    fatality_list_idx = fatality_list.astype(bool)
+    fatality_list_idx = fatality_list.astype(bool).reindex(persons.local.index)
     dead_people_slice = persons.local.loc[fatality_list_idx]
     households_with_dead_people = dead_people_slice.household_id.unique()
     persons_in_relevant_household_index = persons["household_id"].isin(households_with_dead_people)
@@ -119,28 +121,16 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
 
 # TODO: Refactor this
 def run_and_calibrate_mortality_model(persons, observed_fatalities_data, year):
-    # Observed values for calibration
-    observed_fatalities = observed_fatalities_data.to_frame()
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    calibration_procedure = demos_config.mortality_module_config.calibration_procedure
+    
+    # Get model data
+    model = mm.get_step("mortality")
+    model_variables = columns_in_formula(model.model_expression)
+    model_data = persons.to_frame(model_variables)
 
-    # Get estimated model object and run it
-    mortality = mm.get_step("mortality")
-    mortality.run()
-
-    fatality_list = mortality.choices.astype(int)
-    predicted_share = fatality_list.sum() / fatality_list.shape[0]
-    target = observed_fatalities[observed_fatalities["year"]==year]["count"]
-    target_share = target / len(persons)
-    error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
-    print("The Fatality Model Calibration:")
-    calibrate_time = 0
-    while error >= 1000:
-        print(f"{calibrate_time} time: {error}")
-        mortality.fitted_parameters[0] += np.log(target.sum()/fatality_list.sum())
-        mortality.run()
-        fatality_list = mortality.choices.astype(int)
-        predicted_share = fatality_list.sum() / len(persons)
-        error = np.sqrt(np.mean((fatality_list.sum() - target)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
-
-    return fatality_list
+    # Calibrate if needed
+    if calibration_procedure is not None:
+        return calibration_procedure.calibrate_and_run_model(model, model_data)
+    return model.predict(model_data)
