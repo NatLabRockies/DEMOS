@@ -7,17 +7,6 @@ import numpy as np
 import orca
 
 # TODO: Logging
-
-class AbsoluteErrorCalibration(BaseModel):
-    procedure_type: Literal["absolute_error"]
-    observed_values_table: str
-    tolerance: float
-    max_iter: int = 20
-    
-    def calibrate_and_run_model(self, model: BinaryLogitStep, data: pd.DataFrame):
-        raise NotImplementedError("Absoulute Error Calibration has not yet been implemented")
-
-
 class RMSECalibration(BaseModel):
     procedure_type: Literal["rmse_error"]
     tolerance_type: Literal["relative", "absolute"] = "absolute"
