@@ -4,7 +4,6 @@ import os
 from itertools import product
 
 import numpy as np
-import openmatrix as omx
 import orca
 import pandas as pd
 import yaml
@@ -361,57 +360,6 @@ except Exception:
             df["agg_sector"] = -1
         ect = ect.append(df)
 orca.add_table("ect", ect.set_index("year"))
-
-
-# -----------------------------------------------------------------------------------------
-# ADD ACTIVITYSIM SKIMS DATA
-# -----------------------------------------------------------------------------------------
-print("Handle skim data.")
-skims = omx.open_file('data/skims_mpo_{}.omx'.format(region_code),'r')
-orca.add_injectable('asim_skims', skims)
-
-# Mode Choice Constants (Consider moving them to .yaml file)
-# Here as a place holder for now
-orca.add_injectable('cost_per_mile', 18.0) # 18 cents per miles
-orca.add_injectable('walkThresh', 2.0) #2 miles
-orca.add_injectable('walkSpeed', 3.0) #3 miles per hour
-orca.add_injectable('bikeThresh', 6.0) #2 miles
-orca.add_injectable('bikeSpeed', 12.00) #3 miles per hour
-orca.add_injectable('ivt_cost_multiplier', 0.6)
-orca.add_injectable('costShareSr2', 1.75)
-orca.add_injectable('costShareSr3', 2.50)
-orca.add_injectable('short_i_wait_multiplier', 2.0)
-orca.add_injectable('waitThresh', 10.00)
-orca.add_injectable('long_i_wait_multiplier', 1.0 )
-orca.add_injectable('xwait_multiplier', 2.0)
-orca.add_injectable('wacc_multiplier', 2.0)
-orca.add_injectable('wegr_multiplier', 2.0)
-orca.add_injectable('shortWalk', 0.333)
-orca.add_injectable('longWalk', 0.667)
-orca.add_injectable('tnc_baseline', 2.20)
-orca.add_injectable('tnc_cost_minute', 0.24)
-orca.add_injectable('tnc_cost_mile', 1.33)
-orca.add_injectable('tnc_min_fare', 7.20)
-orca.add_injectable('avg_parking_cost', 2.50)
-orca.add_injectable('transit_change', 1)
-
-
-def add_missing_combinations(df):
-    # Get the unique values from each index level
-    index_values = [df.index.get_level_values(level).unique() for level in range(df.index.nlevels)]
-
-    # Generate all possible pair combinations
-    index_pairs = list(product(*index_values))
-
-    # Reindex the DataFrame with all possible combinations
-    new_df = df.reindex(index=index_pairs)
-
-    return new_df
-
-print("Update travel data table's index.")
-travel_data = orca.get_table("travel_data")
-t = add_missing_combinations(travel_data.local)
-orca.add_table('travel_data', t)
 
 # -----------------------------------------------------------------------------------------
 # ADD DEMOS TABLES
