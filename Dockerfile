@@ -1,17 +1,14 @@
-FROM python:3.8
+FROM continuumio/miniconda3:latest
 
-ADD . /base/
+# Create conda environment
+WORKDIR /tmp
+COPY environment.yml conda-linux-64.lock ./
+RUN conda create --name demos-env --file conda-linux-64.lock \
+	&& conda clean --all --yes \
+	&& rm conda-linux-64.lock environment.yml
 
-WORKDIR /base
+# Copy the code
+COPY ./demos /demos
+WORKDIR /demos
 
-RUN python setup.py develop
-
-WORKDIR /base/demos_urbansim
-
-RUN apt-get update && \
-	apt-get install -y gcc libhdf5-serial-dev
-
-RUN pip install -r requirements.txt
-
-WORKDIR /base/demos_urbansim
-ENTRYPOINT ["python", "-u", "simulate.py", "-c", "-cf", "custom", "-l"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "demos-env", "python", "simulate.py"]
