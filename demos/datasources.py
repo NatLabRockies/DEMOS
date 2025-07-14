@@ -309,7 +309,7 @@ try:
     forecast_hct = forecast_hct.set_index("year").diff().iloc[1:].cumsum()
     base_value = hct[hct["year"] == hct["year"].max()].total_number_of_households.item()
     forecast_hct["total_number_of_households"] += base_value
-    hct = hct.append(forecast_hct.reset_index())
+    hct = pd.concat([hct, forecast_hct.reset_index()])
 except Exception:
     max = hct[hct["year"] == hct["year"].max()]
     min = hct[hct["year"] == hct["year"].min()]
@@ -327,7 +327,7 @@ except Exception:
         df = pd.DataFrame(data={"year": [year], "total_number_of_households": [hh]})
         if "hh_type" in hct.columns:
             df["hh_type"] = -1
-        hct = hct.append(df)
+        hct = pd.concat([hct, df])
 orca.add_table("hct", hct.set_index("year"))
 
 try:
@@ -341,7 +341,7 @@ try:
     forecast_ect = forecast_ect.set_index("year").diff().iloc[1:].cumsum()
     base_value = ect[ect["year"] == ect["year"].max()].total_number_of_jobs.item()
     forecast_ect["total_number_of_jobs"] += base_value
-    ect = ect.append(forecast_ect.reset_index())
+    ect = pd.concat([ect, forecast_ect.reset_index()])
 except Exception:
     max = ect[ect["year"] == ect["year"].max()]
     min = ect[ect["year"] == ect["year"].min()]
@@ -358,7 +358,7 @@ except Exception:
         df = pd.DataFrame(data={"year": [year], "total_number_of_jobs": [jobs]})
         if "agg_sector" in ect.columns:
             df["agg_sector"] = -1
-        ect = ect.append(df)
+        ect = pd.concat([ect, df])
 orca.add_table("ect", ect.set_index("year"))
 
 # -----------------------------------------------------------------------------------------

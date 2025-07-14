@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nrel.demos"
+version = "0.0.1"
+description = "DEMOS is a demographic simulation tool."
+readme = "README.md"
+authors = [{ name = "National Renewable Energy Laboratory" }, { name = "LBNL" }]
+license = {}
+classifiers = {}
+keywords = ["simulation", "demographic", "agent-based"]
+dependencies = [
+
+]
+
+requires-python = ">= 3.10"
+
+[project.optional-dependencies]
+reporting = [
+    "ipykernel",
+    "matplotlib",
+    "seaborn",
+    
+
+]
+docs = []
+dev = [
+    "black"
+]
+
+[project.scripts]
+# TODO: Check these
+demos = "demos.simulate:simulate"
+# plotting = 
