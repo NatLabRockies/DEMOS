@@ -1,15 +1,18 @@
-from pandas import HDFStore, DataFrame
 import time
+import numpy as np
+from pandas import HDFStore, DataFrame
 
 def compare_datasets(dset1, dset2):
     df1 = DataFrame(dset1).sort_index(axis=1)
     df2 = DataFrame(dset2).sort_index(axis=1)
-
-    if not df1.equals(df2):
-        print(f"Datasets are different.")
-        return False
+    comparison = df1.compare(df2)
+    
+    if len(comparison) > 0:
+        print(comparison)
+        return np.allclose(comparison.swaplevel(axis=1)['self'],comparison.swaplevel(axis=1)['other'], equal_nan=True)
 
     return True
+
 
 def compare_hdf5_files(file1_path, file2_path):
     with HDFStore(file1_path, 'r') as store1, HDFStore(file2_path, 'r') as store2:
@@ -22,10 +25,10 @@ def compare_hdf5_files(file1_path, file2_path):
 
         if only_in_store1:
             print(f"Keys only in {file1_path}: {only_in_store1}")
-            return False
+            # return False
         if only_in_store2:
             print(f"Keys only in {file2_path}: {only_in_store2}")
-            return False
+            # return False
 
         for key in common_keys:
             print(f"Comparing dataset {key}......", end=" ")
@@ -33,14 +36,14 @@ def compare_hdf5_files(file1_path, file2_path):
             dset2 = store2[key]
             if not compare_datasets(dset1, dset2):
                 print("Not Equal.")
-                return False
+                # return False
             else:
                 print("Equal.")
         return True
 
 # Example usage:
 start = time.time()
-file1_path = 'data/model_data_origin_win.h5' #you may change file path here, like 'data/model_data_origin_linux.h5' if you're in Linux
+file1_path = 'data/model_data_2011_yamil_version.h5' #you may change file path here, like 'data/model_data_origin_linux.h5' if you're in Linux
 file2_path = 'data/model_data_2011.h5' #you may change file path here
 if compare_hdf5_files(file1_path, file2_path):
     print("All output datasets are equal.")

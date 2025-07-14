@@ -3,6 +3,7 @@ import argparse
 
 import numpy as np
 import orca
+import pandas as pd
 from templates import modelmanager as mm
 
 
@@ -27,6 +28,9 @@ def run(
     orca.add_injectable('random_match', random_match)
     orca.add_injectable('scenario_name', scenario_name)
 
+    orca.add_table('run_times', pd.DataFrame())
+    orca.add_table('marital_rebalanced', pd.DataFrame())
+
     import datasources
     import models
     import variables
@@ -42,12 +46,13 @@ def run(
         out_tables = datasources.hdf_tables + ["graveyard"] #TODO: FIX THIS
     iter_vars = list(range(
         base_year + freq_interval, forecast_year + freq_interval, freq_interval))
+    orca.run(["fix_persons_table"])
     orca.run(
         orca.get_injectable('sim_steps'),
         data_out=output_fname,
         iter_vars=iter_vars,
         out_base_tables=[],
-        out_run_tables=out_tables,
+        out_run_tables=out_tables + ["run_times", "marital_rebalanced"],
         out_run_local=True,
         out_interval= 1
     )
@@ -65,7 +70,6 @@ if __name__ == '__main__':
     parser.add_argument("-b", "--capacity_boost", type=int, help="value to multiply capacities during simulation")
     parser.add_argument("-l", "--all_local", action="store_true", help="no cloud access whatsoever")
     parser.add_argument("-i", "--input_year", type=int, help="input data (base) year")
-    parser.add_argument("-f", "--freq_interval", type=int, help="intra-simulation frequency interval")
     parser.add_argument("-o", "--output_fname", type=str, help="output file name")
     parser.add_argument("-t", "--travel_model", type=str, help="source of skims data. e.g. beam, polaris")
     parser.add_argument("-ts", "--table_save", action="store_true", help="store all other generated tables")
@@ -77,7 +81,7 @@ if __name__ == '__main__':
     initial_run = args.initial_run if args.initial_run else False
     base_year = args.input_year if args.input_year else 2010
     forecast_year = args.year if args.year else 2020
-    freq_interval = args.freq_interval if args.freq_interval else 1
+    freq_interval = 1
     random_seed = args.random_seed if args.random_seed else False
     calibrated = args.calibrated if args.calibrated else False
     calibrated_folder = args.calibrated_folder if args.calibrated_folder \

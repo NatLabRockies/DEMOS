@@ -699,12 +699,12 @@ def income_segment(households):
 @orca.column('households')
 def income_bin1(households):
     df = households.to_frame(columns=["income"])
-    return df.lt(250000) * 1
+    return df.lt(25_000) * 1
 
 @orca.column('households')
 def income_bin2(households):
     df = households.to_frame(columns=["income"])["income"]
-    return df.between(25000, 50000, inclusive='left') * 1
+    return df.between(25_000, 50_000, inclusive='left') * 1
 
 @orca.column('households')
 def income_bin3(households):
@@ -749,20 +749,16 @@ def top_edu_bin3(households):
 
 
 @orca.column('households')
-def have_spouse(persons, households):
+def have_spouse(persons):
     df = persons.to_frame(columns=['household_id', 'relate'])
-    households_df = households.to_frame(columns=['serialno'])
-    household_id = households_df.index.to_series()
     filtered_houses = df[df['relate'] == 1]['household_id']
-    return household_id.isin(filtered_houses) * 1
+    return (df['relate'] == 1).groupby(df["household_id"]).sum()
 
 @orca.column('households')
 def hh_birth_agebin1(persons, households):
     df = persons.to_frame(columns=['household_id', 'relate', 'sex', 'age'])
-    households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-    df = df.merge(households_df, on="household_id")
-    # subset = df[df["relate"].isin([0, 1])]
-    # print("DF shape:", df.shape[0])
+    # households_df = households.to_frame(columns=["have_spouse"]).reset_index()
+    # df = df.merge(households_df, on="household_id")
     df.loc[:,"is_head"] = np.where(df["relate"]==0, 1, 0)
     df.loc[:,"is_female"] = np.where(df["sex"]==2, 1, 0)
     df.loc[:,"female_head"] = df["is_head"] * df["is_female"]
@@ -776,17 +772,16 @@ def hh_birth_agebin1(persons, households):
         age_head = ("age_head", "sum"),
         age_female = ("age_female", "sum"),
         head_spouse = ("head_spouse", "sum")
-    ).reset_index()
+    )
     df.loc[:, "age_final"] = np.where(df["head_spouse"]>=2, df["age_female"], df["age_head"])
     # print("NEW DF", df.shape[0])
-    return np.where(df["age_final"]<=27, 1, 0)
+    return (df["age_final"]<=27).astype(int)
 
 @orca.column('households')
 def hh_birth_agebin2(persons, households):
     df = persons.to_frame(columns=['household_id', 'relate', 'sex', 'age'])
-    households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-    df = df.merge(households_df, on="household_id")
-    # subset = df[df["relate"].isin([0, 1])]
+    # households_df = households.to_frame(columns=["have_spouse"]).reset_index()
+    # df = df.merge(households_df, on="household_id")
     df.loc[:, "is_head"] = np.where(df["relate"]==0, 1, 0)
     df.loc[:, "is_female"] = np.where(df["sex"]==2, 1, 0)
     df.loc[:, "female_head"] = df["is_head"] * df["is_female"]
@@ -800,10 +795,10 @@ def hh_birth_agebin2(persons, households):
         age_head = ("age_head", "sum"),
         age_female = ("age_female", "sum"),
         head_spouse = ("head_spouse", "sum")
-    ).reset_index()
+    )
     df.loc[:, "age_final"] = np.where(df["head_spouse"]>=2, df["age_female"], df["age_head"])
     # print(df.shape[0])
-    return np.where(df["age_final"].between(27, 35, inclusive='right'), 1, 0)
+    return (df["age_final"].between(27, 35, inclusive='right')).astype(int)
 
 # @orca.column('households')
 # def use_agebin3(persons, households):
@@ -966,6 +961,8 @@ def hd_race_wht(persons):
     df = df[df['relate'] == 0]
     df.sort_values('household_id',inplace=True)
     return df.set_index('household_id')['race_wht']
+    # # TODO: This is hiding an error that needs to be fixed!
+    # return df.groupby("household_id").first()["race_wht"]
 
 @orca.column('households')
 def hd_agebin1(households):

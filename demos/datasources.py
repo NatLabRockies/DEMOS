@@ -1,4 +1,5 @@
 import glob
+import time
 import os
 from itertools import product
 
@@ -212,7 +213,7 @@ persons = orca.get_table("persons").local
 age_intervals = [0, 20, 30, 40, 50, 65, 900]
 education_intervals = [0, 18, 22, 200]
 # Define the labels for age and education groups
-age_labels = ['lte20', '21-29', '30-39', '40-49', '50-64', 'gte65']
+age_labels = ['lte19', '20-29', '30-39', '40-49', '50-64', 'gte65']
 education_labels = ['lte17', '18-21', 'gte22']
 # Create age and education groups with labels
 persons['age_group'] = pd.cut(persons['age'], bins=age_intervals, labels=age_labels, include_lowest=True).astype(str)
@@ -523,8 +524,13 @@ demos_tables = [
     "school_locations",
     "work_locations"
 ]
+# TODO: This apparently does nothing
 for table in demos_tables:
     orca.add_table(table, pd.DataFrame())
+
+# Tables for rebalancing process
+orca.add_table("rebalanced_households", pd.DataFrame(columns=orca.get_table("households").local_columns))
+orca.add_table("rebalanced_persons", pd.DataFrame(columns=orca.get_table("persons").local_columns))
 
 print("Register persons and households columns.")
 orca.add_injectable("persons_local_cols", orca.get_table("persons").local.columns)
@@ -587,3 +593,11 @@ configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable(
 print("Models' folder: ", configs_folder)
 
 print("********** End importing datasources **********")
+
+def log_execution_time(start_time, year, module_name):
+    now = time.time()
+    run_table = orca.get_table('run_times')
+    run_table.local = pd.concat([run_table.local,
+                                 pd.DataFrame([[year, module_name, now - start_time]],
+                                              columns=["year", "module", "walltime"])
+                                 ])
