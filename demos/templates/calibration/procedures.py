@@ -55,3 +55,18 @@ class RMSECalibration(BaseModel):
             error = self.compute_error(prediction, target_value)
         print(f"{total_iterations} iter: {error}")
         return prediction
+
+
+class SimultaneousCalibration(BaseModel):
+    procedure_type: Literal["simultaneous"]
+    tolerance: float
+    max_iter: int = 20
+    logging_level: int = 20 # INFO
+
+    # scaling_factor: float = 1.5
+    learning_rate: float = 2.5
+    momentum_weight: float = 0.3
+
+    
+    
+    ...

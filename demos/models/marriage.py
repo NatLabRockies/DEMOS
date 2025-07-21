@@ -50,7 +50,7 @@ def update_married_households_random(persons, households, marriage_list, get_new
     ### Pairs are selected by age
     female_newmarried.sort_values("age", inplace=True)
     male_newmarried.sort_values("age", inplace=True)
-    newmarried = pd.concat([male_newmarried, female_newmarried], axis=0)         # NOTE: This order is important, relate = 0 is assigned to male
+    newmarried = pd.concat([male_newmarried, female_newmarried], axis=0)
     newmarried["hh_group"] = np.arange(len(newmarried)) % (len(newmarried) // 2) # [0, 1, 2, ..., n_weddings -1, 0, 1, ..., n_weddings - 1]
     
     # TODO: This part is for comparison to other experiments
@@ -62,7 +62,7 @@ def update_married_households_random(persons, households, marriage_list, get_new
 
     female_newcohab.sort_values("age", inplace=True)
     male_newcohab.sort_values("age", inplace=True)
-    newcohab = pd.concat([male_newcohab, female_newcohab], axis=0) # NOTE: This order is important, relate = 0 is assigned to female
+    newcohab = pd.concat([male_newcohab, female_newcohab], axis=0)
     newcohab["hh_group"] = (np.arange(len(newcohab)) % (len(newcohab) // 2)) + newmarried["hh_group"].max() + 1
 
     newcohab["rnd"] = np.random.random(len(newcohab))
