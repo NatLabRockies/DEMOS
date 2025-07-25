@@ -5,6 +5,10 @@ from templates.calibration import CalibrationConfig, SimultaneousCalibrationConf
 
 CONFIG = None
 
+class HHRebalancingModuleConfig(BaseModel):
+    control_table: str
+    control_col: str
+    geoid_col: str
 
 class EmploymentModuleConfig(BaseModel):
     simultaneous_calibration_config: Optional[SimultaneousCalibrationConfig] = None
@@ -24,6 +28,7 @@ class EmploymentModuleConfig(BaseModel):
 
 class HHReorgModuleConfig(BaseModel):
     simultaneous_calibration_config: Optional[SimultaneousCalibrationConfig] = None
+    geoid_col: Optional[str] = None
 
 class MortalityModuleConfig(BaseModel):
     calibration_procedure: Optional[CalibrationConfig] = None
@@ -45,6 +50,7 @@ class DEMOSConfig(BaseModel):
     mortality_module_config: MortalityModuleConfig
     birth_module_config: BirthModuleConfig
     hh_reorg_module_config: HHReorgModuleConfig
+    hh_rebalancing_module_config: HHRebalancingModuleConfig
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
