@@ -43,7 +43,7 @@ geoid_col = "lcm_county_id"
 
 [hh_reorg_module_config.simultaneous_calibration_config]
 tolerance = 1_000
-max_iter = 1
+max_iter = 100
 learning_rate = 2.5
 momentum_weight = 0.3
 
