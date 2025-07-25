@@ -57,8 +57,7 @@ class RMSECalibration(BaseModel):
         return prediction
 
 
-class SimultaneousCalibration(BaseModel):
-    procedure_type: Literal["simultaneous"]
+class SimultaneousCalibrationConfig(BaseModel):
     tolerance: float
     max_iter: int = 20
     logging_level: int = 20 # INFO

@@ -13,6 +13,7 @@ def run():
     
     orca.add_table('run_times', pd.DataFrame())
     orca.add_table('marital_rebalanced', pd.DataFrame())
+    orca.add_table('marital_status_output', pd.DataFrame())
 
     import datasources
     import models
@@ -23,7 +24,7 @@ def run():
 
     mm.initialize(datasources.configs_folder)
 
-    out_tables = datasources.hdf_tables + ["graveyard", "run_times", "marital_rebalanced"]
+    out_tables = datasources.hdf_tables + ["graveyard", "run_times", "marital_rebalanced", "marital_status_output"]
     iter_vars = list(range(CONFIG.base_year + 1, CONFIG.forecast_year + 1, 1))
     orca.run(["fix_persons_table"])
     orca.run(

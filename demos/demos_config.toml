@@ -2,7 +2,7 @@
 region_code = "06197001"
 random_seed = 100
 base_year = 2010
-forecast_year = 2011
+forecast_year = 2019
 
 [employment_module_config.enter_model_calibration_procedure]
 procedure_type = "rmse_error"
@@ -31,3 +31,9 @@ observed_values_table = "observed_births_data"
 tolerance_type = "absolute"
 tolerance = 1000
 max_iter = 1000
+
+[hh_reorg_module_config.simultaneous_calibration_config]
+tolerance = 1_000
+max_iter = 100
+learning_rate = 2.5
+momentum_weight = 0.3

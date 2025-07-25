@@ -1,17 +1,20 @@
 import toml
-import orca
 from pydantic import BaseModel
 from typing import Optional
-from templates.calibration import CalibrationConfig
+from templates.calibration import CalibrationConfig, SimultaneousCalibrationConfig
 
 CONFIG = None
 
-class MortalityModuleConfig(BaseModel):
-    calibration_procedure: Optional[CalibrationConfig] = None
 
 class EmploymentModuleConfig(BaseModel):
     enter_model_calibration_procedure: Optional[CalibrationConfig] = None
     exit_model_calibration_procedure: Optional[CalibrationConfig] = None
+
+class HHReorgModuleConfig(BaseModel):
+    simultaneous_calibration_config: Optional[SimultaneousCalibrationConfig] = None
+
+class MortalityModuleConfig(BaseModel):
+    calibration_procedure: Optional[CalibrationConfig] = None
 
 class BirthModuleConfig(BaseModel):
     calibration_procedure: Optional[CalibrationConfig] = None
@@ -29,6 +32,7 @@ class DEMOSConfig(BaseModel):
     employment_module_config: EmploymentModuleConfig
     mortality_module_config: MortalityModuleConfig
     birth_module_config: BirthModuleConfig
+    hh_reorg_module_config: HHReorgModuleConfig
     
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
