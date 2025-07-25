@@ -1,0 +1,9 @@
+services:
+  demos:
+    image: demos:0.0.1
+    platform: linux/amd64
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - "${DEMOS_CONFIG_PATH:-./demos_config.toml}:/demos/config.toml:ro"
+      - "${DEMOS_DATA_DIR:-./data}:/demos/data"

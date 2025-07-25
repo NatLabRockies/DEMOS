@@ -11,4 +11,4 @@ RUN conda create --name demos-env --file conda-linux-64.lock \
 COPY ./demos /demos
 WORKDIR /demos
 
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "demos-env", "python", "simulate.py"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "demos-env", "python", "-u", "simulate.py", "-cfg", "config.toml"]
