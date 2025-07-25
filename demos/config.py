@@ -1,5 +1,5 @@
 import toml
-from pydantic import BaseModel
+from pydantic import BaseModel, model_validator
 from typing import Optional
 from templates.calibration import CalibrationConfig, SimultaneousCalibrationConfig
 
@@ -7,8 +7,20 @@ CONFIG = None
 
 
 class EmploymentModuleConfig(BaseModel):
+    simultaneous_calibration_config: Optional[SimultaneousCalibrationConfig] = None
     enter_model_calibration_procedure: Optional[CalibrationConfig] = None
     exit_model_calibration_procedure: Optional[CalibrationConfig] = None
+
+    @model_validator(mode="after")
+    def check_calibration_config_exclusivity(self):
+        sim_cal = self.simultaneous_calibration_config is not None
+        enter_cal = self.enter_model_calibration_procedure is not None
+        exit_cal = self.exit_model_calibration_procedure is not None
+        if sim_cal and (enter_cal or exit_cal):
+            raise ValueError(f"Simultaneous calibration cannot be used at the same time as " + \
+                             f"individual model calibration. Simultaneous selected: {sim_cal}, " + \
+                             f"EnterModel selected: {enter_cal}, ExitModel selected: {exit_cal}")
+        return self
 
 class HHReorgModuleConfig(BaseModel):
     simultaneous_calibration_config: Optional[SimultaneousCalibrationConfig] = None

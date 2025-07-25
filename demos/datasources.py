@@ -86,6 +86,11 @@ observed_exiting_workforce_data_name = "outputs/calibration/%s/exiting_workforce
 observed_exiting_workforce_data = pd.read_csv(observed_exiting_workforce_data_name)
 orca.add_table("observed_exiting_workforce", observed_exiting_workforce_data)
 
+print("Read calibration data for employment model.")
+observed_employment_data_name = "outputs/calibration/%s/employment_obs.csv" % region_code
+observed_employment_data = pd.read_csv(observed_employment_data_name)
+orca.add_table("observed_employment", observed_employment_data)
+
 
 
 if not os.path.exists("data/%s" % data_name):
