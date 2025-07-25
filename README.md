@@ -2,8 +2,28 @@
 
 >**TODO:** The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).
 
+# Usage
+## Docker Container
+The docker image for demos is stored in `registry/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
 
-## i. setup guide
+For running the `docker-compose` workflow:
+```bash
+DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker-compose up
+```
+
+By default `DEMOS_CONFIG_PATH` is set to `./demos_config.toml` and `DEMOS_DATA_DIR` is set to `./data`, so if `data` and `demos_config.toml` are part of the cuurent directory, no additional input is needed.
+
+Alternatively,
+```bash
+docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
+```
+
+### Building the docker image (development only)
+```bash
+docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
+```
+
+## From Source
 
 This repository contains only code and configuration/setup files necessary 
 
