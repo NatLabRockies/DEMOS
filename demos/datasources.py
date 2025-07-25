@@ -62,32 +62,32 @@ orca.add_table("rel_map", rel_map_data)
 
 #read the calibration data
 print("Read calibration data for birth model.")
-observed_births_data_name = "outputs/calibration/%s/births_over_time_obs.csv" % region_code
+observed_births_data_name = "data/outputs/calibration/%s/births_over_time_obs.csv" % region_code
 observed_births_data = pd.read_csv(observed_births_data_name) 
 orca.add_table("observed_births_data", observed_births_data)
 
 print("Read calibration data for fatality model.")
-observed_fatalities_data_name = "outputs/calibration/%s/mortalities_over_time_obs.csv" % region_code
+observed_fatalities_data_name = "data/outputs/calibration/%s/mortalities_over_time_obs.csv" % region_code
 observed_fatalities_data = pd.read_csv(observed_fatalities_data_name)
 orca.add_table("observed_fatalities_data", observed_fatalities_data)
 
 print("Read calibration data for marriage model.")
-observed_marrital_data_name = "outputs/calibration/%s/marrital_status_over_time_obs.csv" % region_code
+observed_marrital_data_name = "data/outputs/calibration/%s/marrital_status_over_time_obs.csv" % region_code
 observed_marrital_data = pd.read_csv(observed_marrital_data_name)
 orca.add_table("observed_marrital_data", observed_marrital_data)
 
 print("Read calibration data for enter_labor model.")
-observed_entering_workforce_data_name = "outputs/calibration/%s/entering_workforce_obs.csv" % region_code
+observed_entering_workforce_data_name = "data/outputs/calibration/%s/entering_workforce_obs.csv" % region_code
 observed_entering_workforce_data = pd.read_csv(observed_entering_workforce_data_name)
 orca.add_table("observed_entering_workforce", observed_entering_workforce_data)
 
 print("Read calibration data for exit_labor model.")
-observed_exiting_workforce_data_name = "outputs/calibration/%s/exiting_workforce_obs.csv" % region_code
+observed_exiting_workforce_data_name = "data/outputs/calibration/%s/exiting_workforce_obs.csv" % region_code
 observed_exiting_workforce_data = pd.read_csv(observed_exiting_workforce_data_name)
 orca.add_table("observed_exiting_workforce", observed_exiting_workforce_data)
 
 print("Read calibration data for employment model.")
-observed_employment_data_name = "outputs/calibration/%s/employment_obs.csv" % region_code
+observed_employment_data_name = "data/outputs/calibration/%s/employment_obs.csv" % region_code
 observed_employment_data = pd.read_csv(observed_employment_data_name)
 orca.add_table("observed_employment", observed_employment_data)
 
@@ -447,7 +447,7 @@ orca.add_table("schools", schools_df)
 # -----------------------------------------------------------------------------------------
 # ADD OUTPUT FOLDER
 # -----------------------------------------------------------------------------------------
-output_folder = "outputs/simulation/%s/" % region_code
+output_folder = "data/outputs/simulation/%s/" % region_code
 if not os.path.exists(output_folder):
     print("Creating output folder")
     os.makedirs(output_folder)
