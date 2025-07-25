@@ -5,6 +5,7 @@ from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
 from templates.utils import transition
 from templates.utils.transition import GrowthRateTransition
+from config import DEMOSConfig, HHRebalancingModuleConfig, SimultaneousCalibrationConfig, get_config
 
 import time
 from datasources import log_execution_time
@@ -12,14 +13,19 @@ from datasources import log_execution_time
 @orca.step('household_rebalancing')
 def household_rebalancing(households, persons, year, get_new_households, get_new_person_id, rebalanced_households, rebalanced_persons):
     start_time = time.time()
+
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    module_config: HHRebalancingModuleConfig = demos_config.hh_rebalancing_module_config
+
     marital_rebalanced = orca.get_table("marital_rebalanced")
     marital_rebalanced.local = pd.concat([marital_rebalanced.local,
                                           pd.DataFrame([[year, (orca.get_table("persons").local.MAR == 1).sum(), (orca.get_table("persons").local.MAR == 3).sum()]],
                                                        columns=["year", "married_original", "divorced_original"])])
 
-    CONTROL_TABLE = "hsize_ct"
-    GEOID_COL = "lcm_county_id"
-    CONTROL_COL = "hh_size"
+    CONTROL_TABLE = module_config.control_table
+    GEOID_COL = module_config.geoid_col
+    CONTROL_COL = module_config.control_col
 
     control_table_wrapped = orca.get_table(CONTROL_TABLE)
     assert GEOID_COL in control_table_wrapped.local_columns, f"{GEOID_COL} must be in {CONTROL_TABLE}"

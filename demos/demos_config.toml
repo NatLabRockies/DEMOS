@@ -38,8 +38,16 @@ tolerance_type = "absolute"
 tolerance = 1000
 max_iter = 1000
 
+[hh_reorg_module_config]
+geoid_col = "lcm_county_id"
+
 [hh_reorg_module_config.simultaneous_calibration_config]
 tolerance = 1_000
-max_iter = 100
+max_iter = 1
 learning_rate = 2.5
 momentum_weight = 0.3
+
+[hh_rebalancing_module_config]
+control_table = "hsize_ct"
+control_col = "hh_size"
+geoid_col = "lcm_county_id"

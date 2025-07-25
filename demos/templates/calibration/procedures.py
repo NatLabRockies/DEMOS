@@ -65,7 +65,3 @@ class SimultaneousCalibrationConfig(BaseModel):
     # scaling_factor: float = 1.5
     learning_rate: float = 2.5
     momentum_weight: float = 0.3
-
-    
-    
-    ...

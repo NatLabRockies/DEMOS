@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
-from config import DEMOSConfig, get_config
+from config import DEMOSConfig, HHReorgModuleConfig, get_config
 from .marriage import update_married_households_random, update_divorce
 
 from datasources import log_execution_time
@@ -460,6 +460,11 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     Returns:
         None
     """
+
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    module_config: HHReorgModuleConfig = demos_config.hh_reorg_module_config
+
     # Precompute some indices
     married_hh = cohabitate_list.index[cohabitate_list == 2].to_list()
     breakup_hh = cohabitate_list.index[cohabitate_list == 1].to_list()
@@ -477,7 +482,6 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
 
     # Get the old household_id for the leaving person to retrieve the county_id
     old_household_id = persons.local.loc[leaving_person_index, "household_id"].values
-    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
 
     ## Person leaving is now head of household
     persons.local.loc[leaving_person_index, "relate"] = 0
@@ -485,7 +489,11 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     ### Assign new household_id to people leaving
     new_households = get_new_households(leaving_person_index.sum())
     persons.local.loc[leaving_person_index, "household_id"] = new_households
-    households.local.loc[new_households, "lcm_county_id"] = county_assignment
+
+    # If geoid_col is set, we copy the geoid from old households to new ones
+    if module_config.geoid_col is not None:
+        county_assignment = households.local.loc[old_household_id, module_config.geoid_col].values
+        households.local.loc[new_households, module_config.geoid_col] = county_assignment
 
 
 def fix_erroneous_households(persons):
