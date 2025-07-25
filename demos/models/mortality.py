@@ -27,7 +27,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     start_time = time.time()
 
     persons["dead"] = -99
-    fatality_list = run_and_calibrate_mortality_model(persons, observed_fatalities_data, year)
+    fatality_list = run_and_calibrate_mortality_model(persons)
 
     # Updates necessary:
     ## - Remove rows from persons table where fatality_list == 1
@@ -120,7 +120,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
 
 
 # TODO: Refactor this
-def run_and_calibrate_mortality_model(persons, observed_fatalities_data, year):
+def run_and_calibrate_mortality_model(persons):
     # Load calibration config
     demos_config: DEMOSConfig = get_config()
     calibration_procedure = demos_config.mortality_module_config.calibration_procedure

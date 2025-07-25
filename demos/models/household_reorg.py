@@ -4,11 +4,12 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
+from config import DEMOSConfig, get_config
 from .marriage import update_married_households_random, update_divorce
 
 from datasources import log_execution_time
 
-from templates.calibration.procedures import SimultaneousCalibration
+from templates.calibration.procedures import SimultaneousCalibrationConfig
 
 @orca.injectable(autocall=False)
 def get_new_households(n):
@@ -190,11 +191,16 @@ def households_reorg(persons, households, year, get_new_households):
                                         persons["is_not_married"]]["household_id"].unique().astype(int)
     
     cohabitation_model_data = households.to_frame(cohabitation_model.variable_names).loc[ELIGIBLE_HOUSEHOLDS]
+
+
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    sim_cal_config: SimultaneousCalibrationConfig = demos_config.hh_reorg_module_config.simultaneous_calibration_config
     
     # Calibrate if necessary
-    calibration = True # TODO: Change this to be controlled by the config file
-    if calibration:
-        simultaneous_calibration(persons,
+    if sim_cal_config is not None:
+        simultaneous_calibration(sim_cal_config,
+                                 persons,
                                  marriage_model,
                                  cohabitation_model,
                                  divorce_model,
@@ -233,21 +239,14 @@ def households_reorg(persons, households, year, get_new_households):
     update_divorce(persons, households, divorce_list, get_new_households)
     print_household_stats()
 
-    # TODO: This needs to be reevaluated after the refactoring
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
     print_marital_count(persons.local)
     log_execution_time(start_time, orca.get_injectable("year"), "household_reorg")
 
 
-def simultaneous_calibration(persons, marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
-    sim_cal_config = SimultaneousCalibration(**{
-        "procedure_type": "simultaneous",
-        "tolerance": 1_000,
-        "max_iter": 100,
-        # "scaling_factor": 1,
-        "learning_rate": 2.5,
-        "momentum_weight": 0.3
-    })
+def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
+
+    marital_status_table = orca.get_table("marital_status_output")
 
     def compute_error(n_married, n_divorced, target_married, target_divorced):
         married_rmse = (n_married - target_married) ** 2
@@ -273,7 +272,19 @@ def simultaneous_calibration(persons, marriage_model, cohab_model, divorce_model
     n_married, min_div, max_div = compute_expected_marital_status(persons.local, cohabitate_x_list, marriage_list, divorce_list)
     n_divorced = (max_div - min_div) / 2 + min_div
 
-    
+    print("Predicted Marital status after applying models BEFORE CALIBRATION")
+    print(f"Predicted MAR == 1: {n_married:,}")
+    print(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
+
+    marital_status_table.local = pd.concat([marital_status_table.local,
+                                            pd.DataFrame(
+                                                [[orca.get_injectable("year"), "married", "before", n_married],
+                                                 [orca.get_injectable("year"), "divorced_min", "before", min_div],
+                                                 [orca.get_injectable("year"), "divorced_max", "before", max_div]],
+                                                columns=["year", "metric", "time", "value"]
+                                                ),
+                                            ], axis=0)
+
     # Initialize optimization algorithm
     married_gradient = 0
     divorce_gradient = 0
@@ -282,7 +293,7 @@ def simultaneous_calibration(persons, marriage_model, cohab_model, divorce_model
     total_iterations = 0
     error = compute_error(n_married, n_divorced, target_married_count, target_divorced_count)
     while error > sim_cal_config.tolerance and total_iterations < sim_cal_config.max_iter:
-        print(f"Iteration {total_iterations} error: {error}")
+        print(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
         lr = sim_cal_config.learning_rate * ((sim_cal_config.max_iter - total_iterations) + .5) / sim_cal_config.max_iter
         
         # Calculate updates with momentum
@@ -309,8 +320,17 @@ def simultaneous_calibration(persons, marriage_model, cohab_model, divorce_model
     
         error = compute_error(n_married, n_divorced, target_married_count, target_divorced_count)
         total_iterations += 1
+    
+    marital_status_table.local = pd.concat([marital_status_table.local,
+                                        pd.DataFrame(
+                                            [[orca.get_injectable("year"), "married", "after", n_married],
+                                             [orca.get_injectable("year"), "divorced_min", "after", min_div],
+                                             [orca.get_injectable("year"), "divorced_max", "after", max_div]],
+                                            columns=["year", "metric", "time", "value"]
+                                            ),
+                                        ], axis=0)
 
-    print(f"Final error after calibration: {error}")
+    print(f"Final error after Simultaneous calibration: {error}")
 
 
 def run_models(marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
