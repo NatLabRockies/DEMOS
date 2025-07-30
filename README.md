@@ -19,7 +19,7 @@ docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-dat
 ```
 
 ### IMPORTANT for MacOS and Windows users
-Docker imposes a global limit on RAM containers can allocated. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
+Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
 
 ### Building the docker image (development only)
 ```bash
