@@ -1,5 +1,7 @@
 # Demographic Microsimulator(DEMOS)
 
+[![Docs](https://github.com/NREL/DEMOS_NREL/actions/workflows/docs.yml/badge.svg)](https://nrel.github.io/DEMOS_NREL/)
+
 >**TODO:** The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).
 
 ## Usage
