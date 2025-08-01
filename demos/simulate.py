@@ -19,6 +19,8 @@ def run():
     import models
     import variables
 
+    datasources.run_datasources()
+
     if CONFIG.random_seed is not None:
         np.random.seed(CONFIG.random_seed)
 

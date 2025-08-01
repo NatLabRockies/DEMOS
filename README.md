@@ -2,8 +2,8 @@
 
 >**TODO:** The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).
 
-# Usage
-## Docker Container
+## Usage
+### Docker Container
 The docker image for demos is stored in `registry/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
 
 For running the `docker-compose` workflow:
@@ -18,15 +18,15 @@ Alternatively,
 docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
 ```
 
-### IMPORTANT for MacOS and Windows users
+#### IMPORTANT for MacOS and Windows users
 Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
 
-### Building the docker image (development only)
+#### Building the docker image (development only)
 ```bash
 docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
 ```
 
-## From Source
+### From Source
 
 This repository contains only code and configuration/setup files necessary 
 
@@ -90,7 +90,7 @@ the demos simulation will produce the following sets of data and results:
   - a synthetic population file showing the evolution of the synthetic population throughout the simulation years. the file should be named `model_data_<scenario_name_output_year>.h5` in directory `DEMOS_NREL/demos/data`.
   - series of aggregated statistics for the population size, number of households, household size distribution, gender distribution, number of births, number of mortalities, number of student enrollments, number of total marriages, number of total divorces, the age distribution of the synthetic population, and income distribution for each simulation year. The files are located at `DEMOS_NREL/demos/outputs/simulation`
 
-## ii. project structure
+### ii. project structure
 >**TODO:** this part still need to be complemented
 
 the main folder of this repository contains several python scripts that contain the different steps necessary to import, process, and run the demos framework. the following is a description of the different folder and scripts used to run the demos simulation

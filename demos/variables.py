@@ -8,7 +8,7 @@ import pandas as pd
 import yaml
 from config import CONFIG
 
-print('Importing variables for region', CONFIG.region_code)
+# print('Importing variables for region', CONFIG.region_code)
 
 # ----------------------------------------------------------------------------------------
 # COMMON FUNCTIONS
@@ -2398,177 +2398,177 @@ def register_geog_dummy(table_name, geog):
     return column_func
 
 
-for sector in orca.get_table('jobs').local.agg_sector.unique():
-    for geo in ['blocks', 'block_groups', 'tracts']:
-        register_jobs_sector(sector, geo)
-        register_prop_jobs_sector(sector, geo)
+# for sector in orca.get_table('jobs').local.agg_sector.unique():
+#     for geo in ['blocks', 'block_groups', 'tracts']:
+#         register_jobs_sector(sector, geo)
+#         register_prop_jobs_sector(sector, geo)
 
 
-for building_type in orca.get_table('residential_units').building_type.unique():
-    for geo in ['blocks', 'block_groups', 'tracts']:
-        register_units_building_type(building_type, geo)
+# for building_type in orca.get_table('residential_units').building_type.unique():
+#     for geo in ['blocks', 'block_groups', 'tracts']:
+#         register_units_building_type(building_type, geo)
 
 
-for building_type in orca.get_table('residential_units').building_type.unique():
-    register_predominant_building_type_cat(building_type)
+# for building_type in orca.get_table('residential_units').building_type.unique():
+#     register_predominant_building_type_cat(building_type)
 
 
-for var in ['total_units', 'total_jobs', 'total_hh', 'hh_size_1', 'total_persons', 'children',
-            'persons_65plus', 'persons_black', 'persons_hispanic',
-            'persons_asian', 'density_hh', 'density_units', 'density_jobs',
-            'ratio_households_to_units', 'mean_income',  'prop_income_segment_1_hh', 'prop_income_segment_6_hh',
-            'median_value_13_acs', 'median_rent_13_acs',  'mean_year_built', 'mean_workers', 'mean_children', 'mean_age_of_head',
-            'prop_hh_rent', 'prop_households_rent', 'prop_units_rent', 'prop_units_sf', 'prop_units_mf']:
-    register_disag_var('block_groups', 'blocks', var)
+# for var in ['total_units', 'total_jobs', 'total_hh', 'hh_size_1', 'total_persons', 'children',
+#             'persons_65plus', 'persons_black', 'persons_hispanic',
+#             'persons_asian', 'density_hh', 'density_units', 'density_jobs',
+#             'ratio_households_to_units', 'mean_income',  'prop_income_segment_1_hh', 'prop_income_segment_6_hh',
+#             'median_value_13_acs', 'median_rent_13_acs',  'mean_year_built', 'mean_workers', 'mean_children', 'mean_age_of_head',
+#             'prop_hh_rent', 'prop_households_rent', 'prop_units_rent', 'prop_units_sf', 'prop_units_mf']:
+#     register_disag_var('block_groups', 'blocks', var)
 
 
-for var in ['density_hh', 'density_units', 'density_jobs', 'income_segment_6_hh', 'income_segment_1_hh']:
-    register_disag_var('tracts', 'blocks', var)
+# for var in ['density_hh', 'density_units', 'density_jobs', 'income_segment_6_hh', 'income_segment_1_hh']:
+#     register_disag_var('tracts', 'blocks', var)
 
-agg_vars = ['sum_acres', 'total_jobs', 'vacant_job_spaces', 'total_hh', 'hh_rent', 'hh_own', 'hh_size_1', 'hh_size_5plus',
-            'income_segment_1_hh', 'income_segment_6_hh',  'total_persons',  'children', 'persons_65plus',
-            'persons_black', 'persons_hispanic', 'persons_asian', 'total_units',  'units_sf', 'units_mf',  'units_own',
-            'units_rent', 'units_mf', 'units_sf', 'units_before_1930', 'units_after_2000',
-            'vacant_residential_units', 'vacant_du_spaces', 'jobs_0', 'jobs_1', 'jobs_2', 'jobs_3', 'jobs_4', 'jobs_5']
+# agg_vars = ['sum_acres', 'total_jobs', 'vacant_job_spaces', 'total_hh', 'hh_rent', 'hh_own', 'hh_size_1', 'hh_size_5plus',
+#             'income_segment_1_hh', 'income_segment_6_hh',  'total_persons',  'children', 'persons_65plus',
+#             'persons_black', 'persons_hispanic', 'persons_asian', 'total_units',  'units_sf', 'units_mf',  'units_own',
+#             'units_rent', 'units_mf', 'units_sf', 'units_before_1930', 'units_after_2000',
+#             'vacant_residential_units', 'vacant_du_spaces', 'jobs_0', 'jobs_1', 'jobs_2', 'jobs_3', 'jobs_4', 'jobs_5']
 
-for var in agg_vars:
-    register_agg_var('blocks', 'block_groups', var, 'sum', prefix=False)
-    register_agg_var('blocks', 'tracts', var, 'sum', prefix=False)
-    register_agg_var('blocks', 'counties', var, 'sum', prefix=False)
-
-
-#for var in ['income', 'year_built']:
-#    register_agg_var('blocks', 'tracts', var, 'mean')
-#    register_agg_var('blocks', 'tracts', var, 'std')
-
-prop_vars = {'households':['hh_own', 'hh_rent', 'income_segment_1_hh', 'income_segment_6_hh', 'hh_size_1', 'hh_size_5plus'],
-             'residential_units': ['units_own', 'units_rent', 'units_sf', 'units_mf', 'units_before_1930', 'units_after_2000']}
-for agent in prop_vars.keys():
-    for var in prop_vars[agent]:
-        for tbl in ['blocks', 'block_groups', 'tracts', 'counties']:
-            register_prop_variable(tbl, agent, var)
-
-prop_vars = {'households':['hh_own', 'hh_rent', 'income_segment_1_hh', 'income_segment_6_hh', 'hh_size_1', 'hh_size_5plus'],
-             'residential_units': ['units_own', 'units_rent', 'units_sf', 'units_mf', 'units_before_1930', 'units_after_2000']}
-for agent in prop_vars.keys():
-    for var in prop_vars[agent]:
-        for tbl in ['blocks', 'block_groups', 'tracts', 'counties']:
-            register_prop_variable(tbl, agent, var)
+# for var in agg_vars:
+#     register_agg_var('blocks', 'block_groups', var, 'sum', prefix=False)
+#     register_agg_var('blocks', 'tracts', var, 'sum', prefix=False)
+#     register_agg_var('blocks', 'counties', var, 'sum', prefix=False)
 
 
+# #for var in ['income', 'year_built']:
+# #    register_agg_var('blocks', 'tracts', var, 'mean')
+# #    register_agg_var('blocks', 'tracts', var, 'std')
 
-# Register skim variables for the zone level
-sum_variables = ['total_jobs', 'total_units', 'total_hh', 'hh_size_1', 'total_persons', 'children',
-                 'persons_65plus', 'persons_black', 'persons_hispanic', 'persons_asian',
-                 'income_segment_1_hh', 'income_segment_6_hh']
-sum_variables += ['jobs_' + sector for sector in orca.get_table('jobs').local.agg_sector.unique()]
-mean_variables = ['density_jobs', 'density_units', 'density_hh', 'mean_home_rent', 'mean_home_value']
-names_dict = {'euclidean_distance': 'euclidean', 'pandana_distance': 'pandana'}
-impedance_columns = ['euclidean', 'pandana']
-units = 'km'
-impedance_thresholds = [1, 5, 10, 15, 20, 30]
-zones_table = 'block_groups'
-region_code = CONFIG.region_code
-travel_data = orca.get_table('travel_data').local.copy()
-travel_data = travel_data.rename(columns=names_dict)
-orca.add_table('travel_data', travel_data)
-orca.add_injectable('zones_table', zones_table)
-orca.add_injectable('skim_input_columns', impedance_columns)
-orca.add_injectable('impedance_thresholds', impedance_thresholds)
-orca.add_injectable('impedance_units', units)
-if zones_table != 'block_groups':
-    for var in sum_variables:
-        register_agg_var('blocks', 'zones', var, 'sum', prefix=False)
-    for var in mean_variables:
-        register_agg_var('blocks', 'zones', var, 'mean', prefix=False)
+# prop_vars = {'households':['hh_own', 'hh_rent', 'income_segment_1_hh', 'income_segment_6_hh', 'hh_size_1', 'hh_size_5plus'],
+#              'residential_units': ['units_own', 'units_rent', 'units_sf', 'units_mf', 'units_before_1930', 'units_after_2000']}
+# for agent in prop_vars.keys():
+#     for var in prop_vars[agent]:
+#         for tbl in ['blocks', 'block_groups', 'tracts', 'counties']:
+#             register_prop_variable(tbl, agent, var)
+
+# prop_vars = {'households':['hh_own', 'hh_rent', 'income_segment_1_hh', 'income_segment_6_hh', 'hh_size_1', 'hh_size_5plus'],
+#              'residential_units': ['units_own', 'units_rent', 'units_sf', 'units_mf', 'units_before_1930', 'units_after_2000']}
+# for agent in prop_vars.keys():
+#     for var in prop_vars[agent]:
+#         for tbl in ['blocks', 'block_groups', 'tracts', 'counties']:
+#             register_prop_variable(tbl, agent, var)
 
 
-for column in impedance_columns:
-    for threshold in impedance_thresholds:
-        for sum_var in sum_variables:
-            column_name = column
-            column_name = '%s_sum_%s_%s_%s' % (sum_var, threshold, units, column_name)
-            column_name = column_name.replace('_segment', '')
-            register_skim_var(zones_table, column_name, threshold, sum_var, column, 'sum', units)
-            register_disag_var(zones_table, 'blocks', column_name)
-        for mean_var in mean_variables:
-            column_name = column
-            column_name = '%s_ave_%s_%s_%s' % (mean_var, threshold, units, column_name)
-            column_name = column_name.replace('_segment', '').replace('mean_', '')
-            register_skim_var(zones_table, column_name, threshold, mean_var, column, 'mean', units)
-            register_disag_var(zones_table, 'blocks', column_name)
+
+# # Register skim variables for the zone level
+# sum_variables = ['total_jobs', 'total_units', 'total_hh', 'hh_size_1', 'total_persons', 'children',
+#                  'persons_65plus', 'persons_black', 'persons_hispanic', 'persons_asian',
+#                  'income_segment_1_hh', 'income_segment_6_hh']
+# sum_variables += ['jobs_' + sector for sector in orca.get_table('jobs').local.agg_sector.unique()]
+# mean_variables = ['density_jobs', 'density_units', 'density_hh', 'mean_home_rent', 'mean_home_value']
+# names_dict = {'euclidean_distance': 'euclidean', 'pandana_distance': 'pandana'}
+# impedance_columns = ['euclidean', 'pandana']
+# units = 'km'
+# impedance_thresholds = [1, 5, 10, 15, 20, 30]
+# zones_table = 'block_groups'
+# region_code = CONFIG.region_code
+# travel_data = orca.get_table('travel_data').local.copy()
+# travel_data = travel_data.rename(columns=names_dict)
+# orca.add_table('travel_data', travel_data)
+# orca.add_injectable('zones_table', zones_table)
+# orca.add_injectable('skim_input_columns', impedance_columns)
+# orca.add_injectable('impedance_thresholds', impedance_thresholds)
+# orca.add_injectable('impedance_units', units)
+# if zones_table != 'block_groups':
+#     for var in sum_variables:
+#         register_agg_var('blocks', 'zones', var, 'sum', prefix=False)
+#     for var in mean_variables:
+#         register_agg_var('blocks', 'zones', var, 'mean', prefix=False)
 
 
-# Calculate pandana-based accessibility variable
-distances = range(400, 5000, 800)
-agg_types = ['ave', 'sum', 'std']
-decay_types = ['linear', 'flat']
-variables_to_aggregate = ['total_hh', 'total_jobs', 'total_units']
-variables_to_aggregate_avg_only = ['density_hh', 'density_jobs', 'density_units',
-                                   'mean_income', 'mean_hh_size', 'bg_mean_age_of_head',
-                                   'prop_income_segment_1_hh', 'prop_income_segment_6_hh',
-                                   'home_rent', 'home_value',
-                                   'mean_home_rent', 'mean_home_value',
-                                   'prop_units_own', 'prop_units_rent', 'prop_units_sf',
-                                   'prop_units_mf', 'prop_units_before_1930',
-                                   'prop_units_after_2000']
-
-for distance in distances:
-    for decay in decay_types:
-        for variable in variables_to_aggregate:
-            for agg_type in agg_types:
-                var_name = '_'.join([variable, agg_type, str(distance), decay[0]])
-                for text in ['bg_', 'total_', 'mean_', '_segment']:
-                    var_name = var_name.replace(text, '')
-                var_name = var_name.replace('before_1930', 'old')
-                var_name = var_name.replace('after_2000', 'new')
-                log_var_name = 'ln_' + var_name
-                if variable in orca.get_table('blocks').columns:
-                    register_pandana_access_variable(var_name, 'blocks', variable, distance, agg_type=agg_type, decay=decay)
-                    register_pandana_access_variable(log_var_name, 'blocks', variable, distance, agg_type=agg_type, decay=decay, log=True)
-                    register_agg_var('blocks', 'block_groups', var_name, agg_type.replace('ave', 'mean'))
-                    register_agg_var('blocks', 'block_groups', log_var_name, agg_type.replace('ave', 'mean'))
-                if variable in orca.get_table('block_groups').columns:
-                    register_pandana_access_variable(var_name, 'block_groups', variable, distance, agg_type=agg_type, decay=decay)
-                    register_pandana_access_variable(log_var_name, 'block_groups', variable, distance, agg_type=agg_type, decay=decay, log=True)
-                    register_disag_var('block_groups', 'blocks', var_name)
-                    register_disag_var('block_groups', 'blocks', log_var_name)
-        for variable in variables_to_aggregate_avg_only:
-            var_name = '_'.join([variable, 'ave', str(distance), decay[0]])
-            var_name = var_name.replace('before_1930', 'old')
-            var_name = var_name.replace('after_2000', 'new')
-            if 'income_segment' in var_name:
-                var_name = var_name.replace('_hh', '')
-            for text in ['bg_', 'mean_', '_segment']:
-                var_name = var_name.replace(text, '')
-            log_var_name = 'ln_' + var_name
-            if variable in orca.get_table('blocks').columns:
-                register_pandana_access_variable(var_name, 'blocks', variable, distance, agg_type='ave', decay=decay)
-                register_pandana_access_variable(log_var_name, 'blocks', variable, distance, agg_type='ave', decay=decay, log=True)
-                register_agg_var('blocks', 'block_groups', var_name, 'mean')
-                register_agg_var('blocks', 'block_groups', log_var_name, 'mean')
-            if variable in orca.get_table('block_groups').columns:
-                register_pandana_access_variable(var_name, 'block_groups', variable, distance, agg_type='ave', decay=decay)
-                register_pandana_access_variable(log_var_name, 'block_groups', variable, distance, agg_type='ave', decay=decay, log=True)
-                register_disag_var('block_groups', 'blocks', log_var_name)
-                register_disag_var('block_groups', 'blocks', var_name)
+# for column in impedance_columns:
+#     for threshold in impedance_thresholds:
+#         for sum_var in sum_variables:
+#             column_name = column
+#             column_name = '%s_sum_%s_%s_%s' % (sum_var, threshold, units, column_name)
+#             column_name = column_name.replace('_segment', '')
+#             register_skim_var(zones_table, column_name, threshold, sum_var, column, 'sum', units)
+#             register_disag_var(zones_table, 'blocks', column_name)
+#         for mean_var in mean_variables:
+#             column_name = column
+#             column_name = '%s_ave_%s_%s_%s' % (mean_var, threshold, units, column_name)
+#             column_name = column_name.replace('_segment', '').replace('mean_', '')
+#             register_skim_var(zones_table, column_name, threshold, mean_var, column, 'mean', units)
+#             register_disag_var(zones_table, 'blocks', column_name)
 
 
-for table in ['blocks', 'block_groups', 'tracts', 'counties']:
-    cols = orca.get_table(table).columns
-    non_numeric = ['_id', '_ID', 'state', 'predominant_building_type', 'cousub']
-    numeric_vars = [s for s in cols if not any(x in s for x in non_numeric)]
-    numeric_vars = [var for var in numeric_vars if (var != 'x') and (var != 'y')]
-    for var in numeric_vars:
-        register_ln_variable(table, var)
-    cols = orca.get_table(table).columns
-    numeric_vars = [s for s in cols if not any(x in s for x in non_numeric)]
-    for var in numeric_vars:
-        register_standardized_variable(table, var)
+# # Calculate pandana-based accessibility variable
+# distances = range(400, 5000, 800)
+# agg_types = ['ave', 'sum', 'std']
+# decay_types = ['linear', 'flat']
+# variables_to_aggregate = ['total_hh', 'total_jobs', 'total_units']
+# variables_to_aggregate_avg_only = ['density_hh', 'density_jobs', 'density_units',
+#                                    'mean_income', 'mean_hh_size', 'bg_mean_age_of_head',
+#                                    'prop_income_segment_1_hh', 'prop_income_segment_6_hh',
+#                                    'home_rent', 'home_value',
+#                                    'mean_home_rent', 'mean_home_value',
+#                                    'prop_units_own', 'prop_units_rent', 'prop_units_sf',
+#                                    'prop_units_mf', 'prop_units_before_1930',
+#                                    'prop_units_after_2000']
+
+# for distance in distances:
+#     for decay in decay_types:
+#         for variable in variables_to_aggregate:
+#             for agg_type in agg_types:
+#                 var_name = '_'.join([variable, agg_type, str(distance), decay[0]])
+#                 for text in ['bg_', 'total_', 'mean_', '_segment']:
+#                     var_name = var_name.replace(text, '')
+#                 var_name = var_name.replace('before_1930', 'old')
+#                 var_name = var_name.replace('after_2000', 'new')
+#                 log_var_name = 'ln_' + var_name
+#                 if variable in orca.get_table('blocks').columns:
+#                     register_pandana_access_variable(var_name, 'blocks', variable, distance, agg_type=agg_type, decay=decay)
+#                     register_pandana_access_variable(log_var_name, 'blocks', variable, distance, agg_type=agg_type, decay=decay, log=True)
+#                     register_agg_var('blocks', 'block_groups', var_name, agg_type.replace('ave', 'mean'))
+#                     register_agg_var('blocks', 'block_groups', log_var_name, agg_type.replace('ave', 'mean'))
+#                 if variable in orca.get_table('block_groups').columns:
+#                     register_pandana_access_variable(var_name, 'block_groups', variable, distance, agg_type=agg_type, decay=decay)
+#                     register_pandana_access_variable(log_var_name, 'block_groups', variable, distance, agg_type=agg_type, decay=decay, log=True)
+#                     register_disag_var('block_groups', 'blocks', var_name)
+#                     register_disag_var('block_groups', 'blocks', log_var_name)
+#         for variable in variables_to_aggregate_avg_only:
+#             var_name = '_'.join([variable, 'ave', str(distance), decay[0]])
+#             var_name = var_name.replace('before_1930', 'old')
+#             var_name = var_name.replace('after_2000', 'new')
+#             if 'income_segment' in var_name:
+#                 var_name = var_name.replace('_hh', '')
+#             for text in ['bg_', 'mean_', '_segment']:
+#                 var_name = var_name.replace(text, '')
+#             log_var_name = 'ln_' + var_name
+#             if variable in orca.get_table('blocks').columns:
+#                 register_pandana_access_variable(var_name, 'blocks', variable, distance, agg_type='ave', decay=decay)
+#                 register_pandana_access_variable(log_var_name, 'blocks', variable, distance, agg_type='ave', decay=decay, log=True)
+#                 register_agg_var('blocks', 'block_groups', var_name, 'mean')
+#                 register_agg_var('blocks', 'block_groups', log_var_name, 'mean')
+#             if variable in orca.get_table('block_groups').columns:
+#                 register_pandana_access_variable(var_name, 'block_groups', variable, distance, agg_type='ave', decay=decay)
+#                 register_pandana_access_variable(log_var_name, 'block_groups', variable, distance, agg_type='ave', decay=decay, log=True)
+#                 register_disag_var('block_groups', 'blocks', log_var_name)
+#                 register_disag_var('block_groups', 'blocks', var_name)
 
 
-for county in orca.get_table('blocks').county_id.unique():
-    register_geog_dummy('blocks', county)
+# for table in ['blocks', 'block_groups', 'tracts', 'counties']:
+#     cols = orca.get_table(table).columns
+#     non_numeric = ['_id', '_ID', 'state', 'predominant_building_type', 'cousub']
+#     numeric_vars = [s for s in cols if not any(x in s for x in non_numeric)]
+#     numeric_vars = [var for var in numeric_vars if (var != 'x') and (var != 'y')]
+#     for var in numeric_vars:
+#         register_ln_variable(table, var)
+#     cols = orca.get_table(table).columns
+#     numeric_vars = [s for s in cols if not any(x in s for x in non_numeric)]
+#     for var in numeric_vars:
+#         register_standardized_variable(table, var)
+
+
+# for county in orca.get_table('blocks').county_id.unique():
+#     register_geog_dummy('blocks', county)
 
 
 # -----------------------------------------------------------------------------------------
@@ -2999,6 +2999,6 @@ def register_current_hh_type(type):
     return column_func
 
 
-for hh_type in orca.get_table('households').hh_type.unique():
-    register_base_hh_type(hh_type)
-    register_current_hh_type(hh_type)
+# for hh_type in orca.get_table('households').hh_type.unique():
+#     register_base_hh_type(hh_type)
+#     register_current_hh_type(hh_type)
