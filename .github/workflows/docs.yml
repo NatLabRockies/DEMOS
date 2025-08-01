@@ -13,9 +13,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      # Full clone on main/dev so we get version history for documentation
+      - name: Checkout full history on main/dev
+        if: ${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev' }}
+        uses: actions/checkout@v4
         with:
-          fetch-depth: "${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/dev') ? 0 : 1 }}"
+          fetch-depth: 0
+
+      # Shallow clone (single commit) on all other branches for debugging
+      - name: Checkout shallow on other branches
+        if: ${{ github.ref != 'refs/heads/main' && github.ref != 'refs/heads/dev' }}
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
       
       - name: Set up Python Environment
         uses: actions/setup-python@v4
@@ -30,7 +40,7 @@ jobs:
       - name: Build HTML docs
         working-directory: docs
         run: make html
-        
+
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v4
         with:
