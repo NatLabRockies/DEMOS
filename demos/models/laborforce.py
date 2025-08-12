@@ -3,15 +3,13 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
-from datasources import log_execution_time
+from logging_logic import log_execution_time
 from config import DEMOSConfig, EmploymentModuleConfig, SimultaneousCalibrationConfig, get_config
 from templates.utils.models import columns_in_formula
+from loguru import logger
 
 @orca.step("laborforce_model")
-def laborforce_model(persons,
-                     entering_workforce,
-                     exiting_workforce,
-                     year):
+def laborforce_model(persons):
     """
     Run the education model and update the persons table
 
@@ -50,16 +48,6 @@ def laborforce_model(persons,
     persons.local.loc[reindexed_remain_unemployed == 0, "worker"] = 1
     persons.local.loc[reindexed_remain_unemployed == 0, "earning"] = persons["new_earning"]\
                                                                         .loc[reindexed_remain_unemployed == 0].values
-
-    # Update entering and exiting workforce tables (Seems to be just for records)
-    orca.add_table("entering_workforce", 
-                   pd.concat([entering_workforce.local,
-                              pd.DataFrame(data={"year": [year], "count": [(stay_unemployed_list == 0).sum()]})
-                              ]))
-    orca.add_table("exiting_workforce", 
-                   pd.concat([exiting_workforce.local,
-                              pd.DataFrame(data={"year": [year], "count": [(exit_workforce_list == 1).sum()]})
-                              ]))
     
     log_execution_time(start_time, orca.get_injectable("year"), "laborforce")
 
@@ -108,7 +96,7 @@ def run_simultaenous_calibration(persons, simultaneous_calibration_config):
     
     # Get calibration data
     observed_workers_table = orca.get_table("observed_employment").local 
-    observed_workers = observed_workers_table[observed_workers_table.year == orca.get_injectable("year")]["count"].iloc[0]
+    observed_workers = observed_workers_table[observed_workers_table.index == orca.get_injectable("year")]["count"].iloc[0]
 
     enter_model_predictions, exit_model_predictions = enter_model.predict(enter_model_data), exit_model.predict(exit_model_data)
     
@@ -124,7 +112,7 @@ def run_simultaenous_calibration(persons, simultaneous_calibration_config):
     total_iterations = 0
     error = abs(predicted_total_workers - observed_workers)
     while error > config.tolerance and total_iterations < config.max_iter:
-        print(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
+        logger.info(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
         lr = config.learning_rate * ((config.max_iter - total_iterations) + .5) / config.max_iter
         
         # Calculate gradient
@@ -173,3 +161,17 @@ def income(persons):
     return persons.to_frame(["household_id", "earning"]) \
                   .groupby("household_id") \
                   .sum()["earning"]
+
+@orca.table(cache=True, cache_scope='forever')
+def income_dist(persons):
+    income_dist = persons.to_frame(["worker", "age_group", "education_group", "earning"])[persons["worker"]==1]\
+        .groupby(['age_group', 'education_group']).agg(
+            data_mean = ('earning', 'mean'),
+            data_std = ('earning', 'std')) \
+        .reset_index()
+    
+    # Convert to the parameters of the underlying normal distribution
+    mu = pd.Series(np.log(income_dist["data_mean"]**2 / np.sqrt(income_dist["data_std"]**2 + income_dist["data_mean"]**2)), name="mu")
+    sigma = pd.Series(np.sqrt(np.log(1 + income_dist["data_std"]**2 / income_dist["data_mean"]**2)), name="sigma")
+    income_dist = pd.concat([income_dist, mu, sigma], axis=1)
+    return income_dist

@@ -6,8 +6,8 @@ from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
 from config import DEMOSConfig, HHReorgModuleConfig, get_config
 from .marriage import update_married_households_random, update_divorce
-
-from datasources import log_execution_time
+from loguru import logger
+from logging_logic import log_execution_time
 
 from templates.calibration.procedures import SimultaneousCalibrationConfig
 
@@ -219,17 +219,17 @@ def households_reorg(persons, households, year, get_new_households):
     # Check number marriages before and after applying the model
     print_marital_count(persons.local)
     n_married_after, min_div, max_div = compute_expected_marital_status(persons.local, cohabitate_x_list, marriage_list, divorce_list)
-    print("Predicted Marital status after applying models")
-    print(f"Predicted MAR == 1: {n_married_after:,}")
-    print(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
+    logger.debug("Predicted Marital status after applying models")
+    logger.debug(f"Predicted MAR == 1: {n_married_after:,}")
+    logger.debug(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
 
     ######### UPDATING
-    print("Restructuring households:")
-    print("Cohabitations..")
+    logger.info("Restructuring households:")
+    logger.info("Cohabitations..")
     update_cohabitating_households(persons, households, cohabitate_x_list, get_new_households)
     print_household_stats()
     
-    print("Marriages..")
+    logger.info("Marriages..")
     update_married_households_random(persons, households, marriage_list, get_new_households)
     print_household_stats()
     fix_erroneous_households(persons)
@@ -255,7 +255,7 @@ def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_mode
 
     # Load observed data
     observed_marrital = orca.get_table("observed_marrital_data").to_frame()
-    target_data = observed_marrital[observed_marrital["year"] == orca.get_injectable("year")]
+    target_data = observed_marrital[observed_marrital.index == orca.get_injectable("year")]
     target_married_count  = target_data[(target_data["MAR"] == 1)]["count"].values[0]
     target_divorced_count = target_data[(target_data["MAR"] == 3)]["count"].values[0]
     married_weight = target_married_count / (target_married_count + target_divorced_count)
@@ -272,9 +272,9 @@ def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_mode
     n_married, min_div, max_div = compute_expected_marital_status(persons.local, cohabitate_x_list, marriage_list, divorce_list)
     n_divorced = (max_div - min_div) / 2 + min_div
 
-    print("Predicted Marital status after applying models BEFORE CALIBRATION")
-    print(f"Predicted MAR == 1: {n_married:,}")
-    print(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
+    logger.debug("Predicted Marital status after applying models BEFORE CALIBRATION")
+    logger.debug(f"Predicted MAR == 1: {n_married:,}")
+    logger.debug(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
 
     marital_status_table.local = pd.concat([marital_status_table.local,
                                             pd.DataFrame(
@@ -293,7 +293,7 @@ def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_mode
     total_iterations = 0
     error = compute_error(n_married, n_divorced, target_married_count, target_divorced_count)
     while error > sim_cal_config.tolerance and total_iterations < sim_cal_config.max_iter:
-        print(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
+        logger.info(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
         lr = sim_cal_config.learning_rate * ((sim_cal_config.max_iter - total_iterations) + .5) / sim_cal_config.max_iter
         
         # Calculate updates with momentum
@@ -330,7 +330,7 @@ def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_mode
                                             ),
                                         ], axis=0)
 
-    print(f"Final error after Simultaneous calibration: {error}")
+    logger.info(f"Final error after Simultaneous calibration: {error}")
 
 
 def run_models(marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
@@ -341,7 +341,7 @@ def run_models(marriage_model, cohab_model, divorce_model, marriage_data, cohab_
 
 def print_marital_count(persons_df):
     for i in [1, 3]:
-        print(f"Number of people with MAR={i}: {(persons_df.MAR == i).sum():,}")
+        logger.debug(f"Number of people with MAR={i}: {(persons_df.MAR == i).sum():,}")
 
 def compute_expected_marital_status(persons_df, cohabitate_x_list, marriage_list, divorce_list):
     starting_married = (persons_df.MAR == 1)
@@ -402,21 +402,20 @@ def print_household_stats():
         persons (DataFrame): Pandas DataFrame of the persons table
         households (DataFrame): Pandas DataFrame of the households table
     """
-    print("Households size from persons table: ", orca.get_table("persons").local["household_id"].unique().shape[0])
-    print("Households size from households table: ", orca.get_table("households").local.index.unique().shape[0])
-    print("Persons Size: ", orca.get_table("persons").local.index.unique().shape[0])
-    print("Missing hh:", len(set(orca.get_table("persons").local["household_id"].unique()) -\
-        set(orca.get_table("households").local.index.unique())))
+    logger.debug(f"Households size from persons table: {orca.get_table('persons').local['household_id'].unique().shape[0]}")
+    logger.debug(f"Households size from households table: {orca.get_table('households').local.index.unique().shape[0]}")
+    logger.debug(f"Persons Size: {orca.get_table('persons').local.index.unique().shape[0]}")
+    logger.debug(f"Missing hh: {len(set(orca.get_table('persons').local['household_id'].unique()) - set(orca.get_table('households').local.index.unique()))}")
     persons_df = orca.get_table("persons").local
     persons_df["relate_0"] = np.where(persons_df["relate"]==0, 1, 0)
     persons_df["relate_1"] = np.where(persons_df["relate"]==1, 1, 0)
     persons_df["relate_13"] = np.where(persons_df["relate"]==13, 1, 0)
-    persons_df_sum = persons_df.groupby("household_id").agg(relate_1 = ("relate_1", sum), relate_13 = ("relate_13", sum),
-    relate_0 = ("relate_0", sum))
-    print("Households with multiple 0:", ((persons_df_sum["relate_0"])>1).sum())
-    print("Households with multiple 1:", ((persons_df_sum["relate_1"])>1).sum())
-    print("Households with multiple 13:", ((persons_df_sum["relate_13"])>1).sum())
-    print("Households with 1 and 13:", ((persons_df_sum["relate_1"] * persons_df_sum["relate_13"])>0).sum())
+    persons_df_sum = persons_df.groupby("household_id").agg(relate_1 = ("relate_1", "sum"), relate_13 = ("relate_13", "sum"),
+    relate_0 = ("relate_0", "sum"))
+    logger.debug(f"Households with multiple 0: {((persons_df_sum['relate_0'])>1).sum()}")
+    logger.debug(f"Households with multiple 1: {((persons_df_sum['relate_1'])>1).sum()}")
+    logger.debug(f"Households with multiple 13: {((persons_df_sum['relate_13'])>1).sum()}")
+    logger.debug(f"Households with 1 and 13: {((persons_df_sum['relate_1'] * persons_df_sum['relate_13'])>0).sum()}")
 
 @orca.step("household_stats")
 def household_stats(persons, households):
@@ -426,26 +425,28 @@ def household_stats(persons, households):
         persons (DataFrame): Pandas DataFrame of the persons table
         households (DataFrame): Pandas DataFrame of the households table
     """
-    print("Households size from persons table: ", orca.get_table("persons").local["household_id"].unique().shape[0])
-    print("Households size from households table: ", orca.get_table("households").local.index.unique().shape[0])
-    print("Households in households table not in persons table:", len(sorted(set(orca.get_table("households").local.index.unique()) - set(orca.get_table("persons").local["household_id"].unique()))))
-    print("Households in persons table not in households table:", len(sorted(set(orca.get_table("persons").local["household_id"].unique()) - set(orca.get_table("households").local.index.unique()))))
-    print("Households with NA persons:", orca.get_table("households").local["persons"].isna().sum())
-    print("Duplicated households: ", orca.get_table("households").local.index.has_duplicates)
+    logger.debug(f"Households size from persons table: {orca.get_table('persons').local['household_id'].unique().shape[0]}")
+    logger.debug(f"Households size from households table: {orca.get_table('households').local.index.unique().shape[0]}")
+    logger.debug(f"Households in households table not in persons table: {len(sorted(set(orca.get_table('households').local.index.unique()) - set(orca.get_table('persons').local['household_id'].unique())))}")
+    logger.debug(f"Households in persons table not in households table: {len(sorted(set(orca.get_table('persons').local['household_id'].unique()) - set(orca.get_table('households').local.index.unique())))}")
+    logger.debug(f"Households with NA persons: {orca.get_table('households').local['persons'].isna().sum()}")
+    logger.debug(f"Duplicated households: {orca.get_table('households').local.index.has_duplicates}")
     # print("Counties: ", households["lcm_county_id"].unique())
-    print("Persons Size: ", orca.get_table("persons").local.index.unique().shape[0])
-    print("Duplicated persons: ", orca.get_table("persons").local.index.has_duplicates)
+    logger.debug(f"Persons Size: {orca.get_table('persons').local.index.unique().shape[0]}")
+    logger.debug(f"Duplicated persons: {orca.get_table('persons').local.index.has_duplicates}")
 
     persons_df = orca.get_table("persons").local
     persons_df["relate_0"] = np.where(persons_df["relate"]==0, 1, 0)
     persons_df["relate_1"] = np.where(persons_df["relate"]==1, 1, 0)
     persons_df["relate_13"] = np.where(persons_df["relate"]==13, 1, 0)
-    persons_df_sum = persons_df.groupby("household_id").agg(relate_1 = ("relate_1", sum), relate_13 = ("relate_13", sum),
-    relate_0 = ("relate_0", sum))
-    print("Households with multiple 0: ", ((persons_df_sum["relate_0"])>1).sum())
-    print("Households with multiple 1: ", ((persons_df_sum["relate_1"])>1).sum())
-    print("Households with multiple 13: ", ((persons_df_sum["relate_13"])>1).sum())
-    print("Households with 1 and 13: ", ((persons_df_sum["relate_1"] * persons_df_sum["relate_13"])>0).sum())
+    persons_df_sum = persons_df.groupby("household_id").agg(
+        relate_1 = ("relate_1", sum),
+        relate_13 = ("relate_13", sum),
+        relate_0 = ("relate_0", sum))
+    logger.debug(f"Households with multiple 0:  {((persons_df_sum['relate_0'])>1).sum()}")
+    logger.debug(f"Households with multiple 1:  {((persons_df_sum['relate_1'])>1).sum()}")
+    logger.debug(f"Households with multiple 13: {((persons_df_sum['relate_13'])>1).sum()}")
+    logger.debug(f"Households with 1 and 13: {((persons_df_sum['relate_1'] * persons_df_sum['relate_13'])>0).sum()}")
 
 
 def update_cohabitating_households(persons, households, cohabitate_list, get_new_households):

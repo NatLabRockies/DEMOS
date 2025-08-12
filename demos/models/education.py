@@ -2,7 +2,7 @@ import orca
 import numpy as np
 from templates import estimated_models, modelmanager as mm
 import time
-from datasources import log_execution_time
+from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
 
 @orca.step("education_model")

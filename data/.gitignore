@@ -1,3 +1,7 @@
 *
 !.gitignore
-!outputs/
+!calibrated_values/
+!calibrated_values/**
+!calibrated_configs/
+!calibrated_configs/**
+**/.DS_Store

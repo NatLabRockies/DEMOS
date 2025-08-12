@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
-from datasources import log_execution_time
+from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
 
 @orca.step("kids_moving_model")

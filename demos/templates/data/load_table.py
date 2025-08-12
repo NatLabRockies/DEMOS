@@ -12,7 +12,6 @@ import pandas as pd
 
 from .. import modelmanager, __version__
 
-
 @modelmanager.template
 class LoadTable():
     """

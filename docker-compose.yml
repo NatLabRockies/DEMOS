@@ -5,5 +5,5 @@ services:
     environment:
       - PYTHONUNBUFFERED=1
     volumes:
-      - "${DEMOS_CONFIG_PATH:-./demos_config.toml}:/demos/config.toml:ro"
-      - "${DEMOS_DATA_DIR:-./data}:/demos/data"
+      - "${DEMOS_CONFIG_PATH:-./configuration/demos_config.toml}:/demos/config.toml:ro"
+      - "${DEMOS_DATA_DIR:-./data}:/data"

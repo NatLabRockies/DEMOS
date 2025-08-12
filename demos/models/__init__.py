@@ -10,5 +10,4 @@ from .education import *
 from .rebalancing import *
 from .income_adjustment import *
 from .export import *
-
-from .main import * # TODO: Refactor this
+from .main import *

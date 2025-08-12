@@ -23,7 +23,8 @@ dependencies = [
     "toml==0.10.2",
     "toolz==1.0.0",
     "scipy==1.15.2",
-    "statsmodels==0.14.5"
+    "statsmodels==0.14.5",
+    "loguru==0.7.3"
 ]
 requires-python = ">= 3.10"
 

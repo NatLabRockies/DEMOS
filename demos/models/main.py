@@ -3,7 +3,17 @@ import orca
 import warnings
 import pandas as pd
 import numpy as np
+from config import get_config
 
+@orca.injectable("year")
+def year():
+    default_year = get_config().base_year
+    iter_var = orca.get_injectable("iter_var")
+    if iter_var is not None:
+        return iter_var
+    else:
+        return default_year
+    
 # -----------------------------------------------------------------------------------------
 # STEP DEFINITION
 # -----------------------------------------------------------------------------------------

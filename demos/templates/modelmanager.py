@@ -3,6 +3,7 @@ from __future__ import print_function
 import os
 import copy
 import pickle
+from loguru import logger
 from collections import OrderedDict
 
 import orca
@@ -44,7 +45,7 @@ def initialize(path='configs'):
     
     """
     if not os.path.exists(path):
-        print("Path not found: {}".format(os.path.join(os.getcwd(), path)))
+        logger.warning("Path not found: {}".format(os.path.join(os.getcwd(), path)))
         # TO DO - automatically create directory if run again after warning?
         return
         
@@ -58,7 +59,7 @@ def initialize(path='configs'):
             files.append(os.path.join(path, f))
     
     if len(files) == 0:
-        print("No yaml files found in path '{}'".format(path))
+        logger.warning("No yaml files found in path '{}'".format(path))
         return
         
     steps = []
@@ -72,7 +73,7 @@ def initialize(path='configs'):
                 steps.append(d)            
     
     if len(steps) == 0:
-        print("No files from ModelManager 0.1.dev8 or later found in path '{}'"\
+        logger.warning("No files from ModelManager 0.1.dev8 or later found in path '{}'"\
                 .format(path))
     
     for d in steps:
@@ -164,7 +165,7 @@ def register(step, save_to_disk=True):
     if save_to_disk:
         save_step_to_disk(step)
     
-    print("Registering model step '{}'".format(name))
+    logger.info("Registering model step '{}'".format(name))
     
     _steps[name] = step
     

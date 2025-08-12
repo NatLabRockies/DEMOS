@@ -1,14 +1,10 @@
 import os
 from collections import OrderedDict
 
-# import mode_choice
 import numpy as np
 import orca
 import pandas as pd
 import yaml
-from config import CONFIG
-
-# print('Importing variables for region', CONFIG.region_code)
 
 # ----------------------------------------------------------------------------------------
 # COMMON FUNCTIONS
@@ -110,13 +106,13 @@ def jobs_capacity(jobs):
 #     capacity.index = capacity.index.astype(int)
     return capacity
 
-@orca.column('persons')
-def taz_pct_no_higher_ed(persons, zones):
-    return reindex(zones.pct_no_higher_ed, persons.home_taz)
+# @orca.column('persons')
+# def taz_pct_no_higher_ed(persons, zones):
+#     return reindex(zones.pct_no_higher_ed, persons.home_taz)
 
-@orca.column('persons')
-def taz_pct_hh_inc_under_25k(persons, zones):
-    return reindex(zones.pct_hh_inc_under_25k, persons.home_taz)
+# @orca.column('persons')
+# def taz_pct_hh_inc_under_25k(persons, zones):
+#     return reindex(zones.pct_hh_inc_under_25k, persons.home_taz)
 
 @orca.column('blocks')
 def pct_sector_tech(jobs):
@@ -2123,9 +2119,9 @@ def employment_density(zones):
 #     s = travel_data.county_id
 #     return pd.Series(pd.factorize(s)[0], index = s.index)
 
-@orca.column('persons', cache=True)
-def home_taz(households, persons):
-    return reindex(households.home_taz, persons.household_id)
+# @orca.column('persons', cache=True)
+# def home_taz(households, persons):
+#     return reindex(households.home_taz, persons.household_id)
 
 @orca.column('job_flows', cache=True)
 def from_zone_id(job_flows, blocks):
@@ -2170,39 +2166,6 @@ def mode_choice_template(region_code, calibrated_folder):
         'mode_choice_logsum.yaml')
     # output_file = f"configs/mode_choice/mode_choice_logsum.yaml"
     return read_yaml_file(calibrated_path)
-
-@orca.column('travel_data', cache = 'iteration')
-def logsum(mode_choice_template, travel_data):
-
-    # Read Mode Choice Specs
-    coeffs = mode_choice_template['saved_object']['fitted_parameters']
-    specs = OrderedDict(mode_choice_template['saved_object']['model_expression'])
-    nest = mode_choice_template['saved_object']['nest']
-
-    # Get list of explanatory Variables
-    exp_vars = list(set([key for values in specs.values() for key in values.keys()]))
-
-    # Read Data from Orca
-    t = travel_data.to_frame(columns = exp_vars)
-
-    # Organize Data in Dictionary - (mode, data)
-    x = {mode: np.array([t[key] for key in spec.keys()]) for mode, spec in specs.items()}
-
-    # Iterate over the list of dictionaries and convert list values to NumPy arrays
-    # (for alternative indexing)
-    for d in nest['alternatives']:
-        for key, value in d.items():
-            if isinstance(value, list):
-                d[key] = np.array(value).astype(int)
-
-
-    logsums_ = mode_choice.mode_choice_logsums(params = coeffs,
-                             specs = specs,
-                             exp_vars = x,
-                             nest = nest)
-
-
-    return pd.Series(logsums_, index = t.index)
 
 # -----------------------------------------------------------------------------------------
 # DERIVED VARIABLES

@@ -1,0 +1,136 @@
+# Global config
+random_seed = 100
+base_year = 2010
+forecast_year = 2019
+calibrated_models_dir = "../data/calibrated_configs/custom/06197001"
+inconsistent_persons_table_behavior = "fix"
+output_tables = [
+    "persons",
+    "households",
+    "graveyard",
+    "run_times",
+    "marital_rebalanced",
+    "marital_status_output"
+]
+initialize_empty_tables = [
+    "graveyard",
+    "rebalanced_persons",
+    "rebalanced_households"
+]
+
+# Data sources
+## Synthetic population data
+[[tables]]
+file_type = "h5"
+table_name = "persons"
+filepath = "../data/custom_mpo_06197001_model_data.h5"
+h5_key = "persons"
+
+[[tables]]
+file_type = "h5"
+table_name = "households"
+filepath = "../data/custom_mpo_06197001_model_data.h5"
+h5_key = "households"
+
+## Other static data tables
+## Hide it?
+[[tables]]
+file_type = "csv"
+table_name = "relational_adjustment_mapping"
+filepath = "../data/relmap_06197001.csv"
+index_col = "index"
+
+[[tables]]
+file_type = "csv"
+table_name = "income_rates"
+filepath = "../data/income_rates_06197001.csv"
+index_col = "year"
+custom_dtype_casting = {"lcm_county_id"= "object", "year"= "int", "rate"= "float"}
+
+[[tables]]
+file_type = "csv"
+table_name = "hsize_ct"
+filepath = "../data/hsize_ct_06197001.csv"
+index_col = "year"
+custom_dtype_casting = {"lcm_county_id"="object", "year"="int", "hh_size"="object", "total_number_of_households"="int"}
+
+## Simultaneous Calibration data
+### For simultaneous calibration, tables need 
+### to be manually included here
+[[tables]]
+file_type = "csv"
+table_name = "observed_employment"
+filepath = "../data/calibrated_values/calibration/06197001/employment_obs.csv"
+index_col = "year"
+
+[[tables]]
+file_type = "csv"
+table_name = "observed_marrital_data"
+filepath = "../data/calibrated_values/calibration/06197001/marrital_status_over_time_obs.csv"
+index_col = "year"
+
+
+# Modules configuration
+
+## Employment
+# [employment_module_config.enter_model_calibration_procedure]
+# procedure_type = "rmse_error"
+# observed_values_table = "observed_entering_workforce"
+# tolerance_type = "relative"
+# tolerance = 0.01
+# max_iter = 1000
+
+# [employment_module_config.exit_model_calibration_procedure]
+# procedure_type = "rmse_error"
+# observed_values_table = "observed_exiting_workforce"
+# tolerance_type = "relative"
+# tolerance = 0.01
+# max_iter = 1000
+
+[employment_module_config.simultaneous_calibration_config]
+tolerance = 100
+max_iter = 2 # 100
+learning_rate = 2
+momentum_weight = 0.3
+
+## Mortality
+[mortality_module_config.calibration_procedure]
+procedure_type = "rmse_error"
+tolerance_type = "absolute"
+tolerance = 1000
+max_iter = 2 # 1000
+[mortality_module_config.calibration_procedure.observed_values_table]
+file_type = "csv"
+table_name = "observed_fatalities_data"
+filepath = "../data/calibrated_values/calibration/06197001/mortalities_over_time_obs.csv"
+index_col = "year"
+
+## Birth
+[birth_module_config.calibration_procedure]
+procedure_type = "rmse_error"
+tolerance_type = "absolute"
+tolerance = 1000
+max_iter = 2 # 1000
+[birth_module_config.calibration_procedure.observed_values_table]
+file_type = "csv"
+table_name = "observed_births_data"
+filepath = "../data/calibrated_values/calibration/06197001/births_over_time_obs.csv"
+index_col = "year"
+
+## HH Reorg
+[hh_reorg_module_config]
+geoid_col = "lcm_county_id"
+
+[hh_reorg_module_config.simultaneous_calibration_config]
+tolerance = 1_000
+max_iter = 2 # 100
+learning_rate = 2.5
+momentum_weight = 0.3
+
+## HH Rebalancing
+[hh_rebalancing_module_config]
+control_table = "hsize_ct"
+control_col = "hh_size"
+geoid_col = "lcm_county_id"
+
+

@@ -1,40 +1,35 @@
-import argparse
-# import os
-
-import numpy as np
 import orca
+import argparse
+import numpy as np
 import pandas as pd
 from templates import modelmanager as mm
+from logging_logic import capture_orca_logs
 from config import load_config_file, get_config
 
 
 def run():
     CONFIG = get_config()
-    
+    capture_orca_logs()
+
     orca.add_table('run_times', pd.DataFrame())
     orca.add_table('marital_rebalanced', pd.DataFrame())
     orca.add_table('marital_status_output', pd.DataFrame())
 
-    import datasources
     import models
     import variables
-
-    datasources.run_datasources()
 
     if CONFIG.random_seed is not None:
         np.random.seed(CONFIG.random_seed)
 
-    mm.initialize(datasources.configs_folder)
-
-    out_tables = datasources.hdf_tables + ["graveyard", "run_times", "marital_rebalanced", "marital_status_output"]
+    mm.initialize(CONFIG.calibrated_models_dir)
     iter_vars = list(range(CONFIG.base_year + 1, CONFIG.forecast_year + 1, 1))
-    orca.run(["fix_persons_table"])
+    orca.run(["validate_persons_table"])
     orca.run(
         orca.get_injectable('sim_steps'),
         data_out=CONFIG.output_fname,
         iter_vars=iter_vars,
         out_base_tables=[],
-        out_run_tables=out_tables,
+        out_run_tables=CONFIG.output_tables,
         out_run_local=True,
         out_interval= 1
     )

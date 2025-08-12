@@ -3,12 +3,12 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
-from datasources import log_execution_time
+from logging_logic import log_execution_time
 from config import DEMOSConfig, get_config
 from templates.utils.models import columns_in_formula
 
 @orca.step("fatality_model")
-def fatality_model(persons, households, observed_fatalities_data, rel_map, graveyard, year):
+def fatality_model(persons, households, observed_fatalities_data, relational_adjustment_mapping, graveyard, year):
     """Function to run the fatality model at the persons level.
     The function also updates the persons and households tables,
     and saves the mortalities table.
@@ -35,7 +35,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     ## - Update Relate column if head died:
     ###   If there is a relate==1 or relate==13 person alive, they are the new head
     ###   Otherwise, oldest person is new head
-    ###   In all cases, we need to use the `rel_map` table to map the rest of the relate columns
+    ###   In all cases, we need to use the `relational_adjustment_mapping` table to map the rest of the relate columns
 
     fatality_list_idx = fatality_list.astype(bool).reindex(persons.local.index)
     dead_people_slice = persons.local.loc[fatality_list_idx]
@@ -83,10 +83,10 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     head_old_relate_by_person_id = persons.local.loc[rest_to_head_all_filter].household_id.map(new_heads_old_relate_by_hh)
     person_old_relate_by_person_id = persons.local.loc[rest_to_head_all_filter].relate
 
-    ### In order to efficiently access the rel_map dataframe, we transform relate values into
+    ### In order to efficiently access the relational_adjustment_mapping dataframe, we transform relate values into
     ### indices to the numpy representation of the dataframe
-    rel_map_columns = rel_map.to_frame().columns
-    rel_map_index = rel_map.to_frame().index
+    rel_map_columns = relational_adjustment_mapping.to_frame().columns
+    rel_map_index = relational_adjustment_mapping.to_frame().index
 
     #### First: The column value that we should query corresponds to the
     #### old relate value of the new household head
@@ -101,7 +101,7 @@ def fatality_model(persons, households, observed_fatalities_data, rel_map, grave
     #### (This step also replaces the relate value of the new heads,
     ####  we take care of that after this processing)
     #### TODO: Here we can create spouses without correct marital status
-    persons.local.loc[rest_to_head_all_filter, "relate"] = rel_map.to_frame().values[old_person_relate_index, old_head_relate_index]
+    persons.local.loc[rest_to_head_all_filter, "relate"] = relational_adjustment_mapping.to_frame().values[old_person_relate_index, old_head_relate_index]
 
     ## Update relate of new heads
     persons.local.loc[rest_to_head_ids.tolist() + partner_to_head_ids.to_list(), "relate"] = 0

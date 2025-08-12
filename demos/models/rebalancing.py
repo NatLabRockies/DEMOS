@@ -8,7 +8,7 @@ from templates.utils.transition import GrowthRateTransition
 from config import DEMOSConfig, HHRebalancingModuleConfig, SimultaneousCalibrationConfig, get_config
 
 import time
-from datasources import log_execution_time
+from logging_logic import log_execution_time
 
 @orca.step('household_rebalancing')
 def household_rebalancing(households, persons, year, get_new_households, get_new_person_id, rebalanced_households, rebalanced_persons):
@@ -41,15 +41,12 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     index_df = households.to_frame([GEOID_COL, CONTROL_COL]).sort_values([GEOID_COL, CONTROL_COL])
     indices = index_df.groupby([GEOID_COL, CONTROL_COL]).indices
     current_count = index_df.groupby([GEOID_COL, CONTROL_COL]).size()
-    hh_difference = control_table_wrapped.local.loc[year].set_index([GEOID_COL, CONTROL_COL])[value_column].loc[current_count.index] - current_count
+    hh_difference = control_table_wrapped.local.loc[year].astype({GEOID_COL: "str", CONTROL_COL:"str"}).set_index([GEOID_COL, CONTROL_COL])[value_column].loc[current_count.index] - current_count
     
     # TODO: Add assertions about rows being enough to make the sampling
 
     to_remove_hh = []
     to_duplicate_hh = []
-    # for geo_id, sub_series in hh_difference.groupby(level=0):
-    #     geo_index = index_df[GEOID_COL] == geo_id
-    #     for sub_index, adjustment in sub_series.items():
     for (geo_id, hh_size), adjustment in hh_difference.items():
             valid_indices = index_df.index[indices[(geo_id, hh_size)]]
             selected_hh = np.random.choice(valid_indices, size=abs(adjustment), replace=(adjustment > 0) and (abs(adjustment) > len(valid_indices))).tolist()
