@@ -244,16 +244,24 @@
         </div>
         <article role="main" id="furo-main-content">
           <h1>Source code for demos.config</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">toml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">model_validator</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">toml</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">orca</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">model_validator</span><span class="p">,</span> <span class="n">Field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">templates.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalibrationConfig</span><span class="p">,</span> <span class="n">SimultaneousCalibrationConfig</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datasources</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataSourceModel</span>
 
 <span class="n">CONFIG</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="HHRebalancingModuleConfig">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.HHRebalancingModuleConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HHRebalancingModuleConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Configuration for Household Rebalancing module</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">control_table</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">control_col</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">geoid_col</span><span class="p">:</span> <span class="nb">str</span></div>
@@ -300,13 +308,33 @@
 <div class="viewcode-block" id="DEMOSConfig">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DEMOSConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-    <span class="c1"># Global config</span>
-    <span class="n">region_code</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">forecast_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2020</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Global configuration for DEMOS. Individual fields in this class control the configuration of each module.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span>
+
+    <span class="c1">#: Last year of simulation</span>
+    <span class="n">forecast_year</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2020</span>
+    <span class="c1">#: Year represented in synthetic population input</span>
     <span class="n">base_year</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="c1">#: Path to DEMOS outputs</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;../data/output&quot;</span>
+    <span class="c1">#: Name of output HDF5 file. Defaults to `demos_output_{forecast_year}.h5`.</span>
     <span class="n">output_fname</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="n">calibrated_folder</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;custom&quot;</span>
+    <span class="c1">#: List of orca tables to include in output</span>
+    <span class="n">output_tables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: Path to directory with calibration models</span>
+    <span class="n">calibrated_models_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="c1">#: Behavior of inconsistent `persons` input table</span>
+    <span class="n">inconsistent_persons_table_behavior</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;error&quot;</span><span class="p">,</span> <span class="s2">&quot;fix&quot;</span><span class="p">,</span> <span class="s2">&quot;ignore&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;error&quot;</span>
+    <span class="c1">#: Name of tables to be initialized as empty</span>
+    <span class="n">initialize_empty_tables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="c1"># region_code: str</span>
+    <span class="c1"># calibrated_folder: str = &quot;custom&quot;</span>
+
+    <span class="c1">#: List of tables to be loaded into orca</span>
+    <span class="n">tables</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">DataSourceModel</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
 
     <span class="c1"># Module-specific config</span>
     <span class="n">employment_module_config</span><span class="p">:</span> <span class="n">EmploymentModuleConfig</span>
@@ -315,43 +343,44 @@
     <span class="n">hh_reorg_module_config</span><span class="p">:</span> <span class="n">HHReorgModuleConfig</span>
     <span class="n">hh_rebalancing_module_config</span><span class="p">:</span> <span class="n">HHRebalancingModuleConfig</span>
     
-<div class="viewcode-block" id="DEMOSConfig.__init__">
-<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+<div class="viewcode-block" id="DEMOSConfig.model_post_init">
+<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig.model_post_init">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="o">=</span> <span class="s2">&quot;data/model_data_</span><span class="si">{0}</span><span class="s2">.h5&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">forecast_year</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/demos_output_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">forecast_year</span><span class="si">}</span><span class="s2">.h5&quot;</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output file set to default: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_tables</span> <span class="o">=</span> <span class="p">[]</span>
+            
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_empty_tables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">initialize_empty_tables</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="c1"># Load all table datasources</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">:</span>
+            <span class="n">t</span><span class="o">.</span><span class="n">load_into_orca</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_empty_tables</span><span class="p">:</span>
+            <span class="n">orca</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">())</span></div>
+
+        
+
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">require_persons_and_households</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">loaded_table_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">table_name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">]</span>
+        <span class="k">if</span> <span class="s2">&quot;persons&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_table_names</span> <span class="ow">or</span> <span class="s2">&quot;households&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_table_names</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Both &#39;persons&#39; and &#39;households&#39; tables are required. Tables defined: </span><span class="si">{</span><span class="n">loaded_table_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
 
 
-
-<div class="viewcode-block" id="DEMOSConfig.update">
-<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig.update">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="nb">setattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span></div>
-</div>
-
-
-<div class="viewcode-block" id="load_config_file">
-<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.load_config_file">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">load_config_file</span><span class="p">(</span><span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DEMOSConfig</span><span class="p">:</span>
     <span class="k">global</span> <span class="n">CONFIG</span>
-    <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">DEMOSConfig</span><span class="p">(</span><span class="o">**</span><span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">dir</span><span class="p">))</span></div>
+    <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">DEMOSConfig</span><span class="p">(</span><span class="o">**</span><span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">dir</span><span class="p">))</span>
 
-
-<div class="viewcode-block" id="set_config">
-<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.set_config">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">set_config</span><span class="p">(</span><span class="n">params_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
-    <span class="k">global</span> <span class="n">CONFIG</span>
-    <span class="n">CONFIG</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="o">**</span><span class="nb">vars</span><span class="p">(</span><span class="n">params_dict</span><span class="p">))</span></div>
-
-
-<div class="viewcode-block" id="get_config">
-<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.get_config">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_config</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">CONFIG</span>
-    <span class="k">return</span> <span class="n">CONFIG</span></div>
-
+    <span class="k">return</span> <span class="n">CONFIG</span>
 </pre></div>
         </article>
       </div>

@@ -250,8 +250,121 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="module-demos.config">
-<span id="demos-configuration-structure"></span><h1>DEMOS Configuration Structure<a class="headerlink" href="#module-demos.config" title="Link to this heading">¶</a></h1>
+          <section id="demos-configuration-structure">
+<h1>DEMOS Configuration Structure<a class="headerlink" href="#demos-configuration-structure" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">DEMOSConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#DEMOSConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.DEMOSConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Global configuration for DEMOS. Individual fields in this class control the configuration of each module.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>args</strong> (<em>Any</em>)</p></li>
+<li><p><strong>kwargs</strong> (<em>Any</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.base_year">
+<span class="sig-name descname"><span class="pre">base_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#demos.config.DEMOSConfig.base_year" title="Link to this definition">¶</a></dt>
+<dd><p>Year represented in synthetic population input</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.birth_module_config">
+<span class="sig-name descname"><span class="pre">birth_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.BirthModuleConfig" title="demos.config.BirthModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BirthModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.birth_module_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.calibrated_models_dir">
+<span class="sig-name descname"><span class="pre">calibrated_models_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.calibrated_models_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Path to directory with calibration models</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.employment_module_config">
+<span class="sig-name descname"><span class="pre">employment_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.EmploymentModuleConfig" title="demos.config.EmploymentModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmploymentModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.employment_module_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.forecast_year">
+<span class="sig-name descname"><span class="pre">forecast_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2020</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.forecast_year" title="Link to this definition">¶</a></dt>
+<dd><p>Last year of simulation</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.hh_rebalancing_module_config">
+<span class="sig-name descname"><span class="pre">hh_rebalancing_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.HHRebalancingModuleConfig" title="demos.config.HHRebalancingModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">HHRebalancingModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.hh_rebalancing_module_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.hh_reorg_module_config">
+<span class="sig-name descname"><span class="pre">hh_reorg_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.HHReorgModuleConfig" title="demos.config.HHReorgModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">HHReorgModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.hh_reorg_module_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.inconsistent_persons_table_behavior">
+<span class="sig-name descname"><span class="pre">inconsistent_persons_table_behavior</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'error'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'fix'</span></code><span class="pre">,</span> <code class="docutils literal notranslate"><span class="pre">'ignore'</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'error'</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.inconsistent_persons_table_behavior" title="Link to this definition">¶</a></dt>
+<dd><p>Behavior of inconsistent <cite>persons</cite> input table</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.initialize_empty_tables">
+<span class="sig-name descname"><span class="pre">initialize_empty_tables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.initialize_empty_tables" title="Link to this definition">¶</a></dt>
+<dd><p>Name of tables to be initialized as empty</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_DEMOSConfig__context</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#DEMOSConfig.model_post_init"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.DEMOSConfig.model_post_init" title="Link to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.mortality_module_config">
+<span class="sig-name descname"><span class="pre">mortality_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.MortalityModuleConfig" title="demos.config.MortalityModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MortalityModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.mortality_module_config" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.output_dir">
+<span class="sig-name descname"><span class="pre">output_dir</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'../data/output'</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.output_dir" title="Link to this definition">¶</a></dt>
+<dd><p>Path to DEMOS outputs</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.output_fname">
+<span class="sig-name descname"><span class="pre">output_fname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.output_fname" title="Link to this definition">¶</a></dt>
+<dd><p>Name of output HDF5 file. Defaults to <cite>demos_output_{forecast_year}.h5</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.output_tables">
+<span class="sig-name descname"><span class="pre">output_tables</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.output_tables" title="Link to this definition">¶</a></dt>
+<dd><p>List of orca tables to include in output</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.random_seed">
+<span class="sig-name descname"><span class="pre">random_seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#demos.config.DEMOSConfig.random_seed" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="demos.config.DEMOSConfig.require_persons_and_households">
+<span class="sig-name descname"><span class="pre">require_persons_and_households</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#demos.config.DEMOSConfig.require_persons_and_households" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<section id="module-demos.config">
+<span id="individual-modules-configuration"></span><h2>Individual Modules configuration<a class="headerlink" href="#module-demos.config" title="Link to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="demos.config.BirthModuleConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">BirthModuleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#BirthModuleConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.BirthModuleConfig" title="Link to this definition">¶</a></dt>
@@ -270,77 +383,6 @@
 <dl class="py attribute">
 <dt class="sig sig-object py" id="demos.config.BirthModuleConfig.calibration_procedure">
 <span class="sig-name descname"><span class="pre">calibration_procedure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">CalibrationConfig</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.BirthModuleConfig.calibration_procedure" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">DEMOSConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#DEMOSConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.DEMOSConfig" title="Link to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#DEMOSConfig.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.DEMOSConfig.__init__" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.base_year">
-<span class="sig-name descname"><span class="pre">base_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#demos.config.DEMOSConfig.base_year" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.birth_module_config">
-<span class="sig-name descname"><span class="pre">birth_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.BirthModuleConfig" title="demos.config.BirthModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">BirthModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.birth_module_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.calibrated_folder">
-<span class="sig-name descname"><span class="pre">calibrated_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'custom'</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.calibrated_folder" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.employment_module_config">
-<span class="sig-name descname"><span class="pre">employment_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.EmploymentModuleConfig" title="demos.config.EmploymentModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmploymentModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.employment_module_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.forecast_year">
-<span class="sig-name descname"><span class="pre">forecast_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">2020</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.forecast_year" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.hh_rebalancing_module_config">
-<span class="sig-name descname"><span class="pre">hh_rebalancing_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.HHRebalancingModuleConfig" title="demos.config.HHRebalancingModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">HHRebalancingModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.hh_rebalancing_module_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.hh_reorg_module_config">
-<span class="sig-name descname"><span class="pre">hh_reorg_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.HHReorgModuleConfig" title="demos.config.HHReorgModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">HHReorgModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.hh_reorg_module_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.mortality_module_config">
-<span class="sig-name descname"><span class="pre">mortality_module_config</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#demos.config.MortalityModuleConfig" title="demos.config.MortalityModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">MortalityModuleConfig</span></code></a></em><a class="headerlink" href="#demos.config.DEMOSConfig.mortality_module_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.output_fname">
-<span class="sig-name descname"><span class="pre">output_fname</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.DEMOSConfig.output_fname" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.random_seed">
-<span class="sig-name descname"><span class="pre">random_seed</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></em><a class="headerlink" href="#demos.config.DEMOSConfig.random_seed" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.region_code">
-<span class="sig-name descname"><span class="pre">region_code</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.config.DEMOSConfig.region_code" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="demos.config.DEMOSConfig.update">
-<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#DEMOSConfig.update"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.DEMOSConfig.update" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -386,6 +428,7 @@
 <dt class="sig sig-object py" id="demos.config.HHRebalancingModuleConfig">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">HHRebalancingModuleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#HHRebalancingModuleConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.HHRebalancingModuleConfig" title="Link to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Configuration for Household Rebalancing module</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -463,34 +506,7 @@
 
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="demos.config.get_config">
-<span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">get_config</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#get_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.get_config" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="demos.config.load_config_file">
-<span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">load_config_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#load_config_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.load_config_file" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#demos.config.DEMOSConfig" title="demos.config.DEMOSConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">DEMOSConfig</span></code></a></span></p>
-</dd>
-<dt class="field-even">Parameters<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>dir</strong> (<em>str</em>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="demos.config.set_config">
-<span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">set_config</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#set_config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.set_config" title="Link to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>params_dict</strong> (<em>dict</em>)</p>
-</dd>
-</dl>
-</dd></dl>
-
+</section>
 </section>
 
         </article>
@@ -549,24 +565,28 @@
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">DEMOS Configuration Structure</a><ul>
-<li><a class="reference internal" href="#demos.config.BirthModuleConfig"><code class="docutils literal notranslate"><span class="pre">BirthModuleConfig</span></code></a><ul>
-<li><a class="reference internal" href="#demos.config.BirthModuleConfig.calibration_procedure"><code class="docutils literal notranslate"><span class="pre">BirthModuleConfig.calibration_procedure</span></code></a></li>
-</ul>
-</li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig</span></code></a><ul>
-<li><a class="reference internal" href="#demos.config.DEMOSConfig.__init__"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.__init__()</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.base_year"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.base_year</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.birth_module_config"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.birth_module_config</span></code></a></li>
-<li><a class="reference internal" href="#demos.config.DEMOSConfig.calibrated_folder"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.calibrated_folder</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.calibrated_models_dir"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.calibrated_models_dir</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.employment_module_config"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.employment_module_config</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.forecast_year"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.forecast_year</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.hh_rebalancing_module_config"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.hh_rebalancing_module_config</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.hh_reorg_module_config"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.hh_reorg_module_config</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.inconsistent_persons_table_behavior"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.inconsistent_persons_table_behavior</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.initialize_empty_tables"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.initialize_empty_tables</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.model_post_init"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.model_post_init()</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.mortality_module_config"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.mortality_module_config</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.output_dir"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.output_dir</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.output_fname"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.output_fname</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.output_tables"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.output_tables</span></code></a></li>
 <li><a class="reference internal" href="#demos.config.DEMOSConfig.random_seed"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.random_seed</span></code></a></li>
-<li><a class="reference internal" href="#demos.config.DEMOSConfig.region_code"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.region_code</span></code></a></li>
-<li><a class="reference internal" href="#demos.config.DEMOSConfig.update"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.update()</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.DEMOSConfig.require_persons_and_households"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig.require_persons_and_households()</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#module-demos.config">Individual Modules configuration</a><ul>
+<li><a class="reference internal" href="#demos.config.BirthModuleConfig"><code class="docutils literal notranslate"><span class="pre">BirthModuleConfig</span></code></a><ul>
+<li><a class="reference internal" href="#demos.config.BirthModuleConfig.calibration_procedure"><code class="docutils literal notranslate"><span class="pre">BirthModuleConfig.calibration_procedure</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#demos.config.EmploymentModuleConfig"><code class="docutils literal notranslate"><span class="pre">EmploymentModuleConfig</span></code></a><ul>
@@ -591,9 +611,8 @@
 <li><a class="reference internal" href="#demos.config.MortalityModuleConfig.calibration_procedure"><code class="docutils literal notranslate"><span class="pre">MortalityModuleConfig.calibration_procedure</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#demos.config.get_config"><code class="docutils literal notranslate"><span class="pre">get_config()</span></code></a></li>
-<li><a class="reference internal" href="#demos.config.load_config_file"><code class="docutils literal notranslate"><span class="pre">load_config_file()</span></code></a></li>
-<li><a class="reference internal" href="#demos.config.set_config"><code class="docutils literal notranslate"><span class="pre">set_config()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
