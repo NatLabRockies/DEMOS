@@ -17,6 +17,17 @@ initialize_empty_tables = [
     "rebalanced_persons",
     "rebalanced_households"
 ]
+modules = [
+    "aging",
+    "employment",
+    "household_reorg",
+    # "kids_moving_model",
+    # "fatality_model",
+    # "birth_model",
+    # "education_model",
+    # "household_rebalancing",
+    # "update_income"
+]
 
 # Data sources
 ## Synthetic population data
@@ -33,7 +44,6 @@ filepath = "../data/custom_mpo_06197001_model_data.h5"
 h5_key = "households"
 
 ## Other static data tables
-## Hide it?
 [[tables]]
 file_type = "csv"
 table_name = "relational_adjustment_mapping"

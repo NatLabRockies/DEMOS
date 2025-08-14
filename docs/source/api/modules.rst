@@ -11,3 +11,5 @@ DEMOS Modules
    :caption: Modules
 
    aging_module
+   employment_module
+   hh_reorg_module

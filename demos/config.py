@@ -44,16 +44,23 @@ class MortalityModuleConfig(BaseModel):
 class BirthModuleConfig(BaseModel):
     calibration_procedure: Optional[CalibrationConfig] = None
 
+class AgingModuleConfig(BaseModel):
+    """
+    """
+    #: Age at which a person qualifies as senior
+    senior_age: int = 65
+
+
 class DEMOSConfig(BaseModel):
     """
     Global configuration for DEMOS. Individual fields in this class control the configuration of each module.
     """
     random_seed: int
 
-    #: Last year of simulation
-    forecast_year: int = 2020
     #: Year represented in synthetic population input
     base_year: int
+    #: Last year of simulation
+    forecast_year: int = 2020
     #: Path to DEMOS outputs
     output_dir: str = "../data/output"
     #: Name of output HDF5 file. Defaults to `demos_output_{forecast_year}.h5`.
@@ -66,19 +73,19 @@ class DEMOSConfig(BaseModel):
     inconsistent_persons_table_behavior: Literal["error", "fix", "ignore"] = "error"
     #: Name of tables to be initialized as empty
     initialize_empty_tables: list[str] = None
-    
-    # region_code: str
-    # calibrated_folder: str = "custom"
 
     #: List of tables to be loaded into orca
-    tables: list[DataSourceModel] = Field(default_factory=list)
+    tables: Optional[list[DataSourceModel]] = None
+    #: List of modules to be run
+    modules: Optional[list[str]] = None
 
     # Module-specific config
-    employment_module_config: EmploymentModuleConfig
-    mortality_module_config: MortalityModuleConfig
-    birth_module_config: BirthModuleConfig
-    hh_reorg_module_config: HHReorgModuleConfig
-    hh_rebalancing_module_config: HHRebalancingModuleConfig
+    aging_module_config: AgingModuleConfig = Field(default_factory=AgingModuleConfig)
+    employment_module_config: EmploymentModuleConfig = Field(default_factory=EmploymentModuleConfig)
+    hh_reorg_module_config: HHReorgModuleConfig = Field(default_factory=HHReorgModuleConfig)
+    mortality_module_config: MortalityModuleConfig = Field(default_factory=MortalityModuleConfig)
+    birth_module_config: BirthModuleConfig = Field(default_factory=BirthModuleConfig)
+    hh_rebalancing_module_config: HHRebalancingModuleConfig = Field(default_factory=HHRebalancingModuleConfig)
     
     def model_post_init(self, __context) -> None:
         if self.output_fname is None:
@@ -99,6 +106,19 @@ class DEMOSConfig(BaseModel):
         for n in self.initialize_empty_tables:
             orca.add_table(n, pd.DataFrame())
         
+        if self.modules is None:
+            self.modules = [
+                "aging",
+                "laborforce_model",
+                "households_reorg",
+                "kids_moving_model",
+                "fatality_model",
+                "birth_model",
+                "education_model",
+                "household_rebalancing",
+                "update_income"
+            ]
+        
 
     @model_validator(mode='after')
     def require_persons_and_households(self):
@@ -113,4 +133,6 @@ def load_config_file(dir: str) -> DEMOSConfig:
 
 def get_config():
     global CONFIG
+    if CONFIG is None:
+        CONFIG = DEMOSConfig()
     return CONFIG

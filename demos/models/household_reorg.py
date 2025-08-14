@@ -11,163 +11,34 @@ from logging_logic import log_execution_time
 
 from templates.calibration.procedures import SimultaneousCalibrationConfig
 
-@orca.injectable(autocall=False)
-def get_new_households(n):
-    persons = orca.get_table("persons")
-    graveyard = orca.get_table("graveyard")
-    rebalanced_persons = orca.get_table("rebalanced_persons")
+STEP_NAME = "household_reorg"
+REQUIRED_COLUMNS = [
+    "persons.age",
+    "persons.MAR",
+    "persons.relate"
+]
 
-    current_max = pd.concat([persons.local, graveyard.local, rebalanced_persons.local], ignore_index=True).household_id.max()
-    new_hh_ids = (
-        np.arange(n)    # = [0, 1, 2 ...] up to the number of households
-        + current_max   # = [max_hh_id, max_household_id + 1, ...]
-        + 1
-    )
-    # TODO: Change how we add empty rows to the households table
-    households = orca.get_table("households")
-    households.local = households.local.reindex(set(households.index).union(new_hh_ids))
-    return new_hh_ids 
-
-@orca.column(table_name="persons", cache=True, cache_scope="step")
-def cohabitate(persons):
-    unmarried_partner_index = persons["relate"] == 13
-    cohab_household_ids = persons["household_id"].loc[unmarried_partner_index].unique()
-    return unmarried_partner_index | \
-            ((persons["relate"] == 0) & persons["household_id"].isin(cohab_household_ids))
-
-
-@orca.column(table_name="persons", cache=True, cache_scope="step")
-def is_not_married(persons):
-    # TODO: Standarize the variable name MAR
-    return (persons["MAR"] != 1) & (persons["age"] >= 15)
-
-
-@orca.column(table_name="persons")
-def is_head(persons):
-    return (persons["relate"] == 0).astype(int)
-
-
-@orca.column(table_name="persons")
-def race_head(persons):
-    return persons["is_head"] * persons["race_id"]
-
-
-@orca.column(table_name="persons")
-def age_head(persons):
-    return persons["is_head"] * persons["age"]
-
-
-@orca.column(table_name="persons")
-def hispanic_head(persons):
-    return persons["is_head"] * persons["hispanic"]
-
-@orca.injectable()
-def persons_grouped_household(persons):
-    return persons.to_frame().groupby("household_id")
-
-
-@orca.column(table_name="households")
-def hh_agegroup_of_head(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(age_of_head=("age_head", "sum"))
-    
-    return np.where(agg_df["age_of_head"] < 35, "lt35",
-                    np.where(agg_df["age_of_head"] < 65, "gt35-lt65",
-                             "gt65"))
-
-
-@orca.column(table_name="households")
-def hh_age_of_head(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(hispanic_status_of_head=("hispanic", "sum"))
-    
-    return (agg_df["hispanic_status_of_head"] == 1).replace({0: "no", 1: "yes"})
-
-
-@orca.column(table_name="households")
-def hh_children(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(children=("child", "sum"))
-    
-    return (agg_df["children"] >= 1).replace({0: "no", 1: "yes"})
-
-
-@orca.column(table_name="households")
-def hh_seniors(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(seniors=("senior", "sum"))
-    
-    return (agg_df["seniors"] >= 1).replace({0: "no", 1: "yes"})
-
-
-@orca.column(table_name="households")
-def gt2(persons_grouped_household):
-    agg_df = persons_grouped_household.size()
-    return (agg_df >= 2).astype(int)
-
-
-@orca.column(table_name="households")
-def gt55(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(gt55=("age_gt55", "sum"))
-    return (agg_df["gt55"] >= 1).astype(int)
-
-
-@orca.column(table_name="households")
-def hh_income(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(income=("earning", "sum"))
-    return np.where(agg_df["income"] < 30000,"lt30",
-                    np.where(agg_df["income"] < 60, "gt30-lt60",
-            np.where(
-                agg_df["income"] < 100,
-                "gt60-lt100",
-                np.where(agg_df["income"] < 150, "gt100-lt150", "gt150"),
-            ),
-        ),
-    )
-
-
-@orca.column(table_name="households")
-def hh_race_of_head(data="households.hh_race_id_of_head"):
-    return data.map({
-        1: "white",
-        2: "black",
-        6: "asian",
-        7: "asian"
-    }).fillna("other")
-
-
-@orca.column(table_name="households")
-def hh_race_id_of_head(persons_grouped_household):
-    agg_df = persons_grouped_household\
-        .agg(race_of_head=("race_head", "sum"))
-    return agg_df["race_of_head"]
-
-
-@orca.column(table_name="households")
-def hh_size(persons_grouped_household):
-    agg_df = persons_grouped_household.size()
-    return agg_df.map({1: "one", 2: "two", 3: "three"}).fillna("four or more")
-
-
-
-@orca.step("households_reorg")
-def households_reorg(persons, households, year, get_new_households):
+@orca.step(STEP_NAME)
+def household_reorg(persons, households, year, get_new_households):
     """
-    Households reorganization module
+    This module executes the logic of three sub-modules: Cohabitations, Marriage and Divorce. The logic of each
+    sub-module is controlled by estimated models. These models are run all together at the beginning of the
+    module's execution.
+    
+    If simultaneous calibration data is provided through the configuration file, then
+    a simultaneous calibration procedure is run in which the expected output of the three models combined is used
+    to assess the fitness to the calibration data. That is, given the current output of the estimated models,
+    we calculate how many married and divorced people are expected after their execution, and update the coefficient
+    of the estimated model's parameters if needed.
 
-    Modifies State Variables:
+    **Required tables:**
+        - persons
+        - households
+
+    **Modifies State Variables:**
         - persons.relate
         - persons.MAR
         - persons.household_id
-
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
-        households (DataFrameWrapper): DataFrameWrapper of the households table
-
-    Returns:
-        None
     """
     start_time = time.time()
     marriage_model = mm.get_step("marriage")
@@ -242,6 +113,120 @@ def households_reorg(persons, households, year, get_new_households):
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
     print_marital_count(persons.local)
     log_execution_time(start_time, orca.get_injectable("year"), "household_reorg")
+
+@orca.injectable(autocall=False)
+def get_new_households(n):
+    """
+    Auxiliary orca injectable that creates IDs for new households, maintaining consistency across
+    the persons and graveyard table so that household IDs never repeat.
+    """
+    persons = orca.get_table("persons")
+    graveyard = orca.get_table("graveyard")
+    rebalanced_persons = orca.get_table("rebalanced_persons")
+
+    current_max = pd.concat([persons.local, graveyard.local, rebalanced_persons.local], ignore_index=True).household_id.max()
+    new_hh_ids = (
+        np.arange(n)    # = [0, 1, 2 ...] up to the number of households
+        + current_max   # = [max_hh_id, max_household_id + 1, ...]
+        + 1
+    )
+    # TODO: Change how we add empty rows to the households table
+    households = orca.get_table("households")
+    households.local = households.local.reindex(set(households.index).union(new_hh_ids))
+    return new_hh_ids 
+
+@orca.injectable()
+def persons_grouped_household(persons):
+    """
+    Auxiliary injectable that precomputes `persons.groupby('household_id')`
+    """
+    return persons.to_frame().groupby("household_id")
+
+@orca.column(table_name="persons", cache=True, cache_scope="step")
+def cohabitate(persons):
+    """
+    Binary column in persons table evaluating to True if person is cohabitating partner of household head or head in
+    a household with a cohabitating partner
+    """
+    unmarried_partner_index = persons["relate"] == 13
+    cohab_household_ids = persons["household_id"].loc[unmarried_partner_index].unique()
+    return unmarried_partner_index | \
+            ((persons["relate"] == 0) & persons["household_id"].isin(cohab_household_ids))
+
+
+@orca.column(table_name="persons", cache=True, cache_scope="step")
+def is_not_married(persons):
+    """
+    Binary column in persons table  evaluating to True if a person is above 15 and is not married (`MAR != 1`). Used in interal logic.
+    """
+    return (persons["MAR"] != 1) & (persons["age"] >= 15)
+
+
+@orca.column(table_name="persons")
+def is_head(persons):
+    """
+    Binary column in persons table evaluating to 1 if person is head of household
+    """
+    return (persons["relate"] == 0).astype(int)
+
+
+@orca.column(table_name="persons")
+def race_head(persons):
+    """
+    Combination of `is_head` and `race_id`
+    """
+    return persons["is_head"] * persons["race_id"]
+
+
+@orca.column(table_name="persons")
+def age_head(persons):
+    """
+    Evaluates to `is_head` * `age`
+    """
+    return persons["is_head"] * persons["age"]
+
+
+@orca.column(table_name="persons")
+def hispanic_head(persons):
+    """
+    Evaluates to `is_head` * `hispanic`
+    """
+    return persons["is_head"] * persons["hispanic"]
+
+
+@orca.column(table_name="households")
+def gt2(persons_grouped_household):
+    """
+    Binary column in households table evaluating to 1 if there are at least 2 people in the household
+    """
+    agg_df = persons_grouped_household.size()
+    return (agg_df >= 2).astype(int)
+
+@orca.column(table_name="households")
+def hh_race_of_head(data="households.hh_race_id_of_head"):
+    """
+    Maps `households.hh_race_id_of_head`, which is a numeric value, into 'white', 'black', 'asian' or other
+    """
+    return data.map({
+        1: "white",
+        2: "black",
+        6: "asian",
+        7: "asian"
+    }).fillna("other")
+
+
+@orca.column(table_name="households")
+def hh_race_id_of_head(persons_grouped_household):
+    """"""
+    agg_df = persons_grouped_household\
+        .agg(race_of_head=("race_head", "sum"))
+    return agg_df["race_of_head"]
+
+
+@orca.column(table_name="households")
+def hh_size(persons_grouped_household):
+    agg_df = persons_grouped_household.size()
+    return agg_df.map({1: "one", 2: "two", 3: "three"}).fillna("four or more")
 
 
 def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
@@ -414,37 +399,6 @@ def print_household_stats():
     relate_0 = ("relate_0", "sum"))
     logger.debug(f"Households with multiple 0: {((persons_df_sum['relate_0'])>1).sum()}")
     logger.debug(f"Households with multiple 1: {((persons_df_sum['relate_1'])>1).sum()}")
-    logger.debug(f"Households with multiple 13: {((persons_df_sum['relate_13'])>1).sum()}")
-    logger.debug(f"Households with 1 and 13: {((persons_df_sum['relate_1'] * persons_df_sum['relate_13'])>0).sum()}")
-
-@orca.step("household_stats")
-def household_stats(persons, households):
-    """Function to print the number of households from both the households and pers
-
-    Args:
-        persons (DataFrame): Pandas DataFrame of the persons table
-        households (DataFrame): Pandas DataFrame of the households table
-    """
-    logger.debug(f"Households size from persons table: {orca.get_table('persons').local['household_id'].unique().shape[0]}")
-    logger.debug(f"Households size from households table: {orca.get_table('households').local.index.unique().shape[0]}")
-    logger.debug(f"Households in households table not in persons table: {len(sorted(set(orca.get_table('households').local.index.unique()) - set(orca.get_table('persons').local['household_id'].unique())))}")
-    logger.debug(f"Households in persons table not in households table: {len(sorted(set(orca.get_table('persons').local['household_id'].unique()) - set(orca.get_table('households').local.index.unique())))}")
-    logger.debug(f"Households with NA persons: {orca.get_table('households').local['persons'].isna().sum()}")
-    logger.debug(f"Duplicated households: {orca.get_table('households').local.index.has_duplicates}")
-    # print("Counties: ", households["lcm_county_id"].unique())
-    logger.debug(f"Persons Size: {orca.get_table('persons').local.index.unique().shape[0]}")
-    logger.debug(f"Duplicated persons: {orca.get_table('persons').local.index.has_duplicates}")
-
-    persons_df = orca.get_table("persons").local
-    persons_df["relate_0"] = np.where(persons_df["relate"]==0, 1, 0)
-    persons_df["relate_1"] = np.where(persons_df["relate"]==1, 1, 0)
-    persons_df["relate_13"] = np.where(persons_df["relate"]==13, 1, 0)
-    persons_df_sum = persons_df.groupby("household_id").agg(
-        relate_1 = ("relate_1", sum),
-        relate_13 = ("relate_13", sum),
-        relate_0 = ("relate_0", sum))
-    logger.debug(f"Households with multiple 0:  {((persons_df_sum['relate_0'])>1).sum()}")
-    logger.debug(f"Households with multiple 1:  {((persons_df_sum['relate_1'])>1).sum()}")
     logger.debug(f"Households with multiple 13: {((persons_df_sum['relate_13'])>1).sum()}")
     logger.debug(f"Households with 1 and 13: {((persons_df_sum['relate_1'] * persons_df_sum['relate_13'])>0).sum()}")
 

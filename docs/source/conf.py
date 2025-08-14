@@ -35,19 +35,25 @@ extensions = [
 templates_path = ['_templates']
 exclude_patterns = []
 
-autodoc_typehints = 'description'
+autodoc_typehints = 'signature'
 napoleon_google_docstring = True
 napoleon_numpy_docstring  = True
 
 autodoc_inherit_docstrings = True
 autodoc_preserve_defaults = True
 
+typehints_use_signature = False
+typehints_use_signature_return = False
+
+autodoc_member_order = "bysource"
+
 # Autodoc settings
 autodoc_default_options = {
     'members': True,
     'undoc-members': True,
     'show-inheritance': True,
-    'special-members': '__init__',
+    "member-order": "bysource",
+    # 'special-members': '__init__',
 }
 
 

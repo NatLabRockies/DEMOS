@@ -6,6 +6,7 @@ from typing import Annotated, Literal, Optional, Dict
 
 
 class CSVTableSource(BaseModel):
+    """"""
     file_type: Literal['csv']
     #: Path to source file
     filepath: str
@@ -26,7 +27,9 @@ class CSVTableSource(BaseModel):
 
 
 class H5TableSource(BaseModel):
+    """"""
     file_type: Literal['h5']
+    #: Path to source file
     filepath: str
     #: key in the source HDF5 to be loaded
     h5_key: str

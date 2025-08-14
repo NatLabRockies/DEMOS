@@ -1,5 +1,6 @@
 import orca
 import numpy as np
+import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
 from logging_logic import log_execution_time
@@ -87,3 +88,9 @@ def edu_highschool_proportion(data="persons.edu"):
 @orca.injectable(name="edu_highschool_grads_proportion")
 def edu_highschool_grads_proportion(data="persons.edu"):
     return data[data.isin([16, 17])].value_counts(normalize=True)
+
+@orca.column(table_name="persons")
+def education_group(data="persons.edu"):
+    education_intervals = [0, 18, 22, 200]
+    education_labels = ['lte17', '18-21', 'gte22']
+    return pd.cut(data, bins=education_intervals, labels=education_labels, include_lowest=True).astype(str)

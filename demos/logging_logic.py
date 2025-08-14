@@ -1,46 +1,29 @@
 import orca
 import time
 import pandas as pd
-import logging
-import inspect
 from loguru import logger
+import sys, contextlib
 
-class InterceptHandler(logging.Handler):
-    def __init__(self, target_name: str, prefix: str):
-        super().__init__()
-        self.target_name = target_name
+
+class _StdoutToLoguru:
+    def __init__(self, level="INFO", prefix="[external] "):
+        self.level = level
         self.prefix = prefix
+        self._buf = ""
 
-    def emit(self, record: logging.LogRecord) -> None:
-        # 1. map stdlib level to Loguru level
-        try:
-            level = logger.level(record.levelname).name
-        except ValueError:
-            level = record.levelno
+    def write(self, msg):
+        # buffer to handle partial writes / no trailing newline
+        self._buf += msg
+        while "\n" in self._buf:
+            line, self._buf = self._buf.split("\n", 1)
+            line = line.rstrip()
+            if line:
+                logger.opt(depth=1).log(self.level, f"{self.prefix}{line}")
 
-        # 2. compute correct stack depth so Loguru shows your caller, not the Handler
-        frame, depth = inspect.currentframe(), 2
-        while frame and frame.f_code.co_filename == logging.__file__:
-            frame = frame.f_back
-            depth += 1
-
-        # 3. optionally tag or prefix messages from your library
-        msg = record.getMessage()
-        if record.name == self.target_name:
-            msg = f"{self.prefix} {msg}"
-
-        # 4. re-emit through Loguru
-        logger.opt(depth=depth, exception=record.exc_info).log(level, msg)
-
-def capture_orca_logs():
-    LIB_NAME = "orca.orca"
-    PREFIX   = "[ORCA]"
-    handler  = InterceptHandler(target_name=LIB_NAME, prefix=PREFIX)
-
-    lib_logger = logging.getLogger(LIB_NAME)
-    lib_logger.handlers = [handler]
-    lib_logger.propagate = False
-
+    def flush(self):
+        if self._buf.strip():
+            logger.opt(depth=1).log(self.level, f"{self.prefix}{self._buf.rstrip()}")
+        self._buf = ""
 
 def log_execution_time(start_time, year, module_name):
     now = time.time()

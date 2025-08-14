@@ -1,9 +1,5 @@
-import os
 import orca
-import warnings
-import pandas as pd
-import numpy as np
-from config import get_config
+from config import get_config, DEMOSConfig
 
 @orca.injectable("year")
 def year():
@@ -13,23 +9,6 @@ def year():
         return iter_var
     else:
         return default_year
-    
-# -----------------------------------------------------------------------------------------
-# STEP DEFINITION
-# -----------------------------------------------------------------------------------------
-demo_models = [
-    "update_age",
-    "laborforce_model",
-    "households_reorg",
-    "kids_moving_model",
-    "fatality_model",
-    "birth_model",
-    "education_model",
-    "household_rebalancing",
-    "update_income",
-    # "export_demo_stats",
-]
-steps_all_years = (
-    demo_models
-)
-orca.add_injectable("sim_steps", steps_all_years)
+
+demos_config: DEMOSConfig = get_config()
+orca.add_injectable("sim_steps", demos_config.modules)
