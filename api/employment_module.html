@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Employment Module" href="employment_module.html" /><link rel="prev" title="DEMOS Modules" href="modules.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Household Reorganization Module" href="hh_reorg_module.html" /><link rel="prev" title="Aging Module" href="aging_module.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>Aging Module - demos documentation</title>
+        <title>Employment Module - demos documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -202,8 +202,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">DEMOS Modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Aging Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="employment_module.html">Employment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="aging_module.html">Aging Module</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hh_reorg_module.html">Household Reorganization Module</a></li>
 </ul>
 </li>
@@ -234,7 +234,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/aging_module.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/employment_module.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -254,20 +254,25 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="aging-module">
-<h1>Aging Module<a class="headerlink" href="#aging-module" title="Link to this heading">¶</a></h1>
-<p>Module configuration options: <a class="reference internal" href="configuration_module.html#demos.config.AgingModuleConfig" title="demos.config.AgingModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AgingModuleConfig</span></code></a></p>
+          <section id="employment-module">
+<h1>Employment Module<a class="headerlink" href="#employment-module" title="Link to this heading">¶</a></h1>
+<p>Module configuration options: <a class="reference internal" href="configuration_module.html#demos.config.EmploymentModuleConfig" title="demos.config.EmploymentModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmploymentModuleConfig</span></code></a></p>
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.aging.aging">
-<span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">aging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.aging" title="Link to this definition">¶</a></dt>
-<dd><p>Increases the age of every person in the persons table by 1</p>
+<dt class="sig sig-object py" id="demos.models.employment.employment">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">employment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#employment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.employment" title="Link to this definition">¶</a></dt>
+<dd><p>Executes the <cite>enter_</cite> and <cite>exit_laborforce</cite> estimated models to determine which unemployed
+persons change to employed and which employed change to unemployed. Elegible persons are those
+18 years or older.</p>
+<p>The <cite>earning</cite> column stores the annual income of each individual. For those unemployed, <cite>earning</cite> is set
+to 0, for the rest, the <cite>new_earning</cite> lazily-computed orca column is used to determine the new income.</p>
 <dl class="simple">
 <dt><strong>Required tables:</strong></dt><dd><ul class="simple">
 <li><p>persons</p></li>
 </ul>
 </dd>
 <dt><strong>Modifies State Variables:</strong></dt><dd><ul class="simple">
-<li><p>persons.age</p></li>
+<li><p>persons.worker</p></li>
+<li><p>persons.earning</p></li>
 </ul>
 </dd>
 </dl>
@@ -276,27 +281,75 @@
 <section id="orca-columns">
 <h2>Orca Columns<a class="headerlink" href="#orca-columns" title="Link to this heading">¶</a></h2>
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.aging.child">
-<span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persons.relate'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.child" title="Link to this definition">¶</a></dt>
-<dd><p>This column returns a binary value equal to 1 if the person has a <cite>relate</cite> value
-of <cite>2</cite>, <cite>3</cite>, <cite>4</cite> or <cite>14</cite>.</p>
+<dt class="sig sig-object py" id="demos.models.employment.new_earning">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">new_earning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">income_dist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#new_earning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.new_earning" title="Link to this definition">¶</a></dt>
+<dd><p>Sample income for new workers according to income distribution (<cite>income_dist</cite>) computed from the original synthetic population.
+The income distribution is computed once and cached to be used in <cite>new_earning</cite> calls.</p>
+<p>Click <cite>[source]</cite> (top right) for more details</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.aging.senior">
-<span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">senior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persons.age'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#senior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.senior" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a binary value for each row in persons table set to 1 if the person
-is above <cite>aging_module_config.senior_age</cite> (defaults to <cite>65</cite>).</p>
+<dt class="sig sig-object py" id="demos.models.employment.income_dist">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">income_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#income_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.income_dist" title="Link to this definition">¶</a></dt>
+<dd><p>This table is computed the first time it is called, and stores the average and standard deviation of the income
+of workers at the beginning of the simulation by age and education group. These values are used in the employment
+model to assign an income for people that get into the workforce.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.aging.age_group">
-<span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">age_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persons.age'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#age_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.age_group" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt class="sig sig-object py" id="demos.models.employment.hh_workers">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">hh_workers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#hh_workers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.hh_workers" title="Link to this definition">¶</a></dt>
+<dd><p>Number of workers per household</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.income">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.income" title="Link to this definition">¶</a></dt>
+<dd><p>Household-level income from person-level income. NOTE: This is for HOUSEHOLDS table</p>
+</dd></dl>
 
 </section>
-<section id="module-demos.models.aging">
-<span id="other-functions"></span><h2>Other Functions<a class="headerlink" href="#module-demos.models.aging" title="Link to this heading">¶</a></h2>
+<section id="module-demos.models.employment">
+<span id="other-functions"></span><h2>Other Functions<a class="headerlink" href="#module-demos.models.employment" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.sample_income">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">sample_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#sample_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.sample_income" title="Link to this definition">¶</a></dt>
+<dd><p>Auxiliary function to sample from a lognormal distribution</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.run_and_calibrate_in_workforce_model">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">run_and_calibrate_in_workforce_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_procedure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#run_and_calibrate_in_workforce_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.run_and_calibrate_in_workforce_model" title="Link to this definition">¶</a></dt>
+<dd><p>Execute <cite>enter_labor_force</cite> estimated model on elegible people according to the calibration procedure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.run_and_calibrate_out_workforce_model">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">run_and_calibrate_out_workforce_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_procedure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#run_and_calibrate_out_workforce_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.run_and_calibrate_out_workforce_model" title="Link to this definition">¶</a></dt>
+<dd><p>Execute <cite>exit_labor_force</cite> estimated model on elegible people according to the calibration procedure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.run_simultaenous_calibration">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">run_simultaenous_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simultaneous_calibration_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#run_simultaenous_calibration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.run_simultaenous_calibration" title="Link to this definition">¶</a></dt>
+<dd><p>Execute both <cite>enter_labor_force</cite> and <cite>exit_labor_force</cite> estimated models on elegible people according to the calibration procedure.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></span></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -305,23 +358,23 @@ is above <cite>aging_module_config.senior_age</cite> (defaults to <cite>65</cite
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="employment_module.html">
+          <a class="next-page" href="hh_reorg_module.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Employment Module</div>
+                <div class="title">Household Reorganization Module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="modules.html">
+          <a class="prev-page" href="aging_module.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">DEMOS Modules</div>
+                <div class="title">Aging Module</div>
                 
               </div>
             </a>
@@ -355,15 +408,22 @@ is above <cite>aging_module_config.senior_age</cite> (defaults to <cite>65</cite
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Aging Module</a><ul>
-<li><a class="reference internal" href="#demos.models.aging.aging"><code class="docutils literal notranslate"><span class="pre">aging()</span></code></a></li>
+<li><a class="reference internal" href="#">Employment Module</a><ul>
+<li><a class="reference internal" href="#demos.models.employment.employment"><code class="docutils literal notranslate"><span class="pre">employment()</span></code></a></li>
 <li><a class="reference internal" href="#orca-columns">Orca Columns</a><ul>
-<li><a class="reference internal" href="#demos.models.aging.child"><code class="docutils literal notranslate"><span class="pre">child()</span></code></a></li>
-<li><a class="reference internal" href="#demos.models.aging.senior"><code class="docutils literal notranslate"><span class="pre">senior()</span></code></a></li>
-<li><a class="reference internal" href="#demos.models.aging.age_group"><code class="docutils literal notranslate"><span class="pre">age_group()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.new_earning"><code class="docutils literal notranslate"><span class="pre">new_earning()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.income_dist"><code class="docutils literal notranslate"><span class="pre">income_dist()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.hh_workers"><code class="docutils literal notranslate"><span class="pre">hh_workers()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.income"><code class="docutils literal notranslate"><span class="pre">income()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-demos.models.aging">Other Functions</a></li>
+<li><a class="reference internal" href="#module-demos.models.employment">Other Functions</a><ul>
+<li><a class="reference internal" href="#demos.models.employment.sample_income"><code class="docutils literal notranslate"><span class="pre">sample_income()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.run_and_calibrate_in_workforce_model"><code class="docutils literal notranslate"><span class="pre">run_and_calibrate_in_workforce_model()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.run_and_calibrate_out_workforce_model"><code class="docutils literal notranslate"><span class="pre">run_and_calibrate_out_workforce_model()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.run_simultaenous_calibration"><code class="docutils literal notranslate"><span class="pre">run_simultaenous_calibration()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

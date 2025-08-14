@@ -201,13 +201,17 @@
 <li class="toctree-l1"><a class="reference internal" href="pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="api/modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/aging_module.html">Aging Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/employment_module.html">Employment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/hh_reorg_module.html">Household Reorganization Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="pages/developer_guide.html">Developer Guide</a></li>
 </ul>
 
 </div>
@@ -245,13 +249,21 @@
           
 <section class="genindex-section">
   <h1 id="index">Index</h1>
-  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#U"><strong>U</strong></a></div>
+  <div class="genindex-jumpbox"><a href="#A"><strong>A</strong></a> | <a href="#B"><strong>B</strong></a> | <a href="#C"><strong>C</strong></a> | <a href="#D"><strong>D</strong></a> | <a href="#E"><strong>E</strong></a> | <a href="#F"><strong>F</strong></a> | <a href="#G"><strong>G</strong></a> | <a href="#H"><strong>H</strong></a> | <a href="#I"><strong>I</strong></a> | <a href="#M"><strong>M</strong></a> | <a href="#N"><strong>N</strong></a> | <a href="#O"><strong>O</strong></a> | <a href="#P"><strong>P</strong></a> | <a href="#R"><strong>R</strong></a> | <a href="#S"><strong>S</strong></a> | <a href="#T"><strong>T</strong></a> | <a href="#U"><strong>U</strong></a></div>
 </section>
 <section id="A" class="genindex-section">
   <h2>A</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/aging_module.html#demos.models.aging.age_gt55">age_gt55() (in module demos.models.aging)</a>
+        <li><a href="api/aging_module.html#demos.models.aging.age_group">age_group() (in module demos.models.aging)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.age_head">age_head() (in module demos.models.household_reorg)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/aging_module.html#demos.models.aging.aging">aging() (in module demos.models.aging)</a>
+</li>
+        <li><a href="api/configuration_module.html#demos.config.AgingModuleConfig">AgingModuleConfig (class in demos.config)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -265,8 +277,6 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.birth_module_config">birth_module_config (demos.config.DEMOSConfig attribute)</a>
-</li>
         <li><a href="api/configuration_module.html#demos.config.BirthModuleConfig">BirthModuleConfig (class in demos.config)</a>
 </li>
     </ul></td>
@@ -285,15 +295,23 @@
           <li><a href="api/configuration_module.html#demos.config.MortalityModuleConfig.calibration_procedure">(demos.config.MortalityModuleConfig attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig.check_calibration_config_exclusivity">check_calibration_config_exclusivity() (demos.config.EmploymentModuleConfig method)</a>
 </li>
         <li><a href="api/aging_module.html#demos.models.aging.child">child() (in module demos.models.aging)</a>
 </li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.cohabitate">cohabitate() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.compute_expected_marital_status">compute_expected_marital_status() (in module demos.models.household_reorg)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.HHRebalancingModuleConfig.control_col">control_col (demos.config.HHRebalancingModuleConfig attribute)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.HHRebalancingModuleConfig.control_table">control_table (demos.config.HHRebalancingModuleConfig attribute)</a>
+</li>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource">CSVTableSource (class in demos.datasources)</a>
+</li>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.custom_dtype_casting">custom_dtype_casting (demos.datasources.CSVTableSource attribute)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -303,6 +321,8 @@
   <h2>D</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.delimiter">delimiter (demos.datasources.CSVTableSource attribute)</a>
+</li>
         <li>
     demos
 
@@ -317,13 +337,27 @@
           <li><a href="api/configuration_module.html#module-demos.config">module</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li>
     demos.models.aging
 
         <ul>
           <li><a href="api/aging_module.html#module-demos.models.aging">module</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li>
+    demos.models.employment
+
+        <ul>
+          <li><a href="api/employment_module.html#module-demos.models.employment">module</a>
+</li>
+        </ul></li>
+        <li>
+    demos.models.household_reorg
+
+        <ul>
+          <li><a href="api/hh_reorg_module.html#module-demos.models.household_reorg">module</a>
 </li>
         </ul></li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig">DEMOSConfig (class in demos.config)</a>
@@ -336,7 +370,7 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.employment_module_config">employment_module_config (demos.config.DEMOSConfig attribute)</a>
+        <li><a href="api/employment_module.html#demos.models.employment.employment">employment() (in module demos.models.employment)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig">EmploymentModuleConfig (class in demos.config)</a>
 </li>
@@ -354,6 +388,22 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.file_type">file_type (demos.datasources.CSVTableSource attribute)</a>
+
+        <ul>
+          <li><a href="pages/datasources.html#demos.datasources.H5TableSource.file_type">(demos.datasources.H5TableSource attribute)</a>
+</li>
+        </ul></li>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.filepath">filepath (demos.datasources.CSVTableSource attribute)</a>
+
+        <ul>
+          <li><a href="pages/datasources.html#demos.datasources.H5TableSource.filepath">(demos.datasources.H5TableSource attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.fix_erroneous_households">fix_erroneous_households() (in module demos.models.household_reorg)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.forecast_year">forecast_year (demos.config.DEMOSConfig attribute)</a>
 </li>
     </ul></td>
@@ -371,6 +421,12 @@
 </li>
         </ul></li>
     </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.get_new_households">get_new_households() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.gt2">gt2() (in module demos.models.household_reorg)</a>
+</li>
+    </ul></td>
   </tr></table>
 </section>
 
@@ -378,21 +434,27 @@
   <h2>H</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/aging_module.html#demos.models.aging.hh_age_of_head">hh_age_of_head() (in module demos.models.aging)</a>
+        <li><a href="pages/datasources.html#demos.datasources.H5TableSource.h5_key">h5_key (demos.datasources.H5TableSource attribute)</a>
 </li>
-        <li><a href="api/aging_module.html#demos.models.aging.hh_children">hh_children() (in module demos.models.aging)</a>
+        <li><a href="pages/datasources.html#demos.datasources.H5TableSource">H5TableSource (class in demos.datasources)</a>
 </li>
-        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.hh_rebalancing_module_config">hh_rebalancing_module_config (demos.config.DEMOSConfig attribute)</a>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.hh_race_id_of_head">hh_race_id_of_head() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.hh_race_of_head">hh_race_of_head() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.hh_size">hh_size() (in module demos.models.household_reorg)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.hh_reorg_module_config">hh_reorg_module_config (demos.config.DEMOSConfig attribute)</a>
-</li>
-        <li><a href="api/aging_module.html#demos.models.aging.hh_seniors">hh_seniors() (in module demos.models.aging)</a>
+        <li><a href="api/employment_module.html#demos.models.employment.hh_workers">hh_workers() (in module demos.models.employment)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.HHRebalancingModuleConfig">HHRebalancingModuleConfig (class in demos.config)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.HHReorgModuleConfig">HHReorgModuleConfig (class in demos.config)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.hispanic_head">hispanic_head() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.household_reorg">household_reorg() (in module demos.models.household_reorg)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -402,11 +464,21 @@
   <h2>I</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/employment_module.html#demos.models.employment.income">income() (in module demos.models.employment)</a>
+</li>
+        <li><a href="api/employment_module.html#demos.models.employment.income_dist">income_dist() (in module demos.models.employment)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.inconsistent_persons_table_behavior">inconsistent_persons_table_behavior (demos.config.DEMOSConfig attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.index_col">index_col (demos.datasources.CSVTableSource attribute)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.initialize_empty_tables">initialize_empty_tables (demos.config.DEMOSConfig attribute)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.is_head">is_head() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.is_not_married">is_not_married() (in module demos.models.household_reorg)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -428,12 +500,26 @@
 </li>
           <li><a href="api/aging_module.html#module-demos.models.aging">demos.models.aging</a>
 </li>
+          <li><a href="api/employment_module.html#module-demos.models.employment">demos.models.employment</a>
+</li>
+          <li><a href="api/hh_reorg_module.html#module-demos.models.household_reorg">demos.models.household_reorg</a>
+</li>
         </ul></li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.mortality_module_config">mortality_module_config (demos.config.DEMOSConfig attribute)</a>
+        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.modules">modules (demos.config.DEMOSConfig attribute)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.MortalityModuleConfig">MortalityModuleConfig (class in demos.config)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
+<section id="N" class="genindex-section">
+  <h2>N</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/employment_module.html#demos.models.employment.new_earning">new_earning() (in module demos.models.employment)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -455,15 +541,39 @@
   </tr></table>
 </section>
 
+<section id="P" class="genindex-section">
+  <h2>P</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.persons_grouped_household">persons_grouped_household() (in module demos.models.household_reorg)</a>
+</li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.print_household_stats">print_household_stats() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.print_marital_count">print_marital_count() (in module demos.models.household_reorg)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
 <section id="R" class="genindex-section">
   <h2>R</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.race_head">race_head() (in module demos.models.household_reorg)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.random_seed">random_seed (demos.config.DEMOSConfig attribute)</a>
+</li>
+        <li><a href="api/employment_module.html#demos.models.employment.run_and_calibrate_in_workforce_model">run_and_calibrate_in_workforce_model() (in module demos.models.employment)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.require_persons_and_households">require_persons_and_households() (demos.config.DEMOSConfig method)</a>
+        <li><a href="api/employment_module.html#demos.models.employment.run_and_calibrate_out_workforce_model">run_and_calibrate_out_workforce_model() (in module demos.models.employment)</a>
+</li>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.run_models">run_models() (in module demos.models.household_reorg)</a>
+</li>
+        <li><a href="api/employment_module.html#demos.models.employment.run_simultaenous_calibration">run_simultaenous_calibration() (in module demos.models.employment)</a>
 </li>
     </ul></td>
   </tr></table>
@@ -473,10 +583,16 @@
   <h2>S</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/employment_module.html#demos.models.employment.sample_income">sample_income() (in module demos.models.employment)</a>
+</li>
         <li><a href="api/aging_module.html#demos.models.aging.senior">senior() (in module demos.models.aging)</a>
+</li>
+        <li><a href="api/configuration_module.html#demos.config.AgingModuleConfig.senior_age">senior_age (demos.config.AgingModuleConfig attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.simultaneous_calibration">simultaneous_calibration() (in module demos.models.household_reorg)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig.simultaneous_calibration_config">simultaneous_calibration_config (demos.config.EmploymentModuleConfig attribute)</a>
 
         <ul>
@@ -487,11 +603,29 @@
   </tr></table>
 </section>
 
+<section id="T" class="genindex-section">
+  <h2>T</h2>
+  <table style="width: 100%" class="indextable genindextable"><tr>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.table_name">table_name (demos.datasources.CSVTableSource attribute)</a>
+
+        <ul>
+          <li><a href="pages/datasources.html#demos.datasources.H5TableSource.table_name">(demos.datasources.H5TableSource attribute)</a>
+</li>
+        </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.tables">tables (demos.config.DEMOSConfig attribute)</a>
+</li>
+    </ul></td>
+  </tr></table>
+</section>
+
 <section id="U" class="genindex-section">
   <h2>U</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/aging_module.html#demos.models.aging.update_age">update_age() (in module demos.models.aging)</a>
+        <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.update_cohabitating_households">update_cohabitating_households() (in module demos.models.household_reorg)</a>
 </li>
     </ul></td>
   </tr></table>

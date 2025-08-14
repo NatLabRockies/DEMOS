@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="DEMOS Configuration Structure" href="../api/configuration_module.html" /><link rel="prev" title="Household Reorganization Module" href="../api/hh_reorg_module.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Default Configuration File" href="default_configuration.html" /><link rel="prev" title="DEMOS Configuration Structure" href="../api/configuration_module.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>DEMOS Configuration - demos documentation</title>
+        <title>Data Sources - demos documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -178,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -207,9 +207,9 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/hh_reorg_module.html">Household Reorganization Module</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">DEMOS Configuration</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasources.html">Data Sources</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
 </ul>
 </li>
@@ -234,7 +234,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/pages/configuration.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/pages/datasources.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -248,29 +248,85 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="demos-configuration">
-<h1>DEMOS Configuration<a class="headerlink" href="#demos-configuration" title="Link to this heading">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html#demos.config.DEMOSConfig"><code class="docutils literal notranslate"><span class="pre">DEMOSConfig</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html#module-demos.config">Individual Modules configuration</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="datasources.html">Data Sources</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datasources.html#demos.datasources.CSVTableSource"><code class="docutils literal notranslate"><span class="pre">CSVTableSource</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasources.html#demos.datasources.H5TableSource"><code class="docutils literal notranslate"><span class="pre">H5TableSource</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
-</ul>
-</div>
+          <section id="data-sources">
+<h1>Data Sources<a class="headerlink" href="#data-sources" title="Link to this heading">¶</a></h1>
+<p>Documentation for configuration of data sources currently implemented</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.datasources.</span></span><span class="sig-name descname"><span class="pre">CSVTableSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/datasources.html#CSVTableSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.datasources.CSVTableSource" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource.file_type">
+<span class="sig-name descname"><span class="pre">file_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'csv'</span></code><span class="pre">]</span></em><a class="headerlink" href="#demos.datasources.CSVTableSource.file_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource.filepath">
+<span class="sig-name descname"><span class="pre">filepath</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.datasources.CSVTableSource.filepath" title="Link to this definition">¶</a></dt>
+<dd><p>Path to source file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource.index_col">
+<span class="sig-name descname"><span class="pre">index_col</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.datasources.CSVTableSource.index_col" title="Link to this definition">¶</a></dt>
+<dd><p>Column in the file to be used as index (e.g. <cite>person_id</cite>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource.table_name">
+<span class="sig-name descname"><span class="pre">table_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.datasources.CSVTableSource.table_name" title="Link to this definition">¶</a></dt>
+<dd><p>Identifier of the table in orca</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource.delimiter">
+<span class="sig-name descname"><span class="pre">delimiter</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.datasources.CSVTableSource.delimiter" title="Link to this definition">¶</a></dt>
+<dd><p>Delimiter character (pass down to pandas)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.CSVTableSource.custom_dtype_casting">
+<span class="sig-name descname"><span class="pre">custom_dtype_casting</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">,</span> <code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.datasources.CSVTableSource.custom_dtype_casting" title="Link to this definition">¶</a></dt>
+<dd><p>Apply custom casting to incoming values when reading CSV</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="demos.datasources.H5TableSource">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.datasources.</span></span><span class="sig-name descname"><span class="pre">H5TableSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/datasources.html#H5TableSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.datasources.H5TableSource" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.H5TableSource.file_type">
+<span class="sig-name descname"><span class="pre">file_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Literal</span></code><span class="pre">[</span><code class="docutils literal notranslate"><span class="pre">'h5'</span></code><span class="pre">]</span></em><a class="headerlink" href="#demos.datasources.H5TableSource.file_type" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.H5TableSource.filepath">
+<span class="sig-name descname"><span class="pre">filepath</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.datasources.H5TableSource.filepath" title="Link to this definition">¶</a></dt>
+<dd><p>Path to source file</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.H5TableSource.h5_key">
+<span class="sig-name descname"><span class="pre">h5_key</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.datasources.H5TableSource.h5_key" title="Link to this definition">¶</a></dt>
+<dd><p>key in the source HDF5 to be loaded</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.datasources.H5TableSource.table_name">
+<span class="sig-name descname"><span class="pre">table_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></em><a class="headerlink" href="#demos.datasources.H5TableSource.table_name" title="Link to this definition">¶</a></dt>
+<dd><p>Identifier of the table in orca</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 
         </article>
@@ -278,23 +334,23 @@
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../api/configuration_module.html">
+          <a class="next-page" href="default_configuration.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">DEMOS Configuration Structure</div>
+                <div class="title">Default Configuration File</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="../api/hh_reorg_module.html">
+          <a class="prev-page" href="../api/configuration_module.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Household Reorganization Module</div>
+                <div class="title">DEMOS Configuration Structure</div>
                 
               </div>
             </a>
@@ -316,8 +372,42 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Data Sources</a><ul>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource"><code class="docutils literal notranslate"><span class="pre">CSVTableSource</span></code></a><ul>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource.file_type"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.file_type</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource.filepath"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.filepath</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource.index_col"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.index_col</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource.table_name"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.table_name</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource.delimiter"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.delimiter</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.CSVTableSource.custom_dtype_casting"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.custom_dtype_casting</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#demos.datasources.H5TableSource"><code class="docutils literal notranslate"><span class="pre">H5TableSource</span></code></a><ul>
+<li><a class="reference internal" href="#demos.datasources.H5TableSource.file_type"><code class="docutils literal notranslate"><span class="pre">H5TableSource.file_type</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.H5TableSource.filepath"><code class="docutils literal notranslate"><span class="pre">H5TableSource.filepath</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.H5TableSource.h5_key"><code class="docutils literal notranslate"><span class="pre">H5TableSource.h5_key</span></code></a></li>
+<li><a class="reference internal" href="#demos.datasources.H5TableSource.table_name"><code class="docutils literal notranslate"><span class="pre">H5TableSource.table_name</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

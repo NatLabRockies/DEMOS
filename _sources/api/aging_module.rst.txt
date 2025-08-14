@@ -1,20 +1,19 @@
 Aging Module
 ============
 
-.. autofunction:: demos.models.aging.update_age
+Module configuration options: :py:class:`~demos.config.AgingModuleConfig`
+
+.. autofunction:: demos.models.aging.aging
 
 Orca Columns
 ------------
 .. autofunction:: demos.models.aging.child
 .. autofunction:: demos.models.aging.senior
-.. autofunction:: demos.models.aging.age_gt55
-.. autofunction:: demos.models.aging.hh_children
-.. autofunction:: demos.models.aging.hh_seniors
-.. autofunction:: demos.models.aging.hh_age_of_head
+.. autofunction:: demos.models.aging.age_group
 
 Other Functions
 ---------------
 .. automodule:: demos.models.aging
    :members:
    :undoc-members:
-   :exclude-members: update_age,child,senior,age_gt55,hh_children,hh_seniors,hh_age_of_head
+   :exclude-members: aging,child,senior,age_group
