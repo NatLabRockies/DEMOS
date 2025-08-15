@@ -21,11 +21,11 @@ modules = [
     "aging",
     "employment",
     "household_reorg",
-    # "kids_moving_model",
+    "kids_moving",
     # "fatality_model",
     # "birth_model",
     # "education_model",
-    # "household_rebalancing",
+    "household_rebalancing",
     # "update_income"
 ]
 

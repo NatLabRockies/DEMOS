@@ -1,23 +1,29 @@
 import orca
-import numpy as np
-import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
 from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
 
-@orca.step("kids_moving_model")
-def kids_moving_model(persons, households, get_new_households):
+STEP_NAME = "kids_moving"
+REQUIRED_COLUMNS = [
+    "persons.age",
+    "persons.relate",
+]
+
+@orca.step(STEP_NAME)
+def kids_moving(persons, households, get_new_households):
     """
-    Running the kids moving model and updating household
-    stats.
+    Executes the `kids_move` estimated model and updates the household of kids
+    moving out of their parent's home accordingly.
 
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
-        households (DataFrameWrapper): DataFrameWrapper of the households table
+    **Required tables:**
+        - persons
+        - households
 
-    Returns:
-        None
+    **Modifies State Variables:**
+        - persons.household_id
+        - persons.relate
+        - households.lcm_county_id
     """
     start_time = time.time()
 
@@ -33,23 +39,6 @@ def kids_moving_model(persons, households, get_new_households):
     log_execution_time(start_time, orca.get_injectable("year"), "kids_moving")
 
 def update_households_after_kids(persons, households, kids_moving, get_new_households):
-    """
-    Add and update households after kids move out.
-
-    Modifies State Variables:
-    - persons.household_id
-    - persons.relate
-    - households.lcm_county_id
-
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of persons table
-        households (DataFrameWrapper): DataFrameWrapper of households table
-        kids_moving (pd.Series): Pandas Series of kids moving out of household
-
-    Returns:
-        None
-    """
-
     # Kids moving to a new household conditions
     ## Condition 1: Kids flagged by kids_moving
     ## Condition 2: Households with more than 1 people
