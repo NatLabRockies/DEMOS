@@ -13,3 +13,4 @@ DEMOS Modules
    aging_module
    employment_module
    hh_reorg_module
+   kids_move_module
