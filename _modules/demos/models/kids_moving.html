@@ -254,6 +254,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging_logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_execution_time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">templates.utils.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">columns_in_formula</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEMOSConfig</span><span class="p">,</span> <span class="n">KidsMovingModuleConfig</span><span class="p">,</span> <span class="n">get_config</span>
 
 <span class="n">STEP_NAME</span> <span class="o">=</span> <span class="s2">&quot;kids_moving&quot;</span>
 <span class="n">REQUIRED_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
@@ -293,6 +294,10 @@
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">update_households_after_kids</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">kids_moving</span><span class="p">,</span> <span class="n">get_new_households</span><span class="p">):</span>
+    <span class="c1"># Load module config</span>
+    <span class="n">demos_config</span><span class="p">:</span> <span class="n">DEMOSConfig</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
+    <span class="n">module_config</span><span class="p">:</span> <span class="n">KidsMovingModuleConfig</span> <span class="o">=</span> <span class="n">demos_config</span><span class="o">.</span><span class="n">kids_moving_module_config</span>
+
     <span class="c1"># Kids moving to a new household conditions</span>
     <span class="c1">## Condition 1: Kids flagged by kids_moving</span>
     <span class="c1">## Condition 2: Households with more than 1 people</span>
@@ -319,12 +324,12 @@
     <span class="c1"># Get the old household_id for the moving kids to retrieve the county_id</span>
     <span class="c1"># TODO: Parametrize county_id</span>
     <span class="n">old_household_id</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">old_household_id</span><span class="p">,</span> <span class="s2">&quot;lcm_county_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
     <span class="n">new_households</span> <span class="o">=</span> <span class="n">get_new_households</span><span class="p">(</span><span class="n">kids_moving_index</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_households</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="s2">&quot;lcm_county_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">county_assignment</span>
+    <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">county_assignment</span>
 </pre></div>
         </article>
       </div>

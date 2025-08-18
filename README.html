@@ -258,9 +258,6 @@
           <section id="demographic-microsimulator-demos">
 <h1>Demographic Microsimulator(DEMOS)<a class="headerlink" href="#demographic-microsimulator-demos" title="Link to this heading">¶</a></h1>
 <p><a class="reference external" href="https://nrel.github.io/DEMOS_NREL/"><img alt="Docs" src="https://github.com/NREL/DEMOS_NREL/actions/workflows/docs.yml/badge.svg" /></a></p>
-<blockquote>
-<div><p><strong>TODO:</strong> The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).</p>
-</div></blockquote>
 <section id="usage">
 <h2>Usage<a class="headerlink" href="#usage" title="Link to this heading">¶</a></h2>
 <section id="docker-container">
@@ -270,7 +267,7 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DEMOS_CONFIG_PATH</span><span class="o">=</span>&lt;path-to-config&gt;<span class="w"> </span><span class="nv">DEMOS_DATA_DIR</span><span class="o">=</span>&lt;path-to-data-dir&gt;<span class="w"> </span>docker-compose<span class="w"> </span>up
 </pre></div>
 </div>
-<p>By default <code class="docutils literal notranslate"><span class="pre">DEMOS_CONFIG_PATH</span></code> is set to <code class="docutils literal notranslate"><span class="pre">./demos_config.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">DEMOS_DATA_DIR</span></code> is set to <code class="docutils literal notranslate"><span class="pre">./data</span></code>, so if <code class="docutils literal notranslate"><span class="pre">data</span></code> and <code class="docutils literal notranslate"><span class="pre">demos_config.toml</span></code> are part of the cuurent directory, no additional input is needed.</p>
+<p>By default <code class="docutils literal notranslate"><span class="pre">DEMOS_CONFIG_PATH</span></code> is set to <code class="docutils literal notranslate"><span class="pre">./demos_config.toml</span></code> and <code class="docutils literal notranslate"><span class="pre">DEMOS_DATA_DIR</span></code> is set to <code class="docutils literal notranslate"><span class="pre">./data</span></code>, so if <code class="docutils literal notranslate"><span class="pre">data</span></code> and <code class="docutils literal notranslate"><span class="pre">demos_config.toml</span></code> are part of the current directory, no additional input is needed.</p>
 <p>Alternatively,</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--volume<span class="w"> </span>&lt;path-to-config&gt;:/demos/config.toml:ro<span class="w"> </span>--volume<span class="w"> </span>&lt;path-to-data-dir&gt;:/demos/data<span class="w"> </span>--platform<span class="o">=</span>linux/amd64<span class="w"> </span>demos
 </pre></div>
@@ -284,81 +281,54 @@
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>demos:0.0.1<span class="w"> </span>--platform<span class="o">=</span>linux/amd64<span class="w"> </span>-f<span class="w"> </span>Dockerfile<span class="w"> </span>.
 </pre></div>
 </div>
-</section>
-</section>
-<section id="from-source">
-<h3>From Source<a class="headerlink" href="#from-source" title="Link to this heading">¶</a></h3>
-<p>This repository contains only code and configuration/setup files necessary</p>
 <ol class="arabic">
-<li><p>clone this repository into your local machine</p></li>
-<li><p>create environment if needed</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="p">{</span><span class="n">myenv</span><span class="p">}</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.8</span>
+<li><p>Clone this repository</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">git</span> <span class="n">clone</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">NREL</span><span class="o">/</span><span class="n">DEMOS_NREL</span><span class="o">.</span><span class="n">git</span>
 </pre></div>
 </div>
 </li>
-<li><p>Enter into DEMOS environment</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">activate</span> <span class="p">{</span><span class="n">myenv</span><span class="p">}</span>
+<li><p>Create a virtual environment.</p>
+<p><strong>If using conda</strong>, prefer the provided <code class="docutils literal notranslate"><span class="pre">.lock</span></code> files</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">--</span><span class="n">name</span> <span class="n">demos</span><span class="o">-</span><span class="n">env</span> <span class="o">--</span><span class="n">file</span> <span class="n">conda</span><span class="o">-</span><span class="p">{</span><span class="n">system</span><span class="p">}</span><span class="o">.</span><span class="n">lock</span>
+</pre></div>
+</div>
+<p>Alternatively, create a <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">3.10</span></code> environment and install dependencies</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">conda</span> <span class="n">create</span> <span class="o">-</span><span class="n">n</span> <span class="n">demos</span><span class="o">-</span><span class="n">env</span> <span class="n">python</span><span class="o">=</span><span class="mf">3.10</span>
+<span class="n">conda</span> <span class="n">activate</span> <span class="n">demos</span><span class="o">-</span><span class="n">env</span>
+<span class="n">pip</span> <span class="n">install</span> <span class="o">.</span>
 </pre></div>
 </div>
 </li>
-<li><p>Install all packages if needed</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
-</pre></div>
-</div>
-</li>
-<li><p>Download input data <a class="reference external" href="https://app.box.com/s/tox2nflumia2g4n6rk2i0navca9pskep">data_nrel.zip</a>. You may also refer to the data description <a class="reference external" href="https://cloud.urbansim.com/docs/general/documentation/urbansim%20block%20model%20data.html">here</a></p></li>
-<li><p>Put all files of input data into <code class="docutils literal notranslate"><span class="pre">DEMOS_NREL/demos/data</span></code></p></li>
-<li><p>Run DEMOS. First, enter into <code class="docutils literal notranslate"><span class="pre">DEMOS_NREL/demos</span></code>, then run:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="o">-</span><span class="n">u</span> <span class="n">simulate</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">c</span> <span class="o">-</span><span class="n">y</span> <span class="mi">2011</span> <span class="o">-</span><span class="n">cf</span> <span class="n">custom</span> <span class="o">-</span><span class="n">l</span> <span class="o">-</span><span class="n">r</span> <span class="mi">06197001</span> <span class="o">-</span><span class="n">s</span> <span class="mi">100</span>
-</pre></div>
-</div>
-<p>the following are the arguments used in the above command:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>  <span class="o">-</span><span class="n">r</span> <span class="n">region_code</span><span class="p">,</span> <span class="o">--</span><span class="n">region_code</span> <span class="n">region_code</span>
-						<span class="n">region</span> <span class="n">fips</span> <span class="n">code</span>
-  <span class="o">-</span><span class="n">y</span> <span class="n">year</span><span class="p">,</span> <span class="o">--</span><span class="n">year</span> <span class="n">year</span>  <span class="n">forecast</span> <span class="n">year</span> <span class="n">to</span> <span class="n">simulate</span> <span class="n">to</span>
-  <span class="o">-</span><span class="n">c</span><span class="p">,</span> <span class="o">--</span><span class="n">calibrated</span>      <span class="n">whether</span> <span class="n">to</span> <span class="n">run</span> <span class="k">with</span> <span class="n">calibrated</span> <span class="n">coefficients</span>
-  <span class="o">-</span><span class="n">cf</span> <span class="n">calibrated_folder</span><span class="p">,</span> <span class="o">--</span><span class="n">calibrated_folder</span> <span class="n">calibrated_folder</span>
-						<span class="n">name</span> <span class="n">of</span> <span class="n">the</span> <span class="n">calibration</span> <span class="n">folder</span> <span class="n">to</span> <span class="n">read</span> <span class="n">configs</span> <span class="kn">from</span>
-<span class="w">  </span><span class="o">-</span><span class="n">sg</span><span class="p">,</span> <span class="o">--</span><span class="n">segmented</span>      <span class="n">run</span> <span class="k">with</span> <span class="n">segmented</span> <span class="n">lcms</span>
-  <span class="o">-</span><span class="n">l</span><span class="p">,</span> <span class="o">--</span><span class="n">all_local</span>       <span class="n">no</span> <span class="n">cloud</span> <span class="n">access</span> <span class="n">whatsoever</span>
-  <span class="o">-</span><span class="n">i</span> <span class="n">input_year</span><span class="p">,</span> <span class="o">--</span><span class="n">input_year</span> <span class="n">input_year</span>
-						<span class="nb">input</span> <span class="n">data</span> <span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="n">year</span>
-  <span class="o">-</span><span class="n">f</span> <span class="n">freq_interval</span><span class="p">,</span> <span class="o">--</span><span class="n">freq_interval</span> <span class="n">freq_interval</span>
-						<span class="n">intra</span><span class="o">-</span><span class="n">simulation</span> <span class="n">frequency</span> <span class="n">interval</span>
-  <span class="o">-</span><span class="n">o</span> <span class="n">output_fname</span><span class="p">,</span> <span class="o">--</span><span class="n">output_fname</span> <span class="n">output_fname</span>
-						<span class="n">output</span> <span class="n">file</span> <span class="n">name</span>
-  <span class="o">-</span><span class="n">ss</span> <span class="n">skim_source</span><span class="p">,</span> <span class="o">--</span><span class="n">skim_source</span> <span class="n">skim_source</span>
-						<span class="n">skims</span> <span class="nb">format</span><span class="p">,</span> <span class="n">e</span><span class="o">.</span><span class="n">g</span><span class="o">.</span> <span class="s2">&quot;beam&quot;</span><span class="p">,</span> <span class="s2">&quot;polaris&quot;</span>
-  <span class="o">-</span><span class="n">rm</span><span class="p">,</span> <span class="o">--</span><span class="n">random_matching</span> <span class="n">random</span> <span class="n">matching</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">single</span> <span class="n">to</span> <span class="n">x</span> <span class="n">model</span> <span class="n">to</span> 
-						 <span class="n">reduce</span> <span class="n">computational</span> <span class="n">time</span> <span class="n">due</span> <span class="n">to</span> 
-						 <span class="n">the</span> <span class="n">matchmaking</span> <span class="n">process</span>
-  <span class="o">-</span><span class="n">s</span> <span class="o">--</span><span class="n">random_seed</span> <span class="n">random</span> <span class="n">seed</span> <span class="n">settng</span>
-</pre></div>
-</div>
-</li>
-<li><p>simulation results
-the demos simulation will produce the following sets of data and results:</p></li>
 </ol>
-<ul class="simple">
-<li><p>a synthetic population file showing the evolution of the synthetic population throughout the simulation years. the file should be named <code class="docutils literal notranslate"><span class="pre">model_data_&lt;scenario_name_output_year&gt;.h5</span></code> in directory <code class="docutils literal notranslate"><span class="pre">DEMOS_NREL/demos/data</span></code>.</p></li>
-<li><p>series of aggregated statistics for the population size, number of households, household size distribution, gender distribution, number of births, number of mortalities, number of student enrollments, number of total marriages, number of total divorces, the age distribution of the synthetic population, and income distribution for each simulation year. The files are located at <code class="docutils literal notranslate"><span class="pre">DEMOS_NREL/demos/outputs/simulation</span></code></p></li>
-</ul>
 </section>
+</section>
+</section>
+<section id="running-demos">
+<h2>Running DEMOS<a class="headerlink" href="#running-demos" title="Link to this heading">¶</a></h2>
+<p>DEMOS requires a series of input tables. Example tables are provided <a class="reference external" href="https://app.box.com/s/tox2nflumia2g4n6rk2i0navca9pskep">here</a> for internal NREL use. It is recommended to store all the input values in the folder <code class="docutils literal notranslate"><span class="pre">data</span></code> in root of the project, but absolute values can be used by specifying them in the configuration file. You may also refer to the data description <a class="reference external" href="https://cloud.urbansim.com/docs/general/documentation/urbansim%20block%20model%20data.html">here</a></p>
+<p>To run demos:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">simulate</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">cfg</span> <span class="p">{</span><span class="n">configuration_file</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>A default configuration file is provided in <code class="docutils literal notranslate"><span class="pre">configuration/demos_config.toml</span></code>. The <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> entries outline tables to be loaded. For example, we can load the <code class="docutils literal notranslate"><span class="pre">persons</span></code> and <code class="docutils literal notranslate"><span class="pre">households</span></code> table from an H5 source:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/custom_mpo_06197001_model_data.h5&quot;</span>
+<span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
+
+<span class="k">[[tables]]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/custom_mpo_06197001_model_data.h5&quot;</span>
+<span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
+</pre></div>
+</div>
 <section id="ii-project-structure">
 <h3>ii. project structure<a class="headerlink" href="#ii-project-structure" title="Link to this heading">¶</a></h3>
 <blockquote>
-<div><p><strong>TODO:</strong> this part still need to be complemented</p>
+<div><p><strong>TODO:</strong> The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).</p>
 </div></blockquote>
-<p>the main folder of this repository contains several python scripts that contain the different steps necessary to import, process, and run the demos framework. the following is a description of the different folder and scripts used to run the demos simulation</p>
-<ol class="arabic simple">
-<li><p>the <code class="docutils literal notranslate"><span class="pre">configs\</span></code> directory: this folder contains the different <code class="docutils literal notranslate"><span class="pre">.yaml</span></code> configuration files to run each of the demos and urbansim models. the configuration files for each region are located in subdirectories with the name of the region</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">data\</span></code> directory: contains all the data needed to run the simulation</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">variables.py</span></code>: this script defines all the temporary variables needed to run the models. each variable is created as an orca column.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">datasources.py</span></code>: this script imports all the necessary data for the specified simulation region and create simulation output folders, if needed.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">models.py</span></code>: this script defines all the models as orca steps and defines all pre-processing and post-processing steps needed for each of the models.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">simulate.py</span></code>: this script defines all the simulation parameters and runs the rest of the scripts desribed above.</p></li>
-<li><p>the <code class="docutils literal notranslate"><span class="pre">outputs\</span></code> directory: contains the different results produced by the simulation. simulation results for each region are stored in their respective subdirectories.</p></li>
-</ol>
 </section>
 </section>
 </section>
@@ -425,7 +395,9 @@ the demos simulation will produce the following sets of data and results:</p></l
 <li><a class="reference internal" href="#building-the-docker-image-development-only">Building the docker image (development only)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#from-source">From Source</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#running-demos">Running DEMOS</a><ul>
 <li><a class="reference internal" href="#ii-project-structure">ii. project structure</a></li>
 </ul>
 </li>

@@ -310,11 +310,15 @@
     <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CalibrationConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
+<div class="viewcode-block" id="KidsMovingModuleConfig">
+<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.KidsMovingModuleConfig">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">KidsMovingModuleConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">geoid_col</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
 <div class="viewcode-block" id="AgingModuleConfig">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.AgingModuleConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">AgingModuleConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1">#: Age at which a person qualifies as senior</span>
     <span class="n">senior_age</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">65</span></div>
 
@@ -357,6 +361,7 @@
     <span class="n">mortality_module_config</span><span class="p">:</span> <span class="n">MortalityModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">MortalityModuleConfig</span><span class="p">)</span>
     <span class="n">birth_module_config</span><span class="p">:</span> <span class="n">BirthModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">BirthModuleConfig</span><span class="p">)</span>
     <span class="n">hh_rebalancing_module_config</span><span class="p">:</span> <span class="n">HHRebalancingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">HHRebalancingModuleConfig</span><span class="p">)</span>
+    <span class="n">kids_moving_module_config</span><span class="p">:</span> <span class="n">KidsMovingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">KidsMovingModuleConfig</span><span class="p">)</span>
     
 <div class="viewcode-block" id="DEMOSConfig.model_post_init">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig.model_post_init">[docs]</a>
