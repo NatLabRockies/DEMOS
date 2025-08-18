@@ -3,6 +3,7 @@ from templates import estimated_models, modelmanager as mm
 import time
 from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
+from config import DEMOSConfig, KidsMovingModuleConfig, get_config
 
 STEP_NAME = "kids_moving"
 REQUIRED_COLUMNS = [
@@ -39,6 +40,10 @@ def kids_moving(persons, households, get_new_households):
     log_execution_time(start_time, orca.get_injectable("year"), "kids_moving")
 
 def update_households_after_kids(persons, households, kids_moving, get_new_households):
+    # Load module config
+    demos_config: DEMOSConfig = get_config()
+    module_config: KidsMovingModuleConfig = demos_config.kids_moving_module_config
+
     # Kids moving to a new household conditions
     ## Condition 1: Kids flagged by kids_moving
     ## Condition 2: Households with more than 1 people
@@ -65,9 +70,9 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     # Get the old household_id for the moving kids to retrieve the county_id
     # TODO: Parametrize county_id
     old_household_id = persons.local.loc[kids_moving_index, "household_id"].values
-    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+    county_assignment = households.local.loc[old_household_id, module_config.geoid_col].values
 
     new_households = get_new_households(kids_moving_index.sum())
     persons.local.loc[kids_moving_index, "household_id"] = new_households
     persons.local.loc[kids_moving_index, "relate"] = 0
-    households.local.loc[new_households, "lcm_county_id"] = county_assignment
+    households.local.loc[new_households, module_config.geoid_col] = county_assignment

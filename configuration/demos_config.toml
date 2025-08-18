@@ -143,4 +143,8 @@ control_table = "hsize_ct"
 control_col = "hh_size"
 geoid_col = "lcm_county_id"
 
+# Kids Moving
+[kids_moving_module_config]
+geoid_col = "lcm_county_id"
+
 

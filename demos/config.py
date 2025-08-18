@@ -44,9 +44,10 @@ class MortalityModuleConfig(BaseModel):
 class BirthModuleConfig(BaseModel):
     calibration_procedure: Optional[CalibrationConfig] = None
 
+class KidsMovingModuleConfig(BaseModel):
+    geoid_col: str
+
 class AgingModuleConfig(BaseModel):
-    """
-    """
     #: Age at which a person qualifies as senior
     senior_age: int = 65
 
@@ -86,6 +87,7 @@ class DEMOSConfig(BaseModel):
     mortality_module_config: MortalityModuleConfig = Field(default_factory=MortalityModuleConfig)
     birth_module_config: BirthModuleConfig = Field(default_factory=BirthModuleConfig)
     hh_rebalancing_module_config: HHRebalancingModuleConfig = Field(default_factory=HHRebalancingModuleConfig)
+    kids_moving_module_config: KidsMovingModuleConfig = Field(default_factory=KidsMovingModuleConfig)
     
     def model_post_init(self, __context) -> None:
         if self.output_fname is None:
