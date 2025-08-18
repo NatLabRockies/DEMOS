@@ -4,11 +4,11 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
 from datasources import log_execution_time
+from config import DEMOSConfig, EmploymentModuleConfig, SimultaneousCalibrationConfig, get_config
+from templates.utils.models import columns_in_formula
 
 @orca.step("laborforce_model")
 def laborforce_model(persons,
-                     observed_entering_workforce,
-                     observed_exiting_workforce,
                      entering_workforce,
                      exiting_workforce,
                      year):
@@ -18,6 +18,8 @@ def laborforce_model(persons,
     Modifies State Variables:
         - persons.worker
         - persons.earning
+    
+    Modifies Reporting tables:
         - entering_workforce
         - exiting_workforce
 
@@ -28,8 +30,15 @@ def laborforce_model(persons,
         None
     """
     start_time = time.time()
-    stay_unemployed_list = run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, year)
-    exit_workforce_list = run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, year)
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    module_config: EmploymentModuleConfig = demos_config.employment_module_config
+
+    if module_config.simultaneous_calibration_config is not None:
+        stay_unemployed_list, exit_workforce_list= run_simultaenous_calibration(persons, module_config.simultaneous_calibration_config)
+    else:
+        stay_unemployed_list = run_and_calibrate_in_workforce_model(persons)
+        exit_workforce_list = run_and_calibrate_out_workforce_model(persons)
     
     # Re-index to help querying below
     reindexed_remain_unemployed = stay_unemployed_list.reindex(persons.local.index).fillna(2)
@@ -41,10 +50,6 @@ def laborforce_model(persons,
     persons.local.loc[reindexed_remain_unemployed == 0, "worker"] = 1
     persons.local.loc[reindexed_remain_unemployed == 0, "earning"] = persons["new_earning"]\
                                                                         .loc[reindexed_remain_unemployed == 0].values
-
-    # Comments left by previous developer:
-    # TODO: Make sure that the actual workers don't get restorted due to difference in indexing
-    # TODO: Make sure there is a better way to do this
 
     # Update entering and exiting workforce tables (Seems to be just for records)
     orca.add_table("entering_workforce", 
@@ -62,68 +67,80 @@ def sample_income(mean, std):
     return np.random.lognormal(mean, std)
 
 
-# TODO: Refactor this
-def run_and_calibrate_in_workforce_model(persons, observed_entering_workforce, year):
-    # Observed values for calibration
-    observed_stay_unemployed = observed_entering_workforce.to_frame()
+def run_and_calibrate_in_workforce_model(persons, calibration_procedure):
+    # Get model data
+    model = mm.get_step("enter_labor_force")
+    model_variables = columns_in_formula(model.model_expression)
+    model_filters = (persons.worker == 0) & (persons.age >= 18)
+    model_data = persons.to_frame(model_variables)[model_filters]
 
-    # Dummy value for output column
-    persons["stay_out"] = -99
+    # Calibrate if needed
+    if calibration_procedure is not None:
+        return calibration_procedure.calibrate_and_run_model(model, model_data)
+    return model.predict(model_data)
 
-    # Get estimated model object and run it
-    in_workforce_model = mm.get_step("enter_labor_force")
-    in_workforce_model.run()
 
-    stay_unemployed_list = in_workforce_model.choices.astype(int)
-    predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
-    target_share = observed_stay_unemployed[observed_stay_unemployed["year"]==year]["share"]
-    target = target_share * stay_unemployed_list.shape[0]
-    error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-    print("The Labor Force In Model Calibration:")
-    calibrate_time = 0
-    while error >= 0.01:
-        print(f"{calibrate_time} time: {error}")
-        in_workforce_model.fitted_parameters[0] += np.log(target.sum()/stay_unemployed_list.sum())
-        in_workforce_model.run()
-        stay_unemployed_list = in_workforce_model.choices.astype(int)
-        predicted_share = stay_unemployed_list.sum() / stay_unemployed_list.shape[0]
-        error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+def run_and_calibrate_out_workforce_model(persons, calibration_procedure):
+    # Get model data
+    model = mm.get_step("exit_labor_force")
+    model_variables = columns_in_formula(model.model_expression)
+    model_filters = (persons.worker == 1) & (persons.age >= 18)
+    model_data = persons.to_frame(model_variables)[model_filters]
 
-    return stay_unemployed_list
+    # Calibrate if needed
+    if calibration_procedure is not None:
+        return calibration_procedure.calibrate_and_run_model(model, model_data)
+    return model.predict(model_data)
 
-# TODO: Refactor this
-def run_and_calibrate_out_workforce_model(persons, observed_exiting_workforce, year):
-    # Observed values for calibration
-    observed_exit_workforce = observed_exiting_workforce.to_frame()
 
-    # Dummy value for output column
-    persons["leaving_workforce"] = -99
+def run_simultaenous_calibration(persons, simultaneous_calibration_config):
+    # Get enter model data
+    enter_model = mm.get_step("enter_labor_force")
+    enter_model_variables = columns_in_formula(enter_model.model_expression)
+    enter_model_filters = (persons.worker == 0) & (persons.age >= 18)
+    enter_model_data = persons.to_frame(enter_model_variables)[enter_model_filters]
 
-    # Get estimated model object and run it
-    out_workforce_model = mm.get_step("exit_labor_force")
-    out_workforce_model.run()
+    # Get exit model data
+    exit_model = mm.get_step("exit_labor_force")
+    exit_model_variables = columns_in_formula(exit_model.model_expression)
+    exit_model_filters = (persons.worker == 1) & (persons.age >= 18)
+    exit_model_data = persons.to_frame(exit_model_variables)[exit_model_filters]
     
-    exit_workforce_list = out_workforce_model.choices.astype(int)
-    predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
-    target_share = observed_exit_workforce[observed_exit_workforce["year"]==year]["share"]
-    target = target_share * exit_workforce_list.shape[0]
+    # Get calibration data
+    observed_workers_table = orca.get_table("observed_employment").local 
+    observed_workers = observed_workers_table[observed_workers_table.year == orca.get_injectable("year")]["count"].iloc[0]
 
-    error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-    print("The Labor Force Out Model Calibration:")
-    calibrate_time = 0
-    while error >= 0.01:
-        print(f"{calibrate_time} time: {error}")
-        out_workforce_model.fitted_parameters[0] += np.log(target.sum()/exit_workforce_list.sum())
-        out_workforce_model.run()
-        exit_workforce_list = out_workforce_model.choices.astype(int)
-        predicted_share = exit_workforce_list.sum() / exit_workforce_list.shape[0]
-        error = np.sqrt(np.mean((predicted_share.sum() - target_share)**2))
-        calibrate_time += 1
-    print(f"{calibrate_time} time: {error}")
+    enter_model_predictions, exit_model_predictions = enter_model.predict(enter_model_data), exit_model.predict(exit_model_data)
+    
+    # enter_model_predictions == 0 are those who do NOT remain unemployed (will now be employed)
+    # exit_model_preditions == 0 are those that remain employed
+    predicted_total_workers = (enter_model_predictions == 0).sum() + (exit_model_predictions == 0).sum()
+    
 
-    return exit_workforce_list
+    # Initialize optimization algorithm
+    config: SimultaneousCalibrationConfig = simultaneous_calibration_config
+    gradient = 0
+    momentum_weight = config.momentum_weight
+    total_iterations = 0
+    error = abs(predicted_total_workers - observed_workers)
+    while error > config.tolerance and total_iterations < config.max_iter:
+        print(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
+        lr = config.learning_rate * ((config.max_iter - total_iterations) + .5) / config.max_iter
+        
+        # Calculate gradient
+        update_coeff = np.log(observed_workers / predicted_total_workers)
+        gradient = lr * (momentum_weight * gradient + (1 - momentum_weight) * update_coeff / 2)
+
+        # Apply gradient
+        enter_model.fitted_parameters[0] -= gradient
+        exit_model.fitted_parameters[0] -= gradient
+
+        enter_model_predictions, exit_model_predictions = enter_model.predict(enter_model_data), exit_model.predict(exit_model_data)
+        predicted_total_workers = (enter_model_predictions == 0).sum() + (exit_model_predictions == 0).sum()
+        error = abs(predicted_total_workers - observed_workers)
+        total_iterations += 1
+    print(f"Final error after Simultaneous calibration: {error}")
+    return enter_model_predictions, exit_model_predictions
 
 @orca.column(table_name="persons")
 def age_group(data="persons.age"):

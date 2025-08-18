@@ -4,9 +4,12 @@ import numpy as np
 import pandas as pd
 from templates import estimated_models, modelmanager as mm
 from templates.utils.models import columns_in_formula
+from config import DEMOSConfig, HHReorgModuleConfig, get_config
 from .marriage import update_married_households_random, update_divorce
 
 from datasources import log_execution_time
+
+from templates.calibration.procedures import SimultaneousCalibrationConfig
 
 @orca.injectable(autocall=False)
 def get_new_households(n):
@@ -167,37 +170,58 @@ def households_reorg(persons, households, year, get_new_households):
         None
     """
     start_time = time.time()
+    marriage_model = mm.get_step("marriage")
+    divorce_model = mm.get_step("divorce")
+    cohabitation_model = mm.get_step("cohabitation")
+
     # Marriage Model
     single_noncohab_index = ~persons["cohabitate"] & persons["is_not_married"]
-
-    print("Running marriage model...")
-    marriage = mm.get_step("marriage")
-    # TODO: The marriage.variable_names part was necessary because the Multinomial logit does not
-    #       call .to_frame() inside. This is inconsistent with the binary logit interface
-    marriage_list = marriage.run(persons.to_frame(marriage.variable_names).loc[single_noncohab_index].sort_index(axis=0))
+    marriage_model_data = persons.to_frame(marriage_model.variable_names).loc[single_noncohab_index]
 
     # Divorce model
     married_household_sizes = persons.local\
         .loc[(persons["MAR"] == 1) & persons["relate"].isin([0, 1])] \
         .groupby("household_id").size()
     married_households_living_together = married_household_sizes[married_household_sizes == 2].index.tolist()
-
-    # TODO: Rethink how we are passing the fitlers here
-    print("Running divorce model...")
-    households["divorced"] = -99
-    divorce_model = mm.get_step("divorce")
     divorce_model_variables = columns_in_formula(divorce_model.model_expression)
     divorce_model_data = households.to_frame(divorce_model_variables).loc[married_households_living_together]
-    divorce_list = divorce_model.run_with_data(divorce_model_data).astype(int)
     
     # Cohabitation to X Model
-    print("Running cohabitation model...")
-    ELIGIBLE_HOUSEHOLDS = (
-        persons.local[(persons["relate"] == 13) & persons["is_not_married"]]["household_id"] \
-            .unique().astype(int)
-    )
-    cohabitation = mm.get_step("cohabitation")
-    cohabitate_x_list = cohabitation.run(households.to_frame(cohabitation.variable_names).loc[ELIGIBLE_HOUSEHOLDS])
+    ELIGIBLE_HOUSEHOLDS = persons.local[(persons["relate"] == 13) &
+                                        persons["is_not_married"]]["household_id"].unique().astype(int)
+    
+    cohabitation_model_data = households.to_frame(cohabitation_model.variable_names).loc[ELIGIBLE_HOUSEHOLDS]
+
+
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    sim_cal_config: SimultaneousCalibrationConfig = demos_config.hh_reorg_module_config.simultaneous_calibration_config
+    
+    # Calibrate if necessary
+    if sim_cal_config is not None:
+        simultaneous_calibration(sim_cal_config,
+                                 persons,
+                                 marriage_model,
+                                 cohabitation_model,
+                                 divorce_model,
+                                 marriage_model_data,
+                                 cohabitation_model_data,
+                                 divorce_model_data)
+
+    # Execute all the models
+    marriage_list, divorce_list, cohabitate_x_list = run_models(marriage_model,
+                                                                cohabitation_model,
+                                                                divorce_model,
+                                                                marriage_model_data,
+                                                                cohabitation_model_data,
+                                                                divorce_model_data)
+
+    # Check number marriages before and after applying the model
+    print_marital_count(persons.local)
+    n_married_after, min_div, max_div = compute_expected_marital_status(persons.local, cohabitate_x_list, marriage_list, divorce_list)
+    print("Predicted Marital status after applying models")
+    print(f"Predicted MAR == 1: {n_married_after:,}")
+    print(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
 
     ######### UPDATING
     print("Restructuring households:")
@@ -210,14 +234,164 @@ def households_reorg(persons, households, year, get_new_households):
     print_household_stats()
     fix_erroneous_households(persons)
     print_household_stats()
-    
+
     print("Divorces..")
     update_divorce(persons, households, divorce_list, get_new_households)
     print_household_stats()
 
-    # TODO: This needs to be reevaluated after the refactoring
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
+    print_marital_count(persons.local)
     log_execution_time(start_time, orca.get_injectable("year"), "household_reorg")
+
+
+def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
+
+    marital_status_table = orca.get_table("marital_status_output")
+
+    def compute_error(n_married, n_divorced, target_married, target_divorced):
+        married_rmse = (n_married - target_married) ** 2
+        divorce_rmse = (n_divorced - target_divorced) ** 2
+        return np.sqrt((married_rmse + divorce_rmse) / 2)
+
+    # Load observed data
+    observed_marrital = orca.get_table("observed_marrital_data").to_frame()
+    target_data = observed_marrital[observed_marrital["year"] == orca.get_injectable("year")]
+    target_married_count  = target_data[(target_data["MAR"] == 1)]["count"].values[0]
+    target_divorced_count = target_data[(target_data["MAR"] == 3)]["count"].values[0]
+    married_weight = target_married_count / (target_married_count + target_divorced_count)
+    divorce_weight = target_divorced_count / (target_married_count + target_divorced_count)
+
+    # Execute all the models
+    marriage_list, divorce_list, cohabitate_x_list = run_models(marriage_model,
+                                                                cohab_model,
+                                                                divorce_model,
+                                                                marriage_data,
+                                                                cohab_data,
+                                                                divorce_data)
+
+    n_married, min_div, max_div = compute_expected_marital_status(persons.local, cohabitate_x_list, marriage_list, divorce_list)
+    n_divorced = (max_div - min_div) / 2 + min_div
+
+    print("Predicted Marital status after applying models BEFORE CALIBRATION")
+    print(f"Predicted MAR == 1: {n_married:,}")
+    print(f"Predicted MAR == 3: [{min_div:,}, {max_div:,}]")
+
+    marital_status_table.local = pd.concat([marital_status_table.local,
+                                            pd.DataFrame(
+                                                [[orca.get_injectable("year"), "married", "before", n_married],
+                                                 [orca.get_injectable("year"), "divorced_min", "before", min_div],
+                                                 [orca.get_injectable("year"), "divorced_max", "before", max_div]],
+                                                columns=["year", "metric", "time", "value"]
+                                                ),
+                                            ], axis=0)
+
+    # Initialize optimization algorithm
+    married_gradient = 0
+    divorce_gradient = 0
+    cohabitation_gradient = 0
+    momentum_weight = sim_cal_config.momentum_weight
+    total_iterations = 0
+    error = compute_error(n_married, n_divorced, target_married_count, target_divorced_count)
+    while error > sim_cal_config.tolerance and total_iterations < sim_cal_config.max_iter:
+        print(f"Simultaneous Calibration: Iteration {total_iterations} error: {error}")
+        lr = sim_cal_config.learning_rate * ((sim_cal_config.max_iter - total_iterations) + .5) / sim_cal_config.max_iter
+        
+        # Calculate updates with momentum
+        ## TODO: Cohabitation gradient could be weighted according to the contribution of cohabitation models to marriages
+        divorce_gradient = lr * (momentum_weight * divorce_gradient + (1 - momentum_weight) * divorce_weight * np.log(target_divorced_count / n_divorced))
+        married_gradient = lr * (momentum_weight * married_gradient + (1 - momentum_weight) *  married_weight * np.log(target_married_count / n_married))
+        cohabitation_gradient = lr * (momentum_weight * cohabitation_gradient + (1 - momentum_weight) *  married_weight * np.log(target_married_count / n_married))
+        
+         # Apply updates
+        divorce_model.fitted_parameters[0] += divorce_gradient
+        marriage_model.coeffs.loc[0, 'married'] += married_gradient
+        cohab_model.coeffs.loc[0, 'marriage'] += cohabitation_gradient
+
+        # Re-run models
+        marriage_list, divorce_list, cohabitate_x_list = run_models(marriage_model,
+                                                                cohab_model,
+                                                                divorce_model,
+                                                                marriage_data,
+                                                                cohab_data,
+                                                                divorce_data)
+
+        n_married, min_div, max_div = compute_expected_marital_status(persons.local, cohabitate_x_list, marriage_list, divorce_list)
+        n_divorced = (max_div - min_div) / 2 + min_div
+    
+        error = compute_error(n_married, n_divorced, target_married_count, target_divorced_count)
+        total_iterations += 1
+    
+    marital_status_table.local = pd.concat([marital_status_table.local,
+                                        pd.DataFrame(
+                                            [[orca.get_injectable("year"), "married", "after", n_married],
+                                             [orca.get_injectable("year"), "divorced_min", "after", min_div],
+                                             [orca.get_injectable("year"), "divorced_max", "after", max_div]],
+                                            columns=["year", "metric", "time", "value"]
+                                            ),
+                                        ], axis=0)
+
+    print(f"Final error after Simultaneous calibration: {error}")
+
+
+def run_models(marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
+    marriage_list = marriage_model.predict(marriage_data)
+    divorce_list = divorce_model.predict(divorce_data).astype(int)
+    cohabitate_x_list = cohab_model.predict(cohab_data)
+    return marriage_list, divorce_list, cohabitate_x_list
+
+def print_marital_count(persons_df):
+    for i in [1, 3]:
+        print(f"Number of people with MAR={i}: {(persons_df.MAR == i).sum():,}")
+
+def compute_expected_marital_status(persons_df, cohabitate_x_list, marriage_list, divorce_list):
+    starting_married = (persons_df.MAR == 1)
+    starting_n_married = starting_married.sum()
+    starting_divorced = (persons_df.MAR == 3)
+    starting_n_divorced = starting_divorced.sum()
+    starting_head_idx = persons_df.relate == 0
+    starting_partner_idx = persons_df.relate == 13
+    starting_spouse_idx = persons_df.relate == 1
+
+    # Cohabitations computations
+    cohabitate_marriages = cohabitate_x_list == 2
+    cohabitate_marriage_people = persons_df.household_id.isin(cohabitate_marriages[cohabitate_marriages].index.to_list())
+
+    # New married households * 2 (head and spouse)
+    cohabitation_model_new_married_people = (cohabitate_x_list == 2).sum() * 2
+    cohabitation_model_less_divorced = len(persons_df.loc[cohabitate_marriage_people & (starting_head_idx | starting_partner_idx) & (starting_divorced)])
+
+    # Marriage computations
+    male_filter = persons_df.person_sex == "male"
+    female_filter = persons_df.person_sex == "female"
+    marriage_reindexed = marriage_list.reindex(persons_df.index).fillna(0) == 2
+    
+    male_wed = persons_df.loc[(marriage_reindexed) & (male_filter)]
+    female_wed = persons_df.loc[(marriage_reindexed) & (female_filter)]
+    n_wed = min([len(male_wed), len(female_wed)])
+    
+    n_male_div = (male_wed.MAR == 3).sum()
+    min_male_div_to_married = n_male_div - min([(len(male_wed) - n_wed), n_male_div])
+    max_male_div_to_married = n_male_div - max([0, n_male_div -  n_wed])
+
+    n_female_div = (female_wed.MAR == 3).sum()
+    min_female_div_to_married = n_female_div - min([(len(female_wed) - n_wed), n_female_div])
+    max_female_div_to_married = n_female_div - max([0, n_female_div - n_wed])
+    
+    max_div_to_married = max_male_div_to_married + max_female_div_to_married
+    min_div_to_married = min_male_div_to_married + min_female_div_to_married
+
+    # Divorce computation
+    divorced_household_ids = divorce_list[divorce_list.astype(bool)].index
+    person_in_divorced_household_index = persons_df["household_id"].isin(divorced_household_ids)
+    head_and_spose_index = (starting_head_idx | starting_spouse_idx) & starting_married & person_in_divorced_household_index
+    n_divorced = head_and_spose_index.sum()
+
+    div_after_cohabitation_and_divorce = starting_n_divorced - cohabitation_model_less_divorced + n_divorced
+
+    n_married_after = starting_n_married + cohabitation_model_new_married_people + n_wed*2 - n_divorced
+    min_div = div_after_cohabitation_and_divorce - max_div_to_married
+    max_div = div_after_cohabitation_and_divorce - min_div_to_married
+    return n_married_after, min_div, max_div
 
 
 @orca.step("print_household_stats")
@@ -286,6 +460,11 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     Returns:
         None
     """
+
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    module_config: HHReorgModuleConfig = demos_config.hh_reorg_module_config
+
     # Precompute some indices
     married_hh = cohabitate_list.index[cohabitate_list == 2].to_list()
     breakup_hh = cohabitate_list.index[cohabitate_list == 1].to_list()
@@ -303,7 +482,6 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
 
     # Get the old household_id for the leaving person to retrieve the county_id
     old_household_id = persons.local.loc[leaving_person_index, "household_id"].values
-    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
 
     ## Person leaving is now head of household
     persons.local.loc[leaving_person_index, "relate"] = 0
@@ -311,7 +489,11 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
     ### Assign new household_id to people leaving
     new_households = get_new_households(leaving_person_index.sum())
     persons.local.loc[leaving_person_index, "household_id"] = new_households
-    households.local.loc[new_households, "lcm_county_id"] = county_assignment
+
+    # If geoid_col is set, we copy the geoid from old households to new ones
+    if module_config.geoid_col is not None:
+        county_assignment = households.local.loc[old_household_id, module_config.geoid_col].values
+        households.local.loc[new_households, module_config.geoid_col] = county_assignment
 
 
 def fix_erroneous_households(persons):

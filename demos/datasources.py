@@ -4,50 +4,19 @@ import os
 from itertools import product
 
 import numpy as np
-import openmatrix as omx
 import orca
 import pandas as pd
 import yaml
 #from google.cloud import storage
 from templates.data import LoadTable
+from config import CONFIG
 
 print("********** Statrt importing datasources **********")
-
-# -----------------------------------------------------------------------------------------
-# UC SIMULATIONS: ADDS SPECIAL SCENARIO INJECTABLES FROM NOTES
-# -----------------------------------------------------------------------------------------
-scenario_data = glob.glob("./data/scenario_data*")
-if len(scenario_data) > 0:
-    with open(scenario_data[0]) as f:
-        scenario = yaml.load(f, Loader=yaml.FullLoader)
-    if scenario["notes"] is not None and scenario["notes"] != "":
-        print("Extracting relevant information from scenario notes")
-        settings = eval(scenario["notes"])["settings"]
-        if "calibrated_folder" in settings.keys():
-            orca.add_injectable("calibrated_folder", settings["calibrated_folder"])
-        if "initial_run" in settings.keys():
-            orca.add_injectable("initial_run", eval(settings["initial_run"]))
-        if "multi_level_lcms" in settings.keys():
-            orca.add_injectable("multi_level_lcms", eval(settings["multi_level_lcms"]))
-        if "segmented_lcms" in settings.keys():
-            orca.add_injectable("segmented_lcms", eval(settings["segmented_lcms"]))
-        if "capacity_boost" in settings.keys():
-            orca.add_injectable("capacity_boost", settings["capacity_boost"])
-        if "database_control_totals" in settings.keys():
-            orca.add_injectable(
-                "use_database_control_totals", eval(settings["database_control_totals"])
-            )
-
 # -----------------------------------------------------------------------------------------
 # DOWNLOADS DATA FOR REGION
 # -----------------------------------------------------------------------------------------
-all_local = orca.get_injectable("all_local")
-if not all_local:
-    # TODO: get the region code from cloud and register it into orca
-    pass
-
-region_code = orca.get_injectable("region_code")
-calibrated_folder = orca.get_injectable("calibrated_folder")
+region_code = CONFIG.region_code
+calibrated_folder = CONFIG.calibrated_folder
 print("Importing datasources for region %s" % region_code)
 
 if len(region_code) == 2:
@@ -117,13 +86,15 @@ observed_exiting_workforce_data_name = "outputs/calibration/%s/exiting_workforce
 observed_exiting_workforce_data = pd.read_csv(observed_exiting_workforce_data_name)
 orca.add_table("observed_exiting_workforce", observed_exiting_workforce_data)
 
+print("Read calibration data for employment model.")
+observed_employment_data_name = "outputs/calibration/%s/employment_obs.csv" % region_code
+observed_employment_data = pd.read_csv(observed_employment_data_name)
+orca.add_table("observed_employment", observed_employment_data)
 
-if not all_local:
-    # TODO: download the input file from the cloud to data folder.
-    pass
-else:
-    if not os.path.exists("data/%s" % data_name):
-        raise OSError("No input data found at data/%s" % data_name)
+
+
+if not os.path.exists("data/%s" % data_name):
+    raise OSError("No input data found at data/%s" % data_name)
 
 # -----------------------------------------------------------------------------------------
 # LOADS ORCA TABLES FROM H5 FILE
@@ -233,47 +204,8 @@ orca.add_table("income_dist", income_dist)
 print("All registered tables: ", orca.list_tables())
 
 # -----------------------------------------------------------------------------------------
-# DOWNLOADS CUSTOM SETTINGS IF AVAILABLE
-# -----------------------------------------------------------------------------------------
-
-if calibrated_folder == "custom":
-    # Custom settings, useful for the definition of time-based accessibility variables
-    print("Checking if custom_settings.yaml file exists")
-    if not all_local:
-        # TODO: Download custom_settings.yaml to config folder
-        pass
-    try:
-        with open("configs/custom_settings.yaml") as f:
-            custom_settings = yaml.load(f, Loader=yaml.FullLoader)
-        orca.add_injectable("custom_settings", custom_settings)
-    except OSError:
-        raise OSError("No settings found at configs/custom_settings.yaml")
-
-    # Custom output parameters, useful when variables change from default
-    print("Checking if custom output_parameters.yaml file exists")
-    if not all_local:
-        # TODO: Download output_parameters to config folder
-        pass
-    else:
-        if not os.path.exists("configs/output_parameters.yaml"):
-            raise OSError("No settings found at configs/output_parameters.yaml")
-
-    # Custom calibration settings, useful to refine specifications
-    if orca.get_injectable("running_calibration_routine") is True:
-        print("Checking if custom pf_vars.yaml file exists")
-
-        if not all_local:
-            # TODO: Download pf_vars.yaml to 'configs/calibrated_configs/custom/custom_%s_%s' folder
-            pass
-        else:
-            if not os.path.exists("pf_vars.yaml"):
-                raise OSError("No settings found at ./pf_vars.yaml")
-
-# -----------------------------------------------------------------------------------------
 # ADDS AGGREGATION TABLES
 # -----------------------------------------------------------------------------------------
-
-
 def register_aggregation_table(table_name, table_id):
     """
     Generator function for tables representing aggregate geography.
@@ -315,7 +247,7 @@ for geog in aggregate_geos:
 print("Register current year of the current iteration")
 @orca.injectable("year")
 def year():
-    default_year = orca.get_injectable("base_year")
+    default_year = CONFIG.base_year
     iter_var = orca.get_injectable("iter_var")
     if iter_var is not None:
         return iter_var
@@ -434,57 +366,6 @@ except Exception:
         ect = ect.append(df)
 orca.add_table("ect", ect.set_index("year"))
 
-
-# -----------------------------------------------------------------------------------------
-# ADD ACTIVITYSIM SKIMS DATA
-# -----------------------------------------------------------------------------------------
-print("Handle skim data.")
-skims = omx.open_file('data/skims_mpo_{}.omx'.format(region_code),'r')
-orca.add_injectable('asim_skims', skims)
-
-# Mode Choice Constants (Consider moving them to .yaml file)
-# Here as a place holder for now
-orca.add_injectable('cost_per_mile', 18.0) # 18 cents per miles
-orca.add_injectable('walkThresh', 2.0) #2 miles
-orca.add_injectable('walkSpeed', 3.0) #3 miles per hour
-orca.add_injectable('bikeThresh', 6.0) #2 miles
-orca.add_injectable('bikeSpeed', 12.00) #3 miles per hour
-orca.add_injectable('ivt_cost_multiplier', 0.6)
-orca.add_injectable('costShareSr2', 1.75)
-orca.add_injectable('costShareSr3', 2.50)
-orca.add_injectable('short_i_wait_multiplier', 2.0)
-orca.add_injectable('waitThresh', 10.00)
-orca.add_injectable('long_i_wait_multiplier', 1.0 )
-orca.add_injectable('xwait_multiplier', 2.0)
-orca.add_injectable('wacc_multiplier', 2.0)
-orca.add_injectable('wegr_multiplier', 2.0)
-orca.add_injectable('shortWalk', 0.333)
-orca.add_injectable('longWalk', 0.667)
-orca.add_injectable('tnc_baseline', 2.20)
-orca.add_injectable('tnc_cost_minute', 0.24)
-orca.add_injectable('tnc_cost_mile', 1.33)
-orca.add_injectable('tnc_min_fare', 7.20)
-orca.add_injectable('avg_parking_cost', 2.50)
-orca.add_injectable('transit_change', 1)
-
-
-def add_missing_combinations(df):
-    # Get the unique values from each index level
-    index_values = [df.index.get_level_values(level).unique() for level in range(df.index.nlevels)]
-
-    # Generate all possible pair combinations
-    index_pairs = list(product(*index_values))
-
-    # Reindex the DataFrame with all possible combinations
-    new_df = df.reindex(index=index_pairs)
-
-    return new_df
-
-print("Update travel data table's index.")
-travel_data = orca.get_table("travel_data")
-t = add_missing_combinations(travel_data.local)
-orca.add_table('travel_data', t)
-
 # -----------------------------------------------------------------------------------------
 # ADD DEMOS TABLES
 # -----------------------------------------------------------------------------------------
@@ -583,13 +464,10 @@ def read_yaml(path):
         config = list(yaml.safe_load_all(f))[0]
 
     return config
-region_code = orca.get_injectable("region_code")
-calibrated_folder = orca.get_injectable("calibrated_folder")
-skim_source = orca.get_injectable("skim_source")
+region_code = CONFIG.region_code
+calibrated_folder = CONFIG.calibrated_folder
 calibrated_path = os.path.join('calibrated_configs', calibrated_folder, region_code)
-if os.path.exists(os.path.join('configs', calibrated_path, skim_source)):
-    calibrated_path = os.path.join(calibrated_path, skim_source)
-configs_folder = os.path.join('configs', calibrated_path if orca.get_injectable('calibrated') else 'estimated_configs')
+configs_folder = os.path.join('configs', calibrated_path)
 print("Models' folder: ", configs_folder)
 
 print("********** End importing datasources **********")

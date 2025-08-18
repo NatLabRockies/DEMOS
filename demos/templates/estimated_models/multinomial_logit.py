@@ -1,8 +1,9 @@
 from .. import modelmanager
-from .shared import TemplateStep
+from .template import TemplateStep
 from scipy.special import softmax
 import pandas as pd
 import numpy as np
+
 @modelmanager.template
 class MultinomialLogitStep(TemplateStep):
     def __init__(self, tables=None, model_expression=None, filters=None, out_tables=None,
@@ -29,6 +30,19 @@ class MultinomialLogitStep(TemplateStep):
         #TODO add training process
         pass
 
+    def predict(self, data):
+        if self.coeffs is None:
+            raise Exception("coeffs in MNL fail to be loaded.")
+        data = data.loc[:, self.variable_names].sort_index(axis=0)
+        utils = np.dot(data, self.coeffs)
+        base_util = np.zeros(utils.shape[0])
+        utils = np.column_stack((base_util, utils))
+        probabilities = softmax(utils, axis=1)
+        s = probabilities.cumsum(axis=1)
+        r = np.random.rand(probabilities.shape[0]).reshape((-1, 1))
+        choices = (s < r).sum(axis=1)
+        return pd.Series(index=data.index, data=choices)
+
     def run(self, data):
         """Function to run simulation of the MNL model
 
@@ -39,14 +53,4 @@ class MultinomialLogitStep(TemplateStep):
             Returns:
                 Pandas Series: Pandas Series of the outcomes of the simulated model
             """
-        if self.coeffs is None:
-            raise Exception("coeffs in MNL fail to be loaded.")
-        data = data.loc[:, self.variable_names]
-        utils = np.dot(data, self.coeffs)
-        base_util = np.zeros(utils.shape[0])
-        utils = np.column_stack((base_util, utils))
-        probabilities = softmax(utils, axis=1)
-        s = probabilities.cumsum(axis=1)
-        r = np.random.rand(probabilities.shape[0]).reshape((-1, 1))
-        choices = (s < r).sum(axis=1)
-        return pd.Series(index=data.index, data=choices)
+        return self.predict(data)

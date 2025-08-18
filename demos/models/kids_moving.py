@@ -4,6 +4,7 @@ import pandas as pd
 from templates import estimated_models, modelmanager as mm
 import time
 from datasources import log_execution_time
+from templates.utils.models import columns_in_formula
 
 @orca.step("kids_moving_model")
 def kids_moving_model(persons, households, get_new_households):
@@ -19,14 +20,14 @@ def kids_moving_model(persons, households, get_new_households):
         None
     """
     start_time = time.time()
-    persons_df = orca.get_table("persons").local
-    persons_df["kid_moves"] = -99
-    orca.add_table("persons", persons_df)
 
-    # print("Running the kids moving model...")
-    kids_moving_model = mm.get_step("kids_move")
-    kids_moving_model.run()
-    kids_moving = kids_moving_model.choices.astype(int)
+    # Get model data
+    model = mm.get_step("kids_move")
+    model_variables = columns_in_formula(model.model_expression)
+    model_filters = (persons.relate.isin([2, 3, 4, 7, 9, 14])) & (persons.age >= 16)
+    model_data = persons.to_frame(model_variables)[model_filters]
+
+    kids_moving = model.predict(model_data).astype(int)
 
     update_households_after_kids(persons, households, kids_moving, get_new_households)
     log_execution_time(start_time, orca.get_injectable("year"), "kids_moving")

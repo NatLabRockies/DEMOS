@@ -3,6 +3,7 @@ import numpy as np
 from templates import estimated_models, modelmanager as mm
 import time
 from datasources import log_execution_time
+from templates.utils.models import columns_in_formula
 
 @orca.step("education_model")
 def education_model(persons,
@@ -23,13 +24,14 @@ def education_model(persons,
         None
     """
     start_time = time.time()
-    # Run education model
-    ## Add temporary variable
-    persons_df = persons.local
-    persons_df["stop"] = -99
-    orca.add_table("persons", persons_df)
 
-    stop_student_list = run_education_model()
+    # Run education model
+    model = mm.get_step("education")
+    model_variables = columns_in_formula(model.model_expression)
+    model_filters = (persons.age > 15) & (persons.student == 1)
+    model_data = persons.to_frame(model_variables)[model_filters]
+    stop_student_list = model.predict(model_data).astype(int)
+
     reindexed_stop_student = stop_student_list.reindex(persons.local.index).fillna(-99)
 
     # Update education years
@@ -39,8 +41,6 @@ def education_model(persons,
 
     ## Dropping out
     persons.local.loc[reindexed_stop_student == 1, "student"] = 0
-    # TODO: Check if this line is really necessary
-    # persons.local.loc[reindexed_stop_student == 0, "student"] = 1
 
     ## Update those that stayed in school
     stayed_index = reindexed_stop_student == 0
@@ -77,12 +77,6 @@ def education_model(persons,
     persons.local.loc[stayed_index & eleventh_grade_index, "edu"] = eleventh_grade_transition
 
     log_execution_time(start_time, orca.get_injectable("year"), "education")
-
-
-def run_education_model():
-    edu_model = mm.get_step("education")
-    edu_model.run()
-    return edu_model.choices.astype(int)
 
 
 @orca.injectable(name="edu_highschool_proportion")

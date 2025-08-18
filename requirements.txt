@@ -15,3 +15,5 @@ plotly
 openmatrix
 patsy >= 0.4
 statsmodels >= 0.8
+pydantic
+toml

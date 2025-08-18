@@ -18,7 +18,7 @@ def update_income(persons, households, income_rates, year):
     """
     start_time = time.time()
     # Update income according to county rate
-    persons.earning *= 1 + income_rates.local[income_rates["year"] == year] \
+    persons.local.earning *= 1 + income_rates.local[income_rates["year"] == year] \
                                        .set_index("lcm_county_id")["rate"] \
                                        .loc[households.lcm_county_id \
                                        .loc[persons.household_id]].values
