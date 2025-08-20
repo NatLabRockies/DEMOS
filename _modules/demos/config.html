@@ -261,15 +261,18 @@
 
 <span class="n">CONFIG</span> <span class="o">=</span> <span class="kc">None</span>
 
+
 <div class="viewcode-block" id="HHRebalancingModuleConfig">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.HHRebalancingModuleConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">HHRebalancingModuleConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Configuration for Household Rebalancing module</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">control_table</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">control_col</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">geoid_col</span><span class="p">:</span> <span class="nb">str</span></div>
+
 
 
 <div class="viewcode-block" id="EmploymentModuleConfig">
@@ -285,10 +288,13 @@
         <span class="n">enter_cal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enter_model_calibration_procedure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="n">exit_cal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">exit_model_calibration_procedure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="n">sim_cal</span> <span class="ow">and</span> <span class="p">(</span><span class="n">enter_cal</span> <span class="ow">or</span> <span class="n">exit_cal</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simultaneous calibration cannot be used at the same time as &quot;</span> <span class="o">+</span> \
-                             <span class="sa">f</span><span class="s2">&quot;individual model calibration. Simultaneous selected: </span><span class="si">{</span><span class="n">sim_cal</span><span class="si">}</span><span class="s2">, &quot;</span> <span class="o">+</span> \
-                             <span class="sa">f</span><span class="s2">&quot;EnterModel selected: </span><span class="si">{</span><span class="n">enter_cal</span><span class="si">}</span><span class="s2">, ExitModel selected: </span><span class="si">{</span><span class="n">exit_cal</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Simultaneous calibration cannot be used at the same time as &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;individual model calibration. Simultaneous selected: </span><span class="si">{</span><span class="n">sim_cal</span><span class="si">}</span><span class="s2">, &quot;</span>
+                <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;EnterModel selected: </span><span class="si">{</span><span class="n">enter_cal</span><span class="si">}</span><span class="s2">, ExitModel selected: </span><span class="si">{</span><span class="n">exit_cal</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
+
 
 
 <div class="viewcode-block" id="HHReorgModuleConfig">
@@ -298,10 +304,12 @@
     <span class="n">geoid_col</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
+
 <div class="viewcode-block" id="MortalityModuleConfig">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.MortalityModuleConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MortalityModuleConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CalibrationConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
 
 
 <div class="viewcode-block" id="BirthModuleConfig">
@@ -310,10 +318,12 @@
     <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">CalibrationConfig</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
 
 
+
 <div class="viewcode-block" id="KidsMovingModuleConfig">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.KidsMovingModuleConfig">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">KidsMovingModuleConfig</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">geoid_col</span><span class="p">:</span> <span class="nb">str</span></div>
+
 
 
 <div class="viewcode-block" id="AgingModuleConfig">
@@ -330,6 +340,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Global configuration for DEMOS. Individual fields in this class control the configuration of each module.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
     <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span>
 
     <span class="c1">#: Year represented in synthetic population input</span>
@@ -356,34 +367,46 @@
 
     <span class="c1"># Module-specific config</span>
     <span class="n">aging_module_config</span><span class="p">:</span> <span class="n">AgingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">AgingModuleConfig</span><span class="p">)</span>
-    <span class="n">employment_module_config</span><span class="p">:</span> <span class="n">EmploymentModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">EmploymentModuleConfig</span><span class="p">)</span>
-    <span class="n">hh_reorg_module_config</span><span class="p">:</span> <span class="n">HHReorgModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">HHReorgModuleConfig</span><span class="p">)</span>
-    <span class="n">mortality_module_config</span><span class="p">:</span> <span class="n">MortalityModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">MortalityModuleConfig</span><span class="p">)</span>
+    <span class="n">employment_module_config</span><span class="p">:</span> <span class="n">EmploymentModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">EmploymentModuleConfig</span>
+    <span class="p">)</span>
+    <span class="n">hh_reorg_module_config</span><span class="p">:</span> <span class="n">HHReorgModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">HHReorgModuleConfig</span>
+    <span class="p">)</span>
+    <span class="n">mortality_module_config</span><span class="p">:</span> <span class="n">MortalityModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">MortalityModuleConfig</span>
+    <span class="p">)</span>
     <span class="n">birth_module_config</span><span class="p">:</span> <span class="n">BirthModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">BirthModuleConfig</span><span class="p">)</span>
-    <span class="n">hh_rebalancing_module_config</span><span class="p">:</span> <span class="n">HHRebalancingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">HHRebalancingModuleConfig</span><span class="p">)</span>
-    <span class="n">kids_moving_module_config</span><span class="p">:</span> <span class="n">KidsMovingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="n">KidsMovingModuleConfig</span><span class="p">)</span>
-    
+    <span class="n">hh_rebalancing_module_config</span><span class="p">:</span> <span class="n">HHRebalancingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">HHRebalancingModuleConfig</span>
+    <span class="p">)</span>
+    <span class="n">kids_moving_module_config</span><span class="p">:</span> <span class="n">KidsMovingModuleConfig</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default_factory</span><span class="o">=</span><span class="n">KidsMovingModuleConfig</span>
+    <span class="p">)</span>
+
 <div class="viewcode-block" id="DEMOSConfig.model_post_init">
 <a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig.model_post_init">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/demos_output_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">forecast_year</span><span class="si">}</span><span class="s2">.h5&quot;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="si">}</span><span class="s2">/demos_output_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">forecast_year</span><span class="si">}</span><span class="s2">.h5&quot;</span>
+            <span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Output file set to default: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_tables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_tables</span> <span class="o">=</span> <span class="p">[]</span>
-            
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_empty_tables</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">initialize_empty_tables</span> <span class="o">=</span> <span class="p">[]</span>
-        
+
         <span class="c1"># Load all table datasources</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">:</span>
             <span class="n">t</span><span class="o">.</span><span class="n">load_into_orca</span><span class="p">()</span>
 
         <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">initialize_empty_tables</span><span class="p">:</span>
             <span class="n">orca</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">())</span>
-        
+
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">modules</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modules</span> <span class="o">=</span> <span class="p">[</span>
                 <span class="s2">&quot;aging&quot;</span><span class="p">,</span>
@@ -394,22 +417,28 @@
                 <span class="s2">&quot;birth_model&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;education_model&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;household_rebalancing&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;update_income&quot;</span>
+                <span class="s2">&quot;update_income&quot;</span><span class="p">,</span>
             <span class="p">]</span></div>
 
-        
 
-    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s1">&#39;after&#39;</span><span class="p">)</span>
+    <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">require_persons_and_households</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">loaded_table_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">table_name</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">tables</span><span class="p">]</span>
-        <span class="k">if</span> <span class="s2">&quot;persons&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_table_names</span> <span class="ow">or</span> <span class="s2">&quot;households&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_table_names</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Both &#39;persons&#39; and &#39;households&#39; tables are required. Tables defined: </span><span class="si">{</span><span class="n">loaded_table_names</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span>
+            <span class="s2">&quot;persons&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_table_names</span>
+            <span class="ow">or</span> <span class="s2">&quot;households&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">loaded_table_names</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Both &#39;persons&#39; and &#39;households&#39; tables are required. Tables defined: </span><span class="si">{</span><span class="n">loaded_table_names</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
+
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">load_config_file</span><span class="p">(</span><span class="nb">dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DEMOSConfig</span><span class="p">:</span>
     <span class="k">global</span> <span class="n">CONFIG</span>
     <span class="n">CONFIG</span> <span class="o">=</span> <span class="n">DEMOSConfig</span><span class="p">(</span><span class="o">**</span><span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">dir</span><span class="p">))</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">get_config</span><span class="p">():</span>
     <span class="k">global</span> <span class="n">CONFIG</span>

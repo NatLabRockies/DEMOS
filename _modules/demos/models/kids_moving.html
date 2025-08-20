@@ -262,6 +262,7 @@
     <span class="s2">&quot;persons.relate&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 
+
 <div class="viewcode-block" id="kids_moving">
 <a class="viewcode-back" href="../../../api/kids_move_module.html#demos.models.kids_moving.kids_moving">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">STEP_NAME</span><span class="p">)</span>
@@ -293,6 +294,7 @@
     <span class="n">log_execution_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;kids_moving&quot;</span><span class="p">)</span></div>
 
 
+
 <span class="k">def</span><span class="w"> </span><span class="nf">update_households_after_kids</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">kids_moving</span><span class="p">,</span> <span class="n">get_new_households</span><span class="p">):</span>
     <span class="c1"># Load module config</span>
     <span class="n">demos_config</span><span class="p">:</span> <span class="n">DEMOSConfig</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
@@ -304,26 +306,43 @@
     <span class="c1">## Condition 3: Households with some people staying</span>
 
     <span class="n">household_sizes</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-    <span class="n">person_household_size_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">household_sizes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">person_household_size_index</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">household_sizes</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]]</span> <span class="o">&gt;</span> <span class="mi">1</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">values</span>
 
     <span class="c1">## Compute kids moving per household</span>
-    <span class="n">kids_moving_per_household</span> <span class="o">=</span> <span class="n">kids_moving</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="n">kids_moving_per_household</span> <span class="o">=</span> <span class="n">kids_moving</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="c1">### This re-index speeds up querying by a lot</span>
-    <span class="n">kids_moving_per_household</span> <span class="o">=</span> <span class="n">kids_moving_per_household</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-    
+    <span class="n">kids_moving_per_household</span> <span class="o">=</span> <span class="n">kids_moving_per_household</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span>
+        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
     <span class="c1">### Household-level filter for condition 3</span>
-    <span class="n">household_completely_moving_index</span> <span class="o">=</span> <span class="n">kids_moving_per_household</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">household_sizes</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="n">household_sizes</span>
-    <span class="n">person_completely_moving_index</span> <span class="o">=</span> <span class="n">household_completely_moving_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]]</span>
+    <span class="n">household_completely_moving_index</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">kids_moving_per_household</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">household_sizes</span><span class="o">.</span><span class="n">index</span><span class="p">]</span> <span class="o">==</span> <span class="n">household_sizes</span>
+    <span class="p">)</span>
+    <span class="n">person_completely_moving_index</span> <span class="o">=</span> <span class="n">household_completely_moving_index</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span>
+    <span class="p">]</span>
 
     <span class="c1">### Combine both household conditions to know which kids we need to move</span>
-    <span class="n">eligeble_households_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">person_household_size_index</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">person_completely_moving_index</span><span class="p">)</span><span class="o">.</span><span class="n">values</span>
-    
+    <span class="n">eligeble_households_index</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">person_household_size_index</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">person_completely_moving_index</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">values</span>
+
     <span class="c1"># Finally combine all filters into one</span>
-    <span class="n">kids_moving_index</span> <span class="o">=</span> <span class="n">kids_moving</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">eligeble_households_index</span>
+    <span class="n">kids_moving_index</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">kids_moving</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">eligeble_households_index</span>
+    <span class="p">)</span>
 
     <span class="c1"># Get the old household_id for the moving kids to retrieve the county_id</span>
     <span class="n">old_household_id</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
     <span class="n">new_households</span> <span class="o">=</span> <span class="n">get_new_households</span><span class="p">(</span><span class="n">kids_moving_index</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_households</span>

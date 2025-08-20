@@ -263,11 +263,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">templates.calibration.procedures</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimultaneousCalibrationConfig</span>
 
 <span class="n">STEP_NAME</span> <span class="o">=</span> <span class="s2">&quot;household_reorg&quot;</span>
-<span class="n">REQUIRED_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;persons.age&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;persons.MAR&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;persons.relate&quot;</span>
-<span class="p">]</span>
+<span class="n">REQUIRED_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;persons.age&quot;</span><span class="p">,</span> <span class="s2">&quot;persons.MAR&quot;</span><span class="p">,</span> <span class="s2">&quot;persons.relate&quot;</span><span class="p">]</span>
+
 
 <div class="viewcode-block" id="household_reorg">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.household_reorg">[docs]</a>
@@ -308,49 +305,71 @@
 
     <span class="c1"># Marriage Model</span>
     <span class="n">single_noncohab_index</span> <span class="o">=</span> <span class="o">~</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;cohabitate&quot;</span><span class="p">]</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;is_not_married&quot;</span><span class="p">]</span>
-    <span class="n">marriage_model_data</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">marriage_model</span><span class="o">.</span><span class="n">variable_names</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">single_noncohab_index</span><span class="p">]</span>
+    <span class="n">marriage_model_data</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">marriage_model</span><span class="o">.</span><span class="n">variable_names</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">single_noncohab_index</span>
+    <span class="p">]</span>
 
     <span class="c1"># Divorce model</span>
-    <span class="n">married_household_sizes</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span>\
-        <span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span> \
-        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
-    <span class="n">married_households_living_together</span> <span class="o">=</span> <span class="n">married_household_sizes</span><span class="p">[</span><span class="n">married_household_sizes</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="n">married_household_sizes</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])]</span>
+        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">size</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">married_households_living_together</span> <span class="o">=</span> <span class="n">married_household_sizes</span><span class="p">[</span>
+        <span class="n">married_household_sizes</span> <span class="o">==</span> <span class="mi">2</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="n">divorce_model_variables</span> <span class="o">=</span> <span class="n">columns_in_formula</span><span class="p">(</span><span class="n">divorce_model</span><span class="o">.</span><span class="n">model_expression</span><span class="p">)</span>
-    <span class="n">divorce_model_data</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">divorce_model_variables</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">married_households_living_together</span><span class="p">]</span>
-    
-    <span class="c1"># Cohabitation to X Model</span>
-    <span class="n">ELIGIBLE_HOUSEHOLDS</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)</span> <span class="o">&amp;</span>
-                                        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;is_not_married&quot;</span><span class="p">]][</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    
-    <span class="n">cohabitation_model_data</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">cohabitation_model</span><span class="o">.</span><span class="n">variable_names</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ELIGIBLE_HOUSEHOLDS</span><span class="p">]</span>
+    <span class="n">divorce_model_data</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">divorce_model_variables</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">married_households_living_together</span>
+    <span class="p">]</span>
 
+    <span class="c1"># Cohabitation to X Model</span>
+    <span class="n">ELIGIBLE_HOUSEHOLDS</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;is_not_married&quot;</span><span class="p">]][</span>
+            <span class="s2">&quot;household_id&quot;</span>
+        <span class="p">]</span>
+        <span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">cohabitation_model_data</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span>
+        <span class="n">cohabitation_model</span><span class="o">.</span><span class="n">variable_names</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ELIGIBLE_HOUSEHOLDS</span><span class="p">]</span>
 
     <span class="c1"># Load calibration config</span>
     <span class="n">demos_config</span><span class="p">:</span> <span class="n">DEMOSConfig</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
-    <span class="n">sim_cal_config</span><span class="p">:</span> <span class="n">SimultaneousCalibrationConfig</span> <span class="o">=</span> <span class="n">demos_config</span><span class="o">.</span><span class="n">hh_reorg_module_config</span><span class="o">.</span><span class="n">simultaneous_calibration_config</span>
-    
+    <span class="n">sim_cal_config</span><span class="p">:</span> <span class="n">SimultaneousCalibrationConfig</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">demos_config</span><span class="o">.</span><span class="n">hh_reorg_module_config</span><span class="o">.</span><span class="n">simultaneous_calibration_config</span>
+    <span class="p">)</span>
+
     <span class="c1"># Calibrate if necessary</span>
     <span class="k">if</span> <span class="n">sim_cal_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">simultaneous_calibration</span><span class="p">(</span><span class="n">sim_cal_config</span><span class="p">,</span>
-                                 <span class="n">persons</span><span class="p">,</span>
-                                 <span class="n">marriage_model</span><span class="p">,</span>
-                                 <span class="n">cohabitation_model</span><span class="p">,</span>
-                                 <span class="n">divorce_model</span><span class="p">,</span>
-                                 <span class="n">marriage_model_data</span><span class="p">,</span>
-                                 <span class="n">cohabitation_model_data</span><span class="p">,</span>
-                                 <span class="n">divorce_model_data</span><span class="p">)</span>
+        <span class="n">simultaneous_calibration</span><span class="p">(</span>
+            <span class="n">sim_cal_config</span><span class="p">,</span>
+            <span class="n">persons</span><span class="p">,</span>
+            <span class="n">marriage_model</span><span class="p">,</span>
+            <span class="n">cohabitation_model</span><span class="p">,</span>
+            <span class="n">divorce_model</span><span class="p">,</span>
+            <span class="n">marriage_model_data</span><span class="p">,</span>
+            <span class="n">cohabitation_model_data</span><span class="p">,</span>
+            <span class="n">divorce_model_data</span><span class="p">,</span>
+        <span class="p">)</span>
 
     <span class="c1"># Execute all the models</span>
-    <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">run_models</span><span class="p">(</span><span class="n">marriage_model</span><span class="p">,</span>
-                                                                <span class="n">cohabitation_model</span><span class="p">,</span>
-                                                                <span class="n">divorce_model</span><span class="p">,</span>
-                                                                <span class="n">marriage_model_data</span><span class="p">,</span>
-                                                                <span class="n">cohabitation_model_data</span><span class="p">,</span>
-                                                                <span class="n">divorce_model_data</span><span class="p">)</span>
+    <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">run_models</span><span class="p">(</span>
+        <span class="n">marriage_model</span><span class="p">,</span>
+        <span class="n">cohabitation_model</span><span class="p">,</span>
+        <span class="n">divorce_model</span><span class="p">,</span>
+        <span class="n">marriage_model_data</span><span class="p">,</span>
+        <span class="n">cohabitation_model_data</span><span class="p">,</span>
+        <span class="n">divorce_model_data</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Check number marriages before and after applying the model</span>
     <span class="n">print_marital_count</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">)</span>
-    <span class="n">n_married_after</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span> <span class="o">=</span> <span class="n">compute_expected_marital_status</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">)</span>
+    <span class="n">n_married_after</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span> <span class="o">=</span> <span class="n">compute_expected_marital_status</span><span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span>
+    <span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Predicted Marital status after applying models&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted MAR == 1: </span><span class="si">{</span><span class="n">n_married_after</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted MAR == 3: [</span><span class="si">{</span><span class="n">min_div</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">max_div</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
@@ -358,11 +377,15 @@
     <span class="c1">######### UPDATING</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Restructuring households:&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Cohabitations..&quot;</span><span class="p">)</span>
-    <span class="n">update_cohabitating_households</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">get_new_households</span><span class="p">)</span>
+    <span class="n">update_cohabitating_households</span><span class="p">(</span>
+        <span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">get_new_households</span>
+    <span class="p">)</span>
     <span class="n">print_household_stats</span><span class="p">()</span>
-    
+
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Marriages..&quot;</span><span class="p">)</span>
-    <span class="n">update_married_households_random</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">get_new_households</span><span class="p">)</span>
+    <span class="n">update_married_households_random</span><span class="p">(</span>
+        <span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">get_new_households</span>
+    <span class="p">)</span>
     <span class="n">print_household_stats</span><span class="p">()</span>
     <span class="n">fix_erroneous_households</span><span class="p">(</span><span class="n">persons</span><span class="p">)</span>
     <span class="n">print_household_stats</span><span class="p">()</span>
@@ -374,6 +397,7 @@
     <span class="n">households</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">unique</span><span class="p">()))</span>
     <span class="n">print_marital_count</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">)</span>
     <span class="n">log_execution_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;household_reorg&quot;</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="get_new_households">
@@ -405,16 +429,19 @@
     <span class="n">graveyard</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;graveyard&quot;</span><span class="p">)</span>
     <span class="n">rebalanced_persons</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;rebalanced_persons&quot;</span><span class="p">)</span>
 
-    <span class="n">current_max</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">graveyard</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">rebalanced_persons</span><span class="o">.</span><span class="n">local</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    <span class="n">current_max</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">graveyard</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">rebalanced_persons</span><span class="o">.</span><span class="n">local</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
     <span class="n">new_hh_ids</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>    <span class="c1"># = [0, 1, 2 ...] up to the number of households</span>
-        <span class="o">+</span> <span class="n">current_max</span>   <span class="c1"># = [max_hh_id, max_household_id + 1, ...]</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>  <span class="c1"># = [0, 1, 2 ...] up to the number of households</span>
+        <span class="o">+</span> <span class="n">current_max</span>  <span class="c1"># = [max_hh_id, max_household_id + 1, ...]</span>
         <span class="o">+</span> <span class="mi">1</span>
     <span class="p">)</span>
     <span class="c1"># TODO: Change how we add empty rows to the households table</span>
     <span class="n">households</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
     <span class="n">households</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">households</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">union</span><span class="p">(</span><span class="n">new_hh_ids</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">new_hh_ids</span> </div>
+    <span class="k">return</span> <span class="n">new_hh_ids</span></div>
+
 
 
 <div class="viewcode-block" id="persons_grouped_household">
@@ -441,6 +468,7 @@
     <span class="k">return</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="cohabitate">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.cohabitate">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;persons&quot;</span><span class="p">,</span> <span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_scope</span><span class="o">=</span><span class="s2">&quot;step&quot;</span><span class="p">)</span>
@@ -451,8 +479,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">unmarried_partner_index</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span>
     <span class="n">cohab_household_ids</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">unmarried_partner_index</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">unmarried_partner_index</span> <span class="o">|</span> \
-            <span class="p">((</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">cohab_household_ids</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="n">unmarried_partner_index</span> <span class="o">|</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">cohab_household_ids</span><span class="p">)</span>
+    <span class="p">)</span></div>
 
 
 
@@ -522,6 +551,7 @@
     <span class="k">return</span> <span class="p">(</span><span class="n">agg_df</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="hh_race_of_head">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_race_of_head">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
@@ -529,12 +559,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Maps `households.hh_race_id_of_head`, which is a numeric value, into &#39;white&#39;, &#39;black&#39;, &#39;asian&#39; or other</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">({</span>
-        <span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span>
-        <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
-        <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;asian&quot;</span><span class="p">,</span>
-        <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;asian&quot;</span>
-    <span class="p">})</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;other&quot;</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;asian&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;asian&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;other&quot;</span><span class="p">)</span></div>
 
 
 
@@ -543,8 +568,7 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hh_race_id_of_head</span><span class="p">(</span><span class="n">persons_grouped_household</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-    <span class="n">agg_df</span> <span class="o">=</span> <span class="n">persons_grouped_household</span>\
-        <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">race_of_head</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;race_head&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">))</span>
+    <span class="n">agg_df</span> <span class="o">=</span> <span class="n">persons_grouped_household</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">race_of_head</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;race_head&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">agg_df</span><span class="p">[</span><span class="s2">&quot;race_of_head&quot;</span><span class="p">]</span></div>
 
 
@@ -560,7 +584,16 @@
 
 <div class="viewcode-block" id="simultaneous_calibration">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.simultaneous_calibration">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">simultaneous_calibration</span><span class="p">(</span><span class="n">sim_cal_config</span><span class="p">,</span> <span class="n">persons</span><span class="p">,</span> <span class="n">marriage_model</span><span class="p">,</span> <span class="n">cohab_model</span><span class="p">,</span> <span class="n">divorce_model</span><span class="p">,</span> <span class="n">marriage_data</span><span class="p">,</span> <span class="n">cohab_data</span><span class="p">,</span> <span class="n">divorce_data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">simultaneous_calibration</span><span class="p">(</span>
+    <span class="n">sim_cal_config</span><span class="p">,</span>
+    <span class="n">persons</span><span class="p">,</span>
+    <span class="n">marriage_model</span><span class="p">,</span>
+    <span class="n">cohab_model</span><span class="p">,</span>
+    <span class="n">divorce_model</span><span class="p">,</span>
+    <span class="n">marriage_data</span><span class="p">,</span>
+    <span class="n">cohab_data</span><span class="p">,</span>
+    <span class="n">divorce_data</span><span class="p">,</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Perform simultaneous calibration of marriage, divorce, and cohabitation models.</span>
 
@@ -598,35 +631,51 @@
 
     <span class="c1"># Load observed data</span>
     <span class="n">observed_marrital</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;observed_marrital_data&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
-    <span class="n">target_data</span> <span class="o">=</span> <span class="n">observed_marrital</span><span class="p">[</span><span class="n">observed_marrital</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)]</span>
-    <span class="n">target_married_count</span>  <span class="o">=</span> <span class="n">target_data</span><span class="p">[(</span><span class="n">target_data</span><span class="p">[</span><span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">target_data</span> <span class="o">=</span> <span class="n">observed_marrital</span><span class="p">[</span>
+        <span class="n">observed_marrital</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span>
+    <span class="p">]</span>
+    <span class="n">target_married_count</span> <span class="o">=</span> <span class="n">target_data</span><span class="p">[(</span><span class="n">target_data</span><span class="p">[</span><span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)][</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">target_divorced_count</span> <span class="o">=</span> <span class="n">target_data</span><span class="p">[(</span><span class="n">target_data</span><span class="p">[</span><span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)][</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">married_weight</span> <span class="o">=</span> <span class="n">target_married_count</span> <span class="o">/</span> <span class="p">(</span><span class="n">target_married_count</span> <span class="o">+</span> <span class="n">target_divorced_count</span><span class="p">)</span>
-    <span class="n">divorce_weight</span> <span class="o">=</span> <span class="n">target_divorced_count</span> <span class="o">/</span> <span class="p">(</span><span class="n">target_married_count</span> <span class="o">+</span> <span class="n">target_divorced_count</span><span class="p">)</span>
+    <span class="n">married_weight</span> <span class="o">=</span> <span class="n">target_married_count</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">target_married_count</span> <span class="o">+</span> <span class="n">target_divorced_count</span>
+    <span class="p">)</span>
+    <span class="n">divorce_weight</span> <span class="o">=</span> <span class="n">target_divorced_count</span> <span class="o">/</span> <span class="p">(</span>
+        <span class="n">target_married_count</span> <span class="o">+</span> <span class="n">target_divorced_count</span>
+    <span class="p">)</span>
 
     <span class="c1"># Execute all the models</span>
-    <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">run_models</span><span class="p">(</span><span class="n">marriage_model</span><span class="p">,</span>
-                                                                <span class="n">cohab_model</span><span class="p">,</span>
-                                                                <span class="n">divorce_model</span><span class="p">,</span>
-                                                                <span class="n">marriage_data</span><span class="p">,</span>
-                                                                <span class="n">cohab_data</span><span class="p">,</span>
-                                                                <span class="n">divorce_data</span><span class="p">)</span>
+    <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">run_models</span><span class="p">(</span>
+        <span class="n">marriage_model</span><span class="p">,</span>
+        <span class="n">cohab_model</span><span class="p">,</span>
+        <span class="n">divorce_model</span><span class="p">,</span>
+        <span class="n">marriage_data</span><span class="p">,</span>
+        <span class="n">cohab_data</span><span class="p">,</span>
+        <span class="n">divorce_data</span><span class="p">,</span>
+    <span class="p">)</span>
 
-    <span class="n">n_married</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span> <span class="o">=</span> <span class="n">compute_expected_marital_status</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">)</span>
+    <span class="n">n_married</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span> <span class="o">=</span> <span class="n">compute_expected_marital_status</span><span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span>
+    <span class="p">)</span>
     <span class="n">n_divorced</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_div</span> <span class="o">-</span> <span class="n">min_div</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">min_div</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Predicted Marital status after applying models BEFORE CALIBRATION&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted MAR == 1: </span><span class="si">{</span><span class="n">n_married</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Predicted MAR == 3: [</span><span class="si">{</span><span class="n">min_div</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">max_div</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
 
-    <span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span><span class="p">,</span>
-                                            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                                                <span class="p">[[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;married&quot;</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">n_married</span><span class="p">],</span>
-                                                 <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_min&quot;</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">min_div</span><span class="p">],</span>
-                                                 <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_max&quot;</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">max_div</span><span class="p">]],</span>
-                                                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">]</span>
-                                                <span class="p">),</span>
-                                            <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span><span class="p">,</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;married&quot;</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">n_married</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_min&quot;</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">min_div</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_max&quot;</span><span class="p">,</span> <span class="s2">&quot;before&quot;</span><span class="p">,</span> <span class="n">max_div</span><span class="p">],</span>
+                <span class="p">],</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="c1"># Initialize optimization algorithm</span>
     <span class="n">married_gradient</span> <span class="o">=</span> <span class="mi">0</span>
@@ -634,44 +683,81 @@
     <span class="n">cohabitation_gradient</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">momentum_weight</span> <span class="o">=</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">momentum_weight</span>
     <span class="n">total_iterations</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">n_married</span><span class="p">,</span> <span class="n">n_divorced</span><span class="p">,</span> <span class="n">target_married_count</span><span class="p">,</span> <span class="n">target_divorced_count</span><span class="p">)</span>
-    <span class="k">while</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">tolerance</span> <span class="ow">and</span> <span class="n">total_iterations</span> <span class="o">&lt;</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">max_iter</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simultaneous Calibration: Iteration </span><span class="si">{</span><span class="n">total_iterations</span><span class="si">}</span><span class="s2"> error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lr</span> <span class="o">=</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="p">((</span><span class="n">sim_cal_config</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="n">total_iterations</span><span class="p">)</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">max_iter</span>
-        
+    <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span>
+        <span class="n">n_married</span><span class="p">,</span> <span class="n">n_divorced</span><span class="p">,</span> <span class="n">target_married_count</span><span class="p">,</span> <span class="n">target_divorced_count</span>
+    <span class="p">)</span>
+    <span class="k">while</span> <span class="p">(</span>
+        <span class="n">error</span> <span class="o">&gt;</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">tolerance</span> <span class="ow">and</span> <span class="n">total_iterations</span> <span class="o">&lt;</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">max_iter</span>
+    <span class="p">):</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Simultaneous Calibration: Iteration </span><span class="si">{</span><span class="n">total_iterations</span><span class="si">}</span><span class="s2"> error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">learning_rate</span>
+            <span class="o">*</span> <span class="p">((</span><span class="n">sim_cal_config</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="n">total_iterations</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="o">/</span> <span class="n">sim_cal_config</span><span class="o">.</span><span class="n">max_iter</span>
+        <span class="p">)</span>
+
         <span class="c1"># Calculate updates with momentum</span>
         <span class="c1">## TODO: Cohabitation gradient could be weighted according to the contribution of cohabitation models to marriages</span>
-        <span class="n">divorce_gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">divorce_gradient</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span> <span class="o">*</span> <span class="n">divorce_weight</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">target_divorced_count</span> <span class="o">/</span> <span class="n">n_divorced</span><span class="p">))</span>
-        <span class="n">married_gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">married_gradient</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span> <span class="o">*</span>  <span class="n">married_weight</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">target_married_count</span> <span class="o">/</span> <span class="n">n_married</span><span class="p">))</span>
-        <span class="n">cohabitation_gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">cohabitation_gradient</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span> <span class="o">*</span>  <span class="n">married_weight</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">target_married_count</span> <span class="o">/</span> <span class="n">n_married</span><span class="p">))</span>
-        
-         <span class="c1"># Apply updates</span>
+        <span class="n">divorce_gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">divorce_gradient</span>
+            <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">divorce_weight</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">target_divorced_count</span> <span class="o">/</span> <span class="n">n_divorced</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">married_gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">married_gradient</span>
+            <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">married_weight</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">target_married_count</span> <span class="o">/</span> <span class="n">n_married</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">cohabitation_gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">cohabitation_gradient</span>
+            <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span>
+            <span class="o">*</span> <span class="n">married_weight</span>
+            <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">target_married_count</span> <span class="o">/</span> <span class="n">n_married</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Apply updates</span>
         <span class="n">divorce_model</span><span class="o">.</span><span class="n">fitted_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">divorce_gradient</span>
-        <span class="n">marriage_model</span><span class="o">.</span><span class="n">coeffs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;married&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">married_gradient</span>
-        <span class="n">cohab_model</span><span class="o">.</span><span class="n">coeffs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;marriage&#39;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cohabitation_gradient</span>
+        <span class="n">marriage_model</span><span class="o">.</span><span class="n">coeffs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;married&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">married_gradient</span>
+        <span class="n">cohab_model</span><span class="o">.</span><span class="n">coeffs</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;marriage&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">cohabitation_gradient</span>
 
         <span class="c1"># Re-run models</span>
-        <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">run_models</span><span class="p">(</span><span class="n">marriage_model</span><span class="p">,</span>
-                                                                <span class="n">cohab_model</span><span class="p">,</span>
-                                                                <span class="n">divorce_model</span><span class="p">,</span>
-                                                                <span class="n">marriage_data</span><span class="p">,</span>
-                                                                <span class="n">cohab_data</span><span class="p">,</span>
-                                                                <span class="n">divorce_data</span><span class="p">)</span>
+        <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">run_models</span><span class="p">(</span>
+            <span class="n">marriage_model</span><span class="p">,</span>
+            <span class="n">cohab_model</span><span class="p">,</span>
+            <span class="n">divorce_model</span><span class="p">,</span>
+            <span class="n">marriage_data</span><span class="p">,</span>
+            <span class="n">cohab_data</span><span class="p">,</span>
+            <span class="n">divorce_data</span><span class="p">,</span>
+        <span class="p">)</span>
 
-        <span class="n">n_married</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span> <span class="o">=</span> <span class="n">compute_expected_marital_status</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">)</span>
+        <span class="n">n_married</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span> <span class="o">=</span> <span class="n">compute_expected_marital_status</span><span class="p">(</span>
+            <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span>
+        <span class="p">)</span>
         <span class="n">n_divorced</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_div</span> <span class="o">-</span> <span class="n">min_div</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">min_div</span>
-    
-        <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span><span class="n">n_married</span><span class="p">,</span> <span class="n">n_divorced</span><span class="p">,</span> <span class="n">target_married_count</span><span class="p">,</span> <span class="n">target_divorced_count</span><span class="p">)</span>
+
+        <span class="n">error</span> <span class="o">=</span> <span class="n">compute_error</span><span class="p">(</span>
+            <span class="n">n_married</span><span class="p">,</span> <span class="n">n_divorced</span><span class="p">,</span> <span class="n">target_married_count</span><span class="p">,</span> <span class="n">target_divorced_count</span>
+        <span class="p">)</span>
         <span class="n">total_iterations</span> <span class="o">+=</span> <span class="mi">1</span>
-    
-    <span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span><span class="p">,</span>
-                                        <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                                            <span class="p">[[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;married&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="n">n_married</span><span class="p">],</span>
-                                             <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_min&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="n">min_div</span><span class="p">],</span>
-                                             <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_max&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="n">max_div</span><span class="p">]],</span>
-                                            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">]</span>
-                                            <span class="p">),</span>
-                                        <span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">marital_status_table</span><span class="o">.</span><span class="n">local</span><span class="p">,</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;married&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="n">n_married</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_min&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="n">min_div</span><span class="p">],</span>
+                    <span class="p">[</span><span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;divorced_max&quot;</span><span class="p">,</span> <span class="s2">&quot;after&quot;</span><span class="p">,</span> <span class="n">max_div</span><span class="p">],</span>
+                <span class="p">],</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;year&quot;</span><span class="p">,</span> <span class="s2">&quot;metric&quot;</span><span class="p">,</span> <span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">],</span>
+            <span class="p">),</span>
+        <span class="p">],</span>
+        <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">)</span>
 
     <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final error after Simultaneous calibration: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -679,7 +765,9 @@
 
 <div class="viewcode-block" id="run_models">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.run_models">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">run_models</span><span class="p">(</span><span class="n">marriage_model</span><span class="p">,</span> <span class="n">cohab_model</span><span class="p">,</span> <span class="n">divorce_model</span><span class="p">,</span> <span class="n">marriage_data</span><span class="p">,</span> <span class="n">cohab_data</span><span class="p">,</span> <span class="n">divorce_data</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_models</span><span class="p">(</span>
+    <span class="n">marriage_model</span><span class="p">,</span> <span class="n">cohab_model</span><span class="p">,</span> <span class="n">divorce_model</span><span class="p">,</span> <span class="n">marriage_data</span><span class="p">,</span> <span class="n">cohab_data</span><span class="p">,</span> <span class="n">divorce_data</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run all three estimated models and return their outputs.</span>
 
@@ -704,6 +792,7 @@
     <span class="k">return</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">,</span> <span class="n">cohabitate_x_list</span></div>
 
 
+
 <div class="viewcode-block" id="print_marital_count">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.print_marital_count">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_marital_count</span><span class="p">(</span><span class="n">persons_df</span><span class="p">):</span>
@@ -723,9 +812,12 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of people with MAR=</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
 
+
 <div class="viewcode-block" id="compute_expected_marital_status">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.compute_expected_marital_status">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">compute_expected_marital_status</span><span class="p">(</span><span class="n">persons_df</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">compute_expected_marital_status</span><span class="p">(</span>
+    <span class="n">persons_df</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the expected number of married and divorced persons after applying model outputs.</span>
 
@@ -753,9 +845,9 @@
 <span class="sd">    - Used for calibration and reporting.</span>
 <span class="sd">    - Logic is based on current and predicted statuses.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">starting_married</span> <span class="o">=</span> <span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">starting_married</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">1</span>
     <span class="n">starting_n_married</span> <span class="o">=</span> <span class="n">starting_married</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">starting_divorced</span> <span class="o">=</span> <span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
+    <span class="n">starting_divorced</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="n">starting_n_divorced</span> <span class="o">=</span> <span class="n">starting_divorced</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">starting_head_idx</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">0</span>
     <span class="n">starting_partner_idx</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">13</span>
@@ -763,41 +855,64 @@
 
     <span class="c1"># Cohabitations computations</span>
     <span class="n">cohabitate_marriages</span> <span class="o">=</span> <span class="n">cohabitate_x_list</span> <span class="o">==</span> <span class="mi">2</span>
-    <span class="n">cohabitate_marriage_people</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">cohabitate_marriages</span><span class="p">[</span><span class="n">cohabitate_marriages</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">())</span>
+    <span class="n">cohabitate_marriage_people</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+        <span class="n">cohabitate_marriages</span><span class="p">[</span><span class="n">cohabitate_marriages</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+    <span class="p">)</span>
 
     <span class="c1"># New married households * 2 (head and spouse)</span>
     <span class="n">cohabitation_model_new_married_people</span> <span class="o">=</span> <span class="p">(</span><span class="n">cohabitate_x_list</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span>
-    <span class="n">cohabitation_model_less_divorced</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">cohabitate_marriage_people</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">starting_head_idx</span> <span class="o">|</span> <span class="n">starting_partner_idx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">starting_divorced</span><span class="p">)])</span>
+    <span class="n">cohabitation_model_less_divorced</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span>
+        <span class="n">persons_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">cohabitate_marriage_people</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">starting_head_idx</span> <span class="o">|</span> <span class="n">starting_partner_idx</span><span class="p">)</span>
+            <span class="o">&amp;</span> <span class="p">(</span><span class="n">starting_divorced</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
 
     <span class="c1"># Marriage computations</span>
     <span class="n">male_filter</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">person_sex</span> <span class="o">==</span> <span class="s2">&quot;male&quot;</span>
     <span class="n">female_filter</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">person_sex</span> <span class="o">==</span> <span class="s2">&quot;female&quot;</span>
     <span class="n">marriage_reindexed</span> <span class="o">=</span> <span class="n">marriage_list</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span>
-    
+
     <span class="n">male_wed</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">marriage_reindexed</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">male_filter</span><span class="p">)]</span>
     <span class="n">female_wed</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[(</span><span class="n">marriage_reindexed</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">female_filter</span><span class="p">)]</span>
     <span class="n">n_wed</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">male_wed</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">female_wed</span><span class="p">)])</span>
-    
+
     <span class="n">n_male_div</span> <span class="o">=</span> <span class="p">(</span><span class="n">male_wed</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">min_male_div_to_married</span> <span class="o">=</span> <span class="n">n_male_div</span> <span class="o">-</span> <span class="nb">min</span><span class="p">([(</span><span class="nb">len</span><span class="p">(</span><span class="n">male_wed</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_wed</span><span class="p">),</span> <span class="n">n_male_div</span><span class="p">])</span>
-    <span class="n">max_male_div_to_married</span> <span class="o">=</span> <span class="n">n_male_div</span> <span class="o">-</span> <span class="nb">max</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_male_div</span> <span class="o">-</span>  <span class="n">n_wed</span><span class="p">])</span>
+    <span class="n">max_male_div_to_married</span> <span class="o">=</span> <span class="n">n_male_div</span> <span class="o">-</span> <span class="nb">max</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_male_div</span> <span class="o">-</span> <span class="n">n_wed</span><span class="p">])</span>
 
     <span class="n">n_female_div</span> <span class="o">=</span> <span class="p">(</span><span class="n">female_wed</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">min_female_div_to_married</span> <span class="o">=</span> <span class="n">n_female_div</span> <span class="o">-</span> <span class="nb">min</span><span class="p">([(</span><span class="nb">len</span><span class="p">(</span><span class="n">female_wed</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_wed</span><span class="p">),</span> <span class="n">n_female_div</span><span class="p">])</span>
+    <span class="n">min_female_div_to_married</span> <span class="o">=</span> <span class="n">n_female_div</span> <span class="o">-</span> <span class="nb">min</span><span class="p">(</span>
+        <span class="p">[(</span><span class="nb">len</span><span class="p">(</span><span class="n">female_wed</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_wed</span><span class="p">),</span> <span class="n">n_female_div</span><span class="p">]</span>
+    <span class="p">)</span>
     <span class="n">max_female_div_to_married</span> <span class="o">=</span> <span class="n">n_female_div</span> <span class="o">-</span> <span class="nb">max</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_female_div</span> <span class="o">-</span> <span class="n">n_wed</span><span class="p">])</span>
-    
+
     <span class="n">max_div_to_married</span> <span class="o">=</span> <span class="n">max_male_div_to_married</span> <span class="o">+</span> <span class="n">max_female_div_to_married</span>
     <span class="n">min_div_to_married</span> <span class="o">=</span> <span class="n">min_male_div_to_married</span> <span class="o">+</span> <span class="n">min_female_div_to_married</span>
 
     <span class="c1"># Divorce computation</span>
     <span class="n">divorced_household_ids</span> <span class="o">=</span> <span class="n">divorce_list</span><span class="p">[</span><span class="n">divorce_list</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)]</span><span class="o">.</span><span class="n">index</span>
-    <span class="n">person_in_divorced_household_index</span> <span class="o">=</span> <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">divorced_household_ids</span><span class="p">)</span>
-    <span class="n">head_and_spose_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">starting_head_idx</span> <span class="o">|</span> <span class="n">starting_spouse_idx</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">starting_married</span> <span class="o">&amp;</span> <span class="n">person_in_divorced_household_index</span>
+    <span class="n">person_in_divorced_household_index</span> <span class="o">=</span> <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+        <span class="n">divorced_household_ids</span>
+    <span class="p">)</span>
+    <span class="n">head_and_spose_index</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="p">(</span><span class="n">starting_head_idx</span> <span class="o">|</span> <span class="n">starting_spouse_idx</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="n">starting_married</span>
+        <span class="o">&amp;</span> <span class="n">person_in_divorced_household_index</span>
+    <span class="p">)</span>
     <span class="n">n_divorced</span> <span class="o">=</span> <span class="n">head_and_spose_index</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
-    <span class="n">div_after_cohabitation_and_divorce</span> <span class="o">=</span> <span class="n">starting_n_divorced</span> <span class="o">-</span> <span class="n">cohabitation_model_less_divorced</span> <span class="o">+</span> <span class="n">n_divorced</span>
+    <span class="n">div_after_cohabitation_and_divorce</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">starting_n_divorced</span> <span class="o">-</span> <span class="n">cohabitation_model_less_divorced</span> <span class="o">+</span> <span class="n">n_divorced</span>
+    <span class="p">)</span>
 
-    <span class="n">n_married_after</span> <span class="o">=</span> <span class="n">starting_n_married</span> <span class="o">+</span> <span class="n">cohabitation_model_new_married_people</span> <span class="o">+</span> <span class="n">n_wed</span><span class="o">*</span><span class="mi">2</span> <span class="o">-</span> <span class="n">n_divorced</span>
+    <span class="n">n_married_after</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">starting_n_married</span>
+        <span class="o">+</span> <span class="n">cohabitation_model_new_married_people</span>
+        <span class="o">+</span> <span class="n">n_wed</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="o">-</span> <span class="n">n_divorced</span>
+    <span class="p">)</span>
     <span class="n">min_div</span> <span class="o">=</span> <span class="n">div_after_cohabitation_and_divorce</span> <span class="o">-</span> <span class="n">max_div_to_married</span>
     <span class="n">max_div</span> <span class="o">=</span> <span class="n">div_after_cohabitation_and_divorce</span> <span class="o">-</span> <span class="n">min_div_to_married</span>
     <span class="k">return</span> <span class="n">n_married_after</span><span class="p">,</span> <span class="n">min_div</span><span class="p">,</span> <span class="n">max_div</span></div>
@@ -808,26 +923,47 @@
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.print_household_stats">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s2">&quot;print_household_stats&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_household_stats</span><span class="p">():</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households size from persons table: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s1">&#39;household_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households size from households table: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;households&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Persons Size: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing hh: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s1">&#39;household_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;households&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()))</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Households size from persons table: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s1">&#39;household_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Households size from households table: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;households&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Persons Size: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Missing hh: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s1">&#39;household_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nb">set</span><span class="p">(</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;households&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()))</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
     <span class="n">persons_df</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span>
-    <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate_0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate_13&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">13</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-    <span class="n">persons_df_sum</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">relate_1</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;relate_1&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span> <span class="n">relate_13</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;relate_13&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
-    <span class="n">relate_0</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;relate_0&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">))</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households with multiple 0: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_0&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households with multiple 1: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_1&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households with multiple 13: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_13&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households with 1 and 13: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_1&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_13&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+    <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate_0&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate_1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate_13&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">persons_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="n">persons_df_sum</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+        <span class="n">relate_1</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relate_1&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+        <span class="n">relate_13</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relate_13&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+        <span class="n">relate_0</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;relate_0&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Households with multiple 0: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_0&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Households with multiple 1: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_1&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Households with multiple 13: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_13&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Households with 1 and 13: </span><span class="si">{</span><span class="p">((</span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_1&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">persons_df_sum</span><span class="p">[</span><span class="s1">&#39;relate_13&#39;</span><span class="p">])</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="update_cohabitating_households">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.update_cohabitating_households">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">update_cohabitating_households</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">cohabitate_list</span><span class="p">,</span> <span class="n">get_new_households</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">update_cohabitating_households</span><span class="p">(</span>
+    <span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">cohabitate_list</span><span class="p">,</span> <span class="n">get_new_households</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Updating households and persons after cohabitation model.</span>
 
@@ -853,8 +989,13 @@
     <span class="n">head_index</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span>
 
     <span class="c1"># Perform update for people that got married</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">newly_married_persons_index</span> <span class="o">&amp;</span> <span class="n">unmarried_partner_index</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">,]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">newly_married_persons_index</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">head_index</span> <span class="o">|</span> <span class="n">unmarried_partner_index</span><span class="p">),</span> <span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">newly_married_persons_index</span> <span class="o">&amp;</span> <span class="n">unmarried_partner_index</span><span class="p">,</span>
+        <span class="s2">&quot;relate&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">newly_married_persons_index</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">head_index</span> <span class="o">|</span> <span class="n">unmarried_partner_index</span><span class="p">),</span> <span class="s2">&quot;MAR&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
 
     <span class="c1"># Perform update for people that broke up</span>
     <span class="n">leaving_person_index</span> <span class="o">=</span> <span class="n">newly_brokeup_persons_index</span> <span class="o">&amp;</span> <span class="n">unmarried_partner_index</span>
@@ -871,23 +1012,33 @@
 
     <span class="c1"># If geoid_col is set, we copy the geoid from old households to new ones</span>
     <span class="k">if</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-        <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">county_assignment</span></div>
+        <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span>
+        <span class="p">]</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">county_assignment</span>
+        <span class="p">)</span></div>
 
 
 
 <div class="viewcode-block" id="fix_erroneous_households">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.fix_erroneous_households">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fix_erroneous_households</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-    <span class="n">n_partners_df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)]</span> \
-        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> \
-        <span class="o">.</span><span class="n">nunique</span><span class="p">()</span> \
+    <span class="n">n_partners_df</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)]</span>
+        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">nunique</span><span class="p">()</span>
         <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-    <span class="n">households_to_drop</span> <span class="o">=</span> <span class="n">n_partners_df</span><span class="p">[</span><span class="n">n_partners_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">][</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">households_to_drop</span> <span class="o">=</span> <span class="n">n_partners_df</span><span class="p">[</span><span class="n">n_partners_df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">][</span>
+        <span class="s2">&quot;household_id&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">to_list</span><span class="p">()</span>
 
     <span class="c1"># Drop the households</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">households_to_drop</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-        <span class="n">persons</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="o">~</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">households_to_drop</span><span class="p">)]</span></div>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[</span>
+            <span class="o">~</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">households_to_drop</span><span class="p">)</span>
+        <span class="p">]</span></div>
 
 </pre></div>
         </article>

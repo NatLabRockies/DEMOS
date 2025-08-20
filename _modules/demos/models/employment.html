@@ -256,16 +256,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">templates.calibration</span><span class="w"> </span><span class="kn">import</span> <span class="n">CalibrationConfig</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging_logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_execution_time</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEMOSConfig</span><span class="p">,</span> <span class="n">EmploymentModuleConfig</span><span class="p">,</span> <span class="n">SimultaneousCalibrationConfig</span><span class="p">,</span> <span class="n">get_config</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DEMOSConfig</span><span class="p">,</span>
+    <span class="n">EmploymentModuleConfig</span><span class="p">,</span>
+    <span class="n">SimultaneousCalibrationConfig</span><span class="p">,</span>
+    <span class="n">get_config</span><span class="p">,</span>
+<span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">templates.utils.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">columns_in_formula</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">STEP_NAME</span> <span class="o">=</span> <span class="s2">&quot;employment&quot;</span>
-<span class="n">REQUIRED_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;persons.age&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;persons.worker&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;persons.earning&quot;</span>
-<span class="p">]</span>
+<span class="n">REQUIRED_COLUMNS</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;persons.age&quot;</span><span class="p">,</span> <span class="s2">&quot;persons.worker&quot;</span><span class="p">,</span> <span class="s2">&quot;persons.earning&quot;</span><span class="p">]</span>
+
 
 <div class="viewcode-block" id="employment">
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.employment">[docs]</a>
@@ -302,14 +304,24 @@
     <span class="n">module_config</span><span class="p">:</span> <span class="n">EmploymentModuleConfig</span> <span class="o">=</span> <span class="n">demos_config</span><span class="o">.</span><span class="n">employment_module_config</span>
 
     <span class="k">if</span> <span class="n">module_config</span><span class="o">.</span><span class="n">simultaneous_calibration_config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">stay_unemployed_list</span><span class="p">,</span> <span class="n">exit_workforce_list</span><span class="o">=</span> <span class="n">run_simultaenous_calibration</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">simultaneous_calibration_config</span><span class="p">)</span>
+        <span class="n">stay_unemployed_list</span><span class="p">,</span> <span class="n">exit_workforce_list</span> <span class="o">=</span> <span class="n">run_simultaenous_calibration</span><span class="p">(</span>
+            <span class="n">persons</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">simultaneous_calibration_config</span>
+        <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">stay_unemployed_list</span> <span class="o">=</span> <span class="n">run_and_calibrate_in_workforce_model</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">enter_model_calibration_procedure</span><span class="p">)</span>
-        <span class="n">exit_workforce_list</span> <span class="o">=</span> <span class="n">run_and_calibrate_out_workforce_model</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">exit_model_calibration_procedure</span><span class="p">)</span>
-    
+        <span class="n">stay_unemployed_list</span> <span class="o">=</span> <span class="n">run_and_calibrate_in_workforce_model</span><span class="p">(</span>
+            <span class="n">persons</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">enter_model_calibration_procedure</span>
+        <span class="p">)</span>
+        <span class="n">exit_workforce_list</span> <span class="o">=</span> <span class="n">run_and_calibrate_out_workforce_model</span><span class="p">(</span>
+            <span class="n">persons</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">exit_model_calibration_procedure</span>
+        <span class="p">)</span>
+
     <span class="c1"># Re-index to help querying below</span>
-    <span class="n">reindexed_remain_unemployed</span> <span class="o">=</span> <span class="n">stay_unemployed_list</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
-    <span class="n">reindexed_exit_workforce</span> <span class="o">=</span> <span class="n">exit_workforce_list</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">reindexed_remain_unemployed</span> <span class="o">=</span> <span class="n">stay_unemployed_list</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">reindexed_exit_workforce</span> <span class="o">=</span> <span class="n">exit_workforce_list</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span>
+        <span class="mi">2</span>
+    <span class="p">)</span>
 
     <span class="c1"># Trigger a cache for `income_dist`</span>
     <span class="n">_</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;income_dist&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span>
@@ -318,10 +330,12 @@
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_exit_workforce</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_exit_workforce</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;new_earning&quot;</span><span class="p">]</span>\
-                                                                        <span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;new_earning&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="p">)</span>
+
     <span class="n">log_execution_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="n">STEP_NAME</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="sample_income">
@@ -348,7 +362,9 @@
 
 <div class="viewcode-block" id="run_and_calibrate_in_workforce_model">
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.run_and_calibrate_in_workforce_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_in_workforce_model</span><span class="p">(</span><span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">CalibrationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_in_workforce_model</span><span class="p">(</span>
+    <span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">CalibrationConfig</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the &#39;enter_labor_force&#39; estimated model for eligible persons.</span>
 
@@ -379,7 +395,9 @@
 
 <div class="viewcode-block" id="run_and_calibrate_out_workforce_model">
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.run_and_calibrate_out_workforce_model">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_out_workforce_model</span><span class="p">(</span><span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">CalibrationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_out_workforce_model</span><span class="p">(</span>
+    <span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">CalibrationConfig</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run the &#39;exit_labor_force&#39; estimated model for eligible persons.</span>
 
@@ -410,7 +428,10 @@
 
 <div class="viewcode-block" id="run_simultaenous_calibration">
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.run_simultaenous_calibration">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">run_simultaenous_calibration</span><span class="p">(</span><span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">simultaneous_calibration_config</span><span class="p">:</span> <span class="n">SimultaneousCalibrationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">run_simultaenous_calibration</span><span class="p">(</span>
+    <span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+    <span class="n">simultaneous_calibration_config</span><span class="p">:</span> <span class="n">SimultaneousCalibrationConfig</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run simultaneous calibration for both &#39;enter&#39; and &#39;exit&#39; labor force models.</span>
 
@@ -437,17 +458,22 @@
     <span class="n">exit_model_variables</span> <span class="o">=</span> <span class="n">columns_in_formula</span><span class="p">(</span><span class="n">exit_model</span><span class="o">.</span><span class="n">model_expression</span><span class="p">)</span>
     <span class="n">exit_model_filters</span> <span class="o">=</span> <span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">worker</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">age</span> <span class="o">&gt;=</span> <span class="mi">18</span><span class="p">)</span>
     <span class="n">exit_model_data</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">exit_model_variables</span><span class="p">)[</span><span class="n">exit_model_filters</span><span class="p">]</span>
-    
-    <span class="c1"># Get calibration data</span>
-    <span class="n">observed_workers_table</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;observed_employment&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span> 
-    <span class="n">observed_workers</span> <span class="o">=</span> <span class="n">observed_workers_table</span><span class="p">[</span><span class="n">observed_workers_table</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)][</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
-    <span class="n">enter_model_predictions</span><span class="p">,</span> <span class="n">exit_model_predictions</span> <span class="o">=</span> <span class="n">enter_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">enter_model_data</span><span class="p">),</span> <span class="n">exit_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">exit_model_data</span><span class="p">)</span>
-    
+    <span class="c1"># Get calibration data</span>
+    <span class="n">observed_workers_table</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;observed_employment&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span>
+    <span class="n">observed_workers</span> <span class="o">=</span> <span class="n">observed_workers_table</span><span class="p">[</span>
+        <span class="n">observed_workers_table</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">)</span>
+    <span class="p">][</span><span class="s2">&quot;count&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">enter_model_predictions</span><span class="p">,</span> <span class="n">exit_model_predictions</span> <span class="o">=</span> <span class="n">enter_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
+        <span class="n">enter_model_data</span>
+    <span class="p">),</span> <span class="n">exit_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">exit_model_data</span><span class="p">)</span>
+
     <span class="c1"># enter_model_predictions == 0 are those who do NOT remain unemployed (will now be employed)</span>
     <span class="c1"># exit_model_preditions == 0 are those that remain employed</span>
-    <span class="n">predicted_total_workers</span> <span class="o">=</span> <span class="p">(</span><span class="n">enter_model_predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">exit_model_predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    
+    <span class="n">predicted_total_workers</span> <span class="o">=</span> <span class="p">(</span><span class="n">enter_model_predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span>
+        <span class="n">exit_model_predictions</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
 
     <span class="c1"># Initialize optimization algorithm</span>
     <span class="n">config</span><span class="p">:</span> <span class="n">SimultaneousCalibrationConfig</span> <span class="o">=</span> <span class="n">simultaneous_calibration_config</span>
@@ -456,19 +482,31 @@
     <span class="n">total_iterations</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">predicted_total_workers</span> <span class="o">-</span> <span class="n">observed_workers</span><span class="p">)</span>
     <span class="k">while</span> <span class="n">error</span> <span class="o">&gt;</span> <span class="n">config</span><span class="o">.</span><span class="n">tolerance</span> <span class="ow">and</span> <span class="n">total_iterations</span> <span class="o">&lt;</span> <span class="n">config</span><span class="o">.</span><span class="n">max_iter</span><span class="p">:</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Simultaneous Calibration: Iteration </span><span class="si">{</span><span class="n">total_iterations</span><span class="si">}</span><span class="s2"> error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">lr</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">*</span> <span class="p">((</span><span class="n">config</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="n">total_iterations</span><span class="p">)</span> <span class="o">+</span> <span class="mf">.5</span><span class="p">)</span> <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">max_iter</span>
-        
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Simultaneous Calibration: Iteration </span><span class="si">{</span><span class="n">total_iterations</span><span class="si">}</span><span class="s2"> error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">learning_rate</span>
+            <span class="o">*</span> <span class="p">((</span><span class="n">config</span><span class="o">.</span><span class="n">max_iter</span> <span class="o">-</span> <span class="n">total_iterations</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.5</span><span class="p">)</span>
+            <span class="o">/</span> <span class="n">config</span><span class="o">.</span><span class="n">max_iter</span>
+        <span class="p">)</span>
+
         <span class="c1"># Calculate gradient</span>
         <span class="n">update_coeff</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">observed_workers</span> <span class="o">/</span> <span class="n">predicted_total_workers</span><span class="p">)</span>
-        <span class="n">gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span><span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">gradient</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span> <span class="o">*</span> <span class="n">update_coeff</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">gradient</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="p">(</span>
+            <span class="n">momentum_weight</span> <span class="o">*</span> <span class="n">gradient</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">momentum_weight</span><span class="p">)</span> <span class="o">*</span> <span class="n">update_coeff</span> <span class="o">/</span> <span class="mi">2</span>
+        <span class="p">)</span>
 
         <span class="c1"># Apply gradient</span>
         <span class="n">enter_model</span><span class="o">.</span><span class="n">fitted_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">gradient</span>
         <span class="n">exit_model</span><span class="o">.</span><span class="n">fitted_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-=</span> <span class="n">gradient</span>
 
-        <span class="n">enter_model_predictions</span><span class="p">,</span> <span class="n">exit_model_predictions</span> <span class="o">=</span> <span class="n">enter_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">enter_model_data</span><span class="p">),</span> <span class="n">exit_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">exit_model_data</span><span class="p">)</span>
-        <span class="n">predicted_total_workers</span> <span class="o">=</span> <span class="p">(</span><span class="n">enter_model_predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span><span class="n">exit_model_predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">enter_model_predictions</span><span class="p">,</span> <span class="n">exit_model_predictions</span> <span class="o">=</span> <span class="n">enter_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span>
+            <span class="n">enter_model_data</span>
+        <span class="p">),</span> <span class="n">exit_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">exit_model_data</span><span class="p">)</span>
+        <span class="n">predicted_total_workers</span> <span class="o">=</span> <span class="p">(</span><span class="n">enter_model_predictions</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">+</span> <span class="p">(</span>
+            <span class="n">exit_model_predictions</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
         <span class="n">error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">predicted_total_workers</span> <span class="o">-</span> <span class="n">observed_workers</span><span class="p">)</span>
         <span class="n">total_iterations</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Final error after Simultaneous calibration: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -499,8 +537,12 @@
 <span class="sd">        Sampled earnings for each person.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">persons_df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">])</span>
-    <span class="n">merged_df</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">income_dist</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age_group&#39;</span><span class="p">,</span> <span class="s1">&#39;education_group&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">sample_income</span><span class="p">(</span><span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">],</span> <span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="n">persons_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+    <span class="n">merged_df</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span>
+        <span class="n">income_dist</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">sample_income</span><span class="p">(</span><span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">],</span> <span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="n">persons_df</span><span class="o">.</span><span class="n">index</span>
+    <span class="p">)</span></div>
 
 
 
@@ -521,11 +563,12 @@
 <span class="sd">    pandas.Series</span>
 <span class="sd">        Categorical summary: &quot;none&quot;, &quot;one&quot;, or &quot;two or more&quot; workers per household.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">])</span> \
-           <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span> \
-           <span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s2">&quot;worker&quot;</span><span class="p">]</span> \
-           <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span>
-                  <span class="p">(</span><span class="s2">&quot;one&quot;</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;two or more&quot;</span><span class="p">))</span></div>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s2">&quot;worker&quot;</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">r</span><span class="p">:</span> <span class="s2">&quot;none&quot;</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">(</span><span class="s2">&quot;one&quot;</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;two or more&quot;</span><span class="p">))</span>
+    <span class="p">)</span></div>
 
 
 
@@ -550,14 +593,17 @@
 <span class="sd">    -----</span>
 <span class="sd">    This is for `HOUSEHOLDS` table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])</span> \
-                  <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span> \
-                  <span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s2">&quot;earning&quot;</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s2">&quot;earning&quot;</span><span class="p">]</span>
+    <span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="income_dist">
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.income_dist">[docs]</a>
-<span class="nd">@orca</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_scope</span><span class="o">=</span><span class="s1">&#39;forever&#39;</span><span class="p">)</span>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_scope</span><span class="o">=</span><span class="s2">&quot;forever&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">income_dist</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute and cache income distribution parameters by age and education group.</span>
@@ -574,15 +620,29 @@
 <span class="sd">    pandas.DataFrame</span>
 <span class="sd">        DataFrame with columns: age_group, education_group, data_mean, data_std, mu, sigma.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">income_dist</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;worker&quot;</span><span class="p">,</span> <span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;worker&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span>\
-        <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;age_group&#39;</span><span class="p">,</span> <span class="s1">&#39;education_group&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
-            <span class="n">data_mean</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;earning&#39;</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">),</span>
-            <span class="n">data_std</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;earning&#39;</span><span class="p">,</span> <span class="s1">&#39;std&#39;</span><span class="p">))</span> \
+    <span class="n">income_dist</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;worker&quot;</span><span class="p">,</span> <span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])[</span>
+            <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;worker&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+        <span class="p">]</span>
+        <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">])</span>
+        <span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">data_mean</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;earning&quot;</span><span class="p">,</span> <span class="s2">&quot;mean&quot;</span><span class="p">),</span> <span class="n">data_std</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;earning&quot;</span><span class="p">,</span> <span class="s2">&quot;std&quot;</span><span class="p">))</span>
         <span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
-    
+    <span class="p">)</span>
+
     <span class="c1"># Convert to the parameters of the underlying normal distribution</span>
-    <span class="n">mu</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_mean&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_std&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_mean&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mu&quot;</span><span class="p">)</span>
-    <span class="n">sigma</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_std&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span> <span class="o">/</span> <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_mean&quot;</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)),</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sigma&quot;</span><span class="p">)</span>
+    <span class="n">mu</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span>
+            <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_mean&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span>
+            <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_std&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_mean&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mu&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">sigma</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_std&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="n">income_dist</span><span class="p">[</span><span class="s2">&quot;data_mean&quot;</span><span class="p">]</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">),</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sigma&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
     <span class="n">income_dist</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">income_dist</span><span class="p">,</span> <span class="n">mu</span><span class="p">,</span> <span class="n">sigma</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">income_dist</span></div>
 

@@ -263,6 +263,8 @@
     <span class="s2">&quot;persons.MAR&quot;</span><span class="p">,</span>
     <span class="s2">&quot;persons.relate&quot;</span><span class="p">,</span>
 <span class="p">]</span>
+
+
 <div class="viewcode-block" id="mortality">
 <a class="viewcode-back" href="../../../api/mortality_module.html#demos.models.mortality.mortality">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">STEP_NAME</span><span class="p">)</span>
@@ -270,7 +272,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Executes the `mortality` estimated model and updates the households and persons</span>
 <span class="sd">    table accordingly. Importantly, this module updates the `relate` column according to the</span>
 <span class="sd">    `relational_adjustment_mapping` table.</span>
-<span class="sd">    </span>
+
 <span class="sd">    **Required tables:**</span>
 <span class="sd">        - persons</span>
 <span class="sd">        - households</span>
@@ -299,47 +301,70 @@
     <span class="n">fatality_list_idx</span> <span class="o">=</span> <span class="n">fatality_list</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="n">dead_people_slice</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fatality_list_idx</span><span class="p">]</span>
     <span class="n">households_with_dead_people</span> <span class="o">=</span> <span class="n">dead_people_slice</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
-    <span class="n">persons_in_relevant_household_index</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">households_with_dead_people</span><span class="p">)</span>
+    <span class="n">persons_in_relevant_household_index</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span>
+        <span class="n">households_with_dead_people</span>
+    <span class="p">)</span>
 
     <span class="c1"># Update Marital status</span>
     <span class="c1">## If dead person is spouse or partner, head of household is now widow</span>
-    <span class="n">dead_partners_households</span> <span class="o">=</span> <span class="n">dead_people_slice</span><span class="p">[(</span><span class="n">dead_people_slice</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">dead_people_slice</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)][</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">dead_partners_households</span> <span class="o">=</span> <span class="n">dead_people_slice</span><span class="p">[</span>
+        <span class="p">(</span><span class="n">dead_people_slice</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">dead_people_slice</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)</span>
+    <span class="p">][</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="c1">## Update widow heads that are still alive</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">fatality_list_idx</span> <span class="o">&amp;</span>
-                      <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dead_partners_households</span><span class="p">)</span> <span class="o">&amp;</span>
-                      <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="o">~</span><span class="n">fatality_list_idx</span>
+        <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dead_partners_households</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;MAR&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
 
     <span class="c1"># If dead person is head, spouse or partner is now widow</span>
-    <span class="n">dead_heads_households</span> <span class="o">=</span> <span class="n">dead_people_slice</span><span class="p">[</span><span class="n">dead_people_slice</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span>
+    <span class="n">dead_heads_households</span> <span class="o">=</span> <span class="n">dead_people_slice</span><span class="p">[</span><span class="n">dead_people_slice</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">0</span><span class="p">][</span>
+        <span class="s2">&quot;household_id&quot;</span>
+    <span class="p">]</span>
     <span class="c1">## Update widow partners that are still alive</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">fatality_list_idx</span> <span class="o">&amp;</span>
-                      <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dead_heads_households</span><span class="p">)</span> <span class="o">&amp;</span>
-                      <span class="p">((</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)),</span>
-                      <span class="s2">&quot;MAR&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="o">~</span><span class="n">fatality_list_idx</span>
+        <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dead_heads_households</span><span class="p">)</span>
+        <span class="o">&amp;</span> <span class="p">((</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)),</span>
+        <span class="s2">&quot;MAR&quot;</span><span class="p">,</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
 
     <span class="c1"># Updates to `relate`</span>
     <span class="c1">## Select all the person_id&#39;s of alive people where the head died</span>
     <span class="c1">## They are the new heads</span>
     <span class="n">partner_to_head_household_ids</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-        <span class="o">~</span><span class="n">fatality_list_idx</span> <span class="o">&amp;</span>
-        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">])</span> <span class="o">&amp;</span>
-        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dead_heads_households</span><span class="p">)</span>
+        <span class="o">~</span><span class="n">fatality_list_idx</span>
+        <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">13</span><span class="p">])</span>
+        <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">dead_heads_households</span><span class="p">)</span>
     <span class="p">][</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span>
     <span class="n">partner_to_head_ids</span> <span class="o">=</span> <span class="n">partner_to_head_household_ids</span><span class="o">.</span><span class="n">index</span>
-    
+
     <span class="c1">## Before modifying the dataframe, select the new heads for the rest of households (by age)</span>
-    <span class="n">rest_to_head_households</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dead_heads_households</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">partner_to_head_household_ids</span><span class="p">)</span>
-    <span class="n">rest_to_head_ids</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
-        <span class="o">~</span><span class="n">fatality_list_idx</span> <span class="o">&amp;</span>
-        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">rest_to_head_households</span><span class="p">)</span>
-    <span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">idxmax</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">rest_to_head_households</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">dead_heads_households</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span>
+        <span class="n">partner_to_head_household_ids</span>
+    <span class="p">)</span>
+    <span class="n">rest_to_head_ids</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="o">~</span><span class="n">fatality_list_idx</span> <span class="o">&amp;</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">rest_to_head_households</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
+        <span class="o">.</span><span class="n">idxmax</span><span class="p">()</span>
+        <span class="o">.</span><span class="n">values</span>
+    <span class="p">)</span>
 
     <span class="c1">## We need to update the relate column of all the people where the head died</span>
     <span class="c1">### We only need to do this for the &quot;rest to head&quot; because partners keep the same relation as the previous head</span>
     <span class="n">new_heads_ids</span> <span class="o">=</span> <span class="n">rest_to_head_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
-    <span class="n">rest_to_head_all_filter</span> <span class="o">=</span> <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">rest_to_head_households</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fatality_list_idx</span>
-    <span class="n">new_heads_old_relate_by_hh</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_heads_ids</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span>
-    <span class="n">head_old_relate_by_person_id</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rest_to_head_all_filter</span><span class="p">]</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">new_heads_old_relate_by_hh</span><span class="p">)</span>
+    <span class="n">rest_to_head_all_filter</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">rest_to_head_households</span><span class="p">)</span> <span class="o">&amp;</span> <span class="o">~</span><span class="n">fatality_list_idx</span>
+    <span class="p">)</span>
+    <span class="n">new_heads_old_relate_by_hh</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">new_heads_ids</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">]</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span>
+    <span class="n">head_old_relate_by_person_id</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">rest_to_head_all_filter</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">new_heads_old_relate_by_hh</span><span class="p">)</span>
     <span class="n">person_old_relate_by_person_id</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rest_to_head_all_filter</span><span class="p">]</span><span class="o">.</span><span class="n">relate</span>
 
     <span class="c1">### In order to efficiently access the relational_adjustment_mapping dataframe, we transform relate values into</span>
@@ -350,20 +375,30 @@
     <span class="c1">#### First: The column value that we should query corresponds to the</span>
     <span class="c1">#### old relate value of the new household head</span>
     <span class="c1">#### NOTE: the str transformation might need to be changed in the future if rel_map is changed</span>
-    <span class="n">old_head_relate_index</span> <span class="o">=</span> <span class="n">rel_map_columns</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">(</span><span class="n">head_old_relate_by_person_id</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">))</span>
+    <span class="n">old_head_relate_index</span> <span class="o">=</span> <span class="n">rel_map_columns</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">(</span>
+        <span class="n">head_old_relate_by_person_id</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+    <span class="p">)</span>
 
     <span class="c1">#### Second: The row value corresponds with the old relate of the</span>
     <span class="c1">#### person changing relate (everyone but the new head)</span>
-    <span class="n">old_person_relate_index</span> <span class="o">=</span> <span class="n">rel_map_index</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">(</span><span class="n">person_old_relate_by_person_id</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+    <span class="n">old_person_relate_index</span> <span class="o">=</span> <span class="n">rel_map_index</span><span class="o">.</span><span class="n">get_indexer</span><span class="p">(</span>
+        <span class="n">person_old_relate_by_person_id</span><span class="o">.</span><span class="n">values</span>
+    <span class="p">)</span>
 
     <span class="c1">#### With both of these we can now get the new relate values</span>
     <span class="c1">#### (This step also replaces the relate value of the new heads,</span>
     <span class="c1">####  we take care of that after this processing)</span>
     <span class="c1">#### TODO: Here we can create spouses without correct marital status</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rest_to_head_all_filter</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">relational_adjustment_mapping</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="n">old_person_relate_index</span><span class="p">,</span> <span class="n">old_head_relate_index</span><span class="p">]</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">rest_to_head_all_filter</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="n">relational_adjustment_mapping</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[</span>
+        <span class="n">old_person_relate_index</span><span class="p">,</span> <span class="n">old_head_relate_index</span>
+    <span class="p">]</span>
 
     <span class="c1">## Update relate of new heads</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">rest_to_head_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">partner_to_head_ids</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">rest_to_head_ids</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span> <span class="o">+</span> <span class="n">partner_to_head_ids</span><span class="o">.</span><span class="n">to_list</span><span class="p">(),</span> <span class="s2">&quot;relate&quot;</span>
+    <span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
     <span class="c1"># Finally, remove dead people from the persons dataframe and move them to graveyard</span>
     <span class="n">dead_people</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">fatality_list_idx</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
@@ -372,7 +407,9 @@
 
     <span class="c1"># TODO: This needs to be reevaluated after the refactoring</span>
     <span class="n">spouses_per_hh</span> <span class="o">=</span> <span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">relate</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">household_id</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="o">~</span><span class="n">persons</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">spouses_per_hh</span><span class="p">[</span><span class="n">spouses_per_hh</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+    <span class="n">persons</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="o">~</span><span class="n">persons</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">spouses_per_hh</span><span class="p">[</span><span class="n">spouses_per_hh</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="p">]</span>
     <span class="n">households</span><span class="o">.</span><span class="n">local</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">household_id</span><span class="o">.</span><span class="n">unique</span><span class="p">()))</span>
 
     <span class="n">log_execution_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="s2">&quot;mortality&quot;</span><span class="p">)</span></div>
@@ -384,7 +421,7 @@
     <span class="c1"># Load calibration config</span>
     <span class="n">demos_config</span><span class="p">:</span> <span class="n">DEMOSConfig</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
     <span class="n">calibration_procedure</span> <span class="o">=</span> <span class="n">demos_config</span><span class="o">.</span><span class="n">mortality_module_config</span><span class="o">.</span><span class="n">calibration_procedure</span>
-    
+
     <span class="c1"># Get model data</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="s2">&quot;mortality&quot;</span><span class="p">)</span>
     <span class="n">model_variables</span> <span class="o">=</span> <span class="n">columns_in_formula</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">model_expression</span><span class="p">)</span>

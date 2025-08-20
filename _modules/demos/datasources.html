@@ -260,7 +260,8 @@
 <a class="viewcode-back" href="../../pages/datasources.html#demos.datasources.CSVTableSource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CSVTableSource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-    <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;csv&#39;</span><span class="p">]</span>
+
+    <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;csv&quot;</span><span class="p">]</span>
     <span class="c1">#: Path to source file</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span>
     <span class="c1">#: Column in the file to be used as index (e.g. `person_id`)</span>
@@ -274,8 +275,9 @@
 
     <span class="k">def</span><span class="w"> </span><span class="nf">load_into_orca</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading CSV &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39; table from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">,</span>
-            <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_dtype_casting</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_col</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">delimiter</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">custom_dtype_casting</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index_col</span><span class="p">)</span>
         <span class="n">orca</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table_name</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span></div>
 
 
@@ -284,21 +286,27 @@
 <a class="viewcode-back" href="../../pages/datasources.html#demos.datasources.H5TableSource">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">H5TableSource</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
-    <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s1">&#39;h5&#39;</span><span class="p">]</span>
+
+    <span class="n">file_type</span><span class="p">:</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;h5&quot;</span><span class="p">]</span>
     <span class="c1">#: Path to source file</span>
     <span class="n">filepath</span><span class="p">:</span> <span class="nb">str</span>
     <span class="c1">#: key in the source HDF5 to be loaded</span>
     <span class="n">h5_key</span><span class="p">:</span> <span class="nb">str</span>
     <span class="c1">#: Identifier of the table in orca</span>
     <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span>
-    
+
     <span class="k">def</span><span class="w"> </span><span class="nf">load_into_orca</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Loading HDF5 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39; table from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_key</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;Loading HDF5 &#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">table_name</span><span class="si">}</span><span class="s2">&#39; table from </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_key</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">filepath</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">h5_key</span><span class="p">)</span>
         <span class="n">orca</span><span class="o">.</span><span class="n">add_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">table_name</span><span class="p">,</span> <span class="n">df</span><span class="p">)</span></div>
 
 
-<span class="n">DataSourceModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span><span class="n">H5TableSource</span> <span class="o">|</span> <span class="n">CSVTableSource</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s2">&quot;file_type&quot;</span><span class="p">)]</span>
+
+<span class="n">DataSourceModel</span> <span class="o">=</span> <span class="n">Annotated</span><span class="p">[</span>
+    <span class="n">H5TableSource</span> <span class="o">|</span> <span class="n">CSVTableSource</span><span class="p">,</span> <span class="n">Field</span><span class="p">(</span><span class="n">discriminator</span><span class="o">=</span><span class="s2">&quot;file_type&quot;</span><span class="p">)</span>
+<span class="p">]</span>
 </pre></div>
         </article>
       </div>
