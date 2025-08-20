@@ -32,7 +32,9 @@ def get_probs(data, prob_column=None):
     return p
 
 
-def accounting_sample_replace(total, data, accounting_column, prob_column=None, max_iterations=50):
+def accounting_sample_replace(
+    total, data, accounting_column, prob_column=None, max_iterations=50
+):
     """
     Sample rows with accounting with replacement.
 
@@ -130,7 +132,7 @@ def accounting_sample_no_replace(total, data, accounting_column, prob_column=Non
     """
     # make sure this is even feasible
     if total > data[accounting_column].sum():
-        raise ValueError('Control total exceeds the available samples')
+        raise ValueError("Control total exceeds the available samples")
 
     # check for probabilities
     p = get_probs(data, prob_column)
@@ -148,7 +150,7 @@ def accounting_sample_no_replace(total, data, accounting_column, prob_column=Non
     # get the initial sample
     shuffle = data.loc[shuff_idx]
     csum = np.cumsum(shuffle[accounting_column].values)
-    pos = np.searchsorted(csum, total, 'right')
+    pos = np.searchsorted(csum, total, "right")
     sample = shuffle.iloc[:pos]
 
     # refine the sample
@@ -172,8 +174,15 @@ def accounting_sample_no_replace(total, data, accounting_column, prob_column=Non
     return shuffle.loc[sample_idx].copy(), matched
 
 
-def sample_rows(total, data, replace=True, accounting_column=None,
-                max_iterations=50, prob_column=None, return_status=False):
+def sample_rows(
+    total,
+    data,
+    replace=True,
+    accounting_column=None,
+    max_iterations=50,
+    prob_column=None,
+    return_status=False,
+):
     """
     Samples and returns rows from a data frame while matching a desired control total. The total may
     represent a simple row count or may attempt to match a sum/quantity from an accounting column.
@@ -207,25 +216,28 @@ def sample_rows(total, data, replace=True, accounting_column=None,
 
     """
     if not data.index.is_unique:
-        raise ValueError('Data must have a unique index')
+        raise ValueError("Data must have a unique index")
 
     # simplest case, just return n random rows
     if accounting_column is None:
         if replace is False and total > len(data.index.values):
-            raise ValueError('Control total exceeds the available samples')
+            raise ValueError("Control total exceeds the available samples")
         p = get_probs(prob_column)
-        rows = data.loc[np.random.choice(
-            data.index.values, int(total), replace=replace, p=p)].copy()
+        rows = data.loc[
+            np.random.choice(data.index.values, int(total), replace=replace, p=p)
+        ].copy()
         matched = True
 
     # sample with accounting
     else:
         if replace:
             rows, matched = accounting_sample_replace(
-                total, data, accounting_column, prob_column, max_iterations)
+                total, data, accounting_column, prob_column, max_iterations
+            )
         else:
             rows, matched = accounting_sample_no_replace(
-                total, data, accounting_column, prob_column)
+                total, data, accounting_column, prob_column
+            )
 
     # return the results
     if return_status:

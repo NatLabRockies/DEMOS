@@ -4,40 +4,38 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import os, sys
+
 sys.path.insert(0, os.path.abspath("../../"))
 sys.path.insert(0, os.path.abspath("../../demos"))
 
 # Mock imports for dependencies that might not be available
-autodoc_mock_imports = [
-    'pydantic',
-    'templates'
-]
+autodoc_mock_imports = ["pydantic", "templates"]
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'demos'
-copyright = '2025, National Renewable Energy Laboratory'
-author = 'National Renewable Energy Laboratory'
+project = "demos"
+copyright = "2025, National Renewable Energy Laboratory"
+author = "National Renewable Energy Laboratory"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.napoleon',
-    'sphinx_autodoc_typehints',
-    'myst_parser',
-    'sphinx.ext.viewcode',
-    'sphinx_multiversion'
+    "sphinx.ext.autodoc",
+    "sphinx.ext.napoleon",
+    "sphinx_autodoc_typehints",
+    "myst_parser",
+    "sphinx.ext.viewcode",
+    "sphinx_multiversion",
 ]
 
-templates_path = ['_templates']
+templates_path = ["_templates"]
 exclude_patterns = []
 
-autodoc_typehints = 'signature'
+autodoc_typehints = "signature"
 napoleon_google_docstring = True
-napoleon_numpy_docstring  = True
+napoleon_numpy_docstring = True
 
 autodoc_inherit_docstrings = True
 autodoc_preserve_defaults = True
@@ -49,9 +47,9 @@ autodoc_member_order = "bysource"
 
 # Autodoc settings
 autodoc_default_options = {
-    'members': True,
-    'undoc-members': True,
-    'show-inheritance': True,
+    "members": True,
+    "undoc-members": True,
+    "show-inheritance": True,
     "member-order": "bysource",
     # 'special-members': '__init__',
 }
@@ -60,9 +58,9 @@ autodoc_default_options = {
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'furo'
+html_theme = "furo"
 # html_theme = 'alabaster'
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # -- MyST settings -----------------------------------------------------------
 myst_enable_extensions = [
@@ -72,6 +70,6 @@ myst_enable_extensions = [
 ]
 
 # Sphinx multiversion config
-smv_branch_whitelist = r'^(main|dev|yep/.*)$'
+smv_branch_whitelist = r"^(main|dev|yep/.*)$"
 # Build only tags matching x.x.x (digits or 1–3 letters per segment):
-smv_tag_whitelist = r'^(?:\d+|[a-z]{1,3})\.(?:\d+|[a-z]{1,3})\.(?:\d+|[a-z]{1,3})$'
+smv_tag_whitelist = r"^(?:\d+|[a-z]{1,3})\.(?:\d+|[a-z]{1,3})\.(?:\d+|[a-z]{1,3})$"

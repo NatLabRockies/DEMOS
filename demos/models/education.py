@@ -6,11 +6,11 @@ import time
 from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
 
+
 @orca.step("education_model")
-def education_model(persons,
-                    edu_highschool_proportion,
-                    edu_highschool_grads_proportion,
-                    year):
+def education_model(
+    persons, edu_highschool_proportion, edu_highschool_grads_proportion, year
+):
     """
     Run the education model and update the persons table
 
@@ -62,20 +62,26 @@ def education_model(persons,
     ### Students in grade 12 move to either 15 or 16 based on weights
     ### Proportion of no diploma to GED students is roughly maintained
     twelveth_grade_index = persons["edu"] == 15
-    twelveth_grade_transition = np.random.choice([16, 17],
-                                                 size=(stayed_index & twelveth_grade_index).sum(),
-                                                 p=[edu_highschool_grads_proportion[16],
-                                                    edu_highschool_grads_proportion[17]])
-    persons.local.loc[stayed_index & twelveth_grade_index, "edu"] = twelveth_grade_transition
+    twelveth_grade_transition = np.random.choice(
+        [16, 17],
+        size=(stayed_index & twelveth_grade_index).sum(),
+        p=[edu_highschool_grads_proportion[16], edu_highschool_grads_proportion[17]],
+    )
+    persons.local.loc[stayed_index & twelveth_grade_index, "edu"] = (
+        twelveth_grade_transition
+    )
 
     ### Students in grade 11 move to either 15 or 16 based on weights
     ### Proportion of 12th grade students to diploma highschool students is roughly maintained
     eleventh_grade_index = persons["edu"] == 14
-    eleventh_grade_transition = np.random.choice([15, 16],
-                                                 size=(stayed_index & eleventh_grade_index).sum(),
-                                                 p=[edu_highschool_proportion[15],
-                                                    edu_highschool_proportion[16]])
-    persons.local.loc[stayed_index & eleventh_grade_index, "edu"] = eleventh_grade_transition
+    eleventh_grade_transition = np.random.choice(
+        [15, 16],
+        size=(stayed_index & eleventh_grade_index).sum(),
+        p=[edu_highschool_proportion[15], edu_highschool_proportion[16]],
+    )
+    persons.local.loc[stayed_index & eleventh_grade_index, "edu"] = (
+        eleventh_grade_transition
+    )
 
     log_execution_time(start_time, orca.get_injectable("year"), "education")
 
@@ -89,8 +95,11 @@ def edu_highschool_proportion(data="persons.edu"):
 def edu_highschool_grads_proportion(data="persons.edu"):
     return data[data.isin([16, 17])].value_counts(normalize=True)
 
+
 @orca.column(table_name="persons")
 def education_group(data="persons.edu"):
     education_intervals = [0, 18, 22, 200]
-    education_labels = ['lte17', '18-21', 'gte22']
-    return pd.cut(data, bins=education_intervals, labels=education_labels, include_lowest=True).astype(str)
+    education_labels = ["lte17", "18-21", "gte22"]
+    return pd.cut(
+        data, bins=education_intervals, labels=education_labels, include_lowest=True
+    ).astype(str)

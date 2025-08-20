@@ -7,16 +7,23 @@ import time
 from logging_logic import log_execution_time
 from config import DEMOSConfig, get_config
 
+
 @orca.injectable(autocall=False)
 def get_new_person_id(n):
     persons = orca.get_table("persons")
     graveyard = orca.get_table("graveyard")
     rebalanced_persons = orca.get_table("rebalanced_persons")
 
-    current_max = max([persons.local.index.max(), graveyard.local.index.max(), rebalanced_persons.local.index.max()])
+    current_max = max(
+        [
+            persons.local.index.max(),
+            graveyard.local.index.max(),
+            rebalanced_persons.local.index.max(),
+        ]
+    )
     return (
-        np.arange(n)    # = [0, 1, 2 ...] up to the number of people
-        + current_max   # = [max_person_id, max_person_id + 1, ...]
+        np.arange(n)  # = [0, 1, 2 ...] up to the number of people
+        + current_max  # = [max_person_id, max_person_id + 1, ...]
         + 1
     )
 
@@ -61,19 +68,25 @@ def birth_model(persons, households, observed_births_data, get_new_person_id, ye
 
     # Set race of babies
     # TODO: There is duplication of information between `race_id` and `race`
-    hh_races = (persons.local.groupby("household_id")
-                             .agg(num_races=("race_id", "nunique"))
-                             .reset_index()
-                             .merge(
-                                 households.to_frame(["hh_race_of_head", "hh_race_id_of_head", "household_id"])
-                                 .reset_index(),
-                               on="household_id")).set_index("household_id")
+    hh_races = (
+        persons.local.groupby("household_id")
+        .agg(num_races=("race_id", "nunique"))
+        .reset_index()
+        .merge(
+            households.to_frame(
+                ["hh_race_of_head", "hh_race_id_of_head", "household_id"]
+            ).reset_index(),
+            on="household_id",
+        )
+    ).set_index("household_id")
     one_race_hh_filter = (hh_races.loc[babies.household_id]["num_races"] == 1).values
     babies["race_id"] = 9
-    babies.loc[one_race_hh_filter, "race_id"] = hh_races.loc[babies.loc[one_race_hh_filter, "household_id"], "hh_race_id_of_head"].values
+    babies.loc[one_race_hh_filter, "race_id"] = hh_races.loc[
+        babies.loc[one_race_hh_filter, "household_id"], "hh_race_id_of_head"
+    ].values
     babies["race"] = babies["race_id"].map({1: "white", 2: "black"})
     babies["race"].fillna("other", inplace=True)
-    
+
     # Finally add babies to persons table
     persons.local = pd.concat([persons.local, babies])
 
@@ -87,13 +100,15 @@ def run_and_calibrate_birth_model(persons, households):
     # Load calibration config
     demos_config: DEMOSConfig = get_config()
     calibration_procedure = demos_config.birth_module_config.calibration_procedure
-    
+
     # Get model data
     birth_model = mm.get_step("birth")
     birth_model_variables = columns_in_formula(birth_model.model_expression)
     birth_model_data = households.to_frame(birth_model_variables).loc[ELIGIBLE_HH]
-    
+
     # Calibrate if needed
     if calibration_procedure is not None:
-        return calibration_procedure.calibrate_and_run_model(birth_model, birth_model_data)
+        return calibration_procedure.calibrate_and_run_model(
+            birth_model, birth_model_data
+        )
     return birth_model.predict(birth_model_data)

@@ -1,9 +1,11 @@
 import contextlib
 import logging
 
-US_LOG_FMT = ('%(asctime)s|%(levelname)s|%(name)s|'
-              '%(funcName)s|%(filename)s|%(lineno)s|%(message)s')
-US_LOG_DATE_FMT = '%Y-%m-%d %H:%M:%S'
+US_LOG_FMT = (
+    "%(asctime)s|%(levelname)s|%(name)s|"
+    "%(funcName)s|%(filename)s|%(lineno)s|%(message)s"
+)
+US_LOG_DATE_FMT = "%Y-%m-%d %H:%M:%S"
 US_FMT = logging.Formatter(fmt=US_LOG_FMT, datefmt=US_LOG_DATE_FMT)
 
 
@@ -22,9 +24,9 @@ def log_start_finish(msg, logger, level=logging.DEBUG):
         Level at which to log, passed to ``logger.log``.
 
     """
-    logger.log(level, 'start: ' + msg)
+    logger.log(level, "start: " + msg)
     yield
-    logger.log(level, 'finish: ' + msg)
+    logger.log(level, "finish: " + msg)
 
 
 def set_log_level(level):
@@ -37,11 +39,10 @@ def set_log_level(level):
         A supporting logging level. Use logging constants like logging.DEBUG.
 
     """
-    logging.getLogger('urbansim').setLevel(level)
+    logging.getLogger("urbansim").setLevel(level)
 
 
-def _add_urbansim_handler(handler, level=None, fmt=None, datefmt=None,
-                          propagate=None):
+def _add_urbansim_handler(handler, level=None, fmt=None, datefmt=None, propagate=None):
     """
     Add a logging handler to urbansim.
 
@@ -73,7 +74,7 @@ def _add_urbansim_handler(handler, level=None, fmt=None, datefmt=None,
     if level is not None:
         handler.setLevel(level)
 
-    logger = logging.getLogger('urbansim')
+    logger = logging.getLogger("urbansim")
     logger.addHandler(handler)
 
     if propagate is not None:
@@ -98,7 +99,8 @@ def log_to_stream(level=None, fmt=None, datefmt=None):
 
     """
     _add_urbansim_handler(
-        logging.StreamHandler(), fmt=fmt, datefmt=datefmt, propagate=False)
+        logging.StreamHandler(), fmt=fmt, datefmt=datefmt, propagate=False
+    )
 
 
 def log_to_file(filename, level=None, fmt=None, datefmt=None):
@@ -119,5 +121,4 @@ def log_to_file(filename, level=None, fmt=None, datefmt=None):
         messages.
 
     """
-    _add_urbansim_handler(
-        logging.FileHandler(filename), fmt=fmt, datefmt=datefmt)
+    _add_urbansim_handler(logging.FileHandler(filename), fmt=fmt, datefmt=datefmt)

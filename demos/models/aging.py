@@ -5,9 +5,8 @@ from logging_logic import log_execution_time
 from config import DEMOSConfig, AgingModuleConfig, get_config
 
 STEP_NAME = "aging"
-REQUIRED_COLUMNS = [
-    "persons.age"
-]
+REQUIRED_COLUMNS = ["persons.age"]
+
 
 @orca.step(STEP_NAME)
 def aging(persons):
@@ -78,6 +77,7 @@ def senior(data="persons.age"):
 
     return (data >= aging_config.senior_age).astype(int)
 
+
 @orca.column(table_name="persons")
 def age_group(data="persons.age"):
     """
@@ -96,5 +96,7 @@ def age_group(data="persons.age"):
         Categorical age group labels as strings.
     """
     age_intervals = [0, 20, 30, 40, 50, 65, 900]
-    age_labels = ['lte19', '20-29', '30-39', '40-49', '50-64', 'gte65']
-    return pd.cut(data, bins=age_intervals, labels=age_labels, include_lowest=True).astype(str)
+    age_labels = ["lte19", "20-29", "30-39", "40-49", "50-64", "gte65"]
+    return pd.cut(
+        data, bins=age_intervals, labels=age_labels, include_lowest=True
+    ).astype(str)

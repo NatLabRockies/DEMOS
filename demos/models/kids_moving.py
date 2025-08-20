@@ -11,6 +11,7 @@ REQUIRED_COLUMNS = [
     "persons.relate",
 ]
 
+
 @orca.step(STEP_NAME)
 def kids_moving(persons, households, get_new_households):
     """
@@ -39,6 +40,7 @@ def kids_moving(persons, households, get_new_households):
     update_households_after_kids(persons, households, kids_moving, get_new_households)
     log_execution_time(start_time, orca.get_injectable("year"), "kids_moving")
 
+
 def update_households_after_kids(persons, households, kids_moving, get_new_households):
     # Load module config
     demos_config: DEMOSConfig = get_config()
@@ -50,26 +52,43 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     ## Condition 3: Households with some people staying
 
     household_sizes = persons.local.groupby("household_id").size()
-    person_household_size_index = (household_sizes.loc[persons["household_id"]] > 1).values
+    person_household_size_index = (
+        household_sizes.loc[persons["household_id"]] > 1
+    ).values
 
     ## Compute kids moving per household
-    kids_moving_per_household = kids_moving.groupby(persons.local.loc[kids_moving.index, "household_id"]).sum()
+    kids_moving_per_household = kids_moving.groupby(
+        persons.local.loc[kids_moving.index, "household_id"]
+    ).sum()
     ### This re-index speeds up querying by a lot
-    kids_moving_per_household = kids_moving_per_household.reindex(persons["household_id"].unique()).fillna(0)
-    
+    kids_moving_per_household = kids_moving_per_household.reindex(
+        persons["household_id"].unique()
+    ).fillna(0)
+
     ### Household-level filter for condition 3
-    household_completely_moving_index = kids_moving_per_household.loc[household_sizes.index] == household_sizes
-    person_completely_moving_index = household_completely_moving_index.loc[persons["household_id"]]
+    household_completely_moving_index = (
+        kids_moving_per_household.loc[household_sizes.index] == household_sizes
+    )
+    person_completely_moving_index = household_completely_moving_index.loc[
+        persons["household_id"]
+    ]
 
     ### Combine both household conditions to know which kids we need to move
-    eligeble_households_index = (person_household_size_index & ~person_completely_moving_index).values
-    
+    eligeble_households_index = (
+        person_household_size_index & ~person_completely_moving_index
+    ).values
+
     # Finally combine all filters into one
-    kids_moving_index = kids_moving.reindex(persons.local.index).fillna(0).astype(bool) & eligeble_households_index
+    kids_moving_index = (
+        kids_moving.reindex(persons.local.index).fillna(0).astype(bool)
+        & eligeble_households_index
+    )
 
     # Get the old household_id for the moving kids to retrieve the county_id
     old_household_id = persons.local.loc[kids_moving_index, "household_id"].values
-    county_assignment = households.local.loc[old_household_id, module_config.geoid_col].values
+    county_assignment = households.local.loc[
+        old_household_id, module_config.geoid_col
+    ].values
 
     new_households = get_new_households(kids_moving_index.sum())
     persons.local.loc[kids_moving_index, "household_id"] = new_households

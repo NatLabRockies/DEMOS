@@ -6,6 +6,7 @@ from templates import estimated_models, modelmanager as mm
 import time
 from logging_logic import log_execution_time
 
+
 @orca.step("update_income")
 def update_income(persons, households, income_rates, year):
     """
@@ -19,8 +20,11 @@ def update_income(persons, households, income_rates, year):
     start_time = time.time()
     # TODO: CountyID is not being updated by default
     # Update income according to county rate
-    persons.local.earning *= 1 + income_rates.local.loc[year] \
-                                       .set_index("lcm_county_id")["rate"] \
-                                       .loc[households.lcm_county_id \
-                                       .loc[persons.household_id]].values
+    persons.local.earning *= (
+        1
+        + income_rates.local.loc[year]
+        .set_index("lcm_county_id")["rate"]
+        .loc[households.lcm_county_id.loc[persons.household_id]]
+        .values
+    )
     log_execution_time(start_time, orca.get_injectable("year"), "income_adjustment")
