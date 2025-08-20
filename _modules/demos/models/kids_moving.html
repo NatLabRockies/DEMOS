@@ -198,13 +198,13 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/aging_module.html">Aging Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/mortality_module.html">Mortality Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -322,7 +322,6 @@
     <span class="n">kids_moving_index</span> <span class="o">=</span> <span class="n">kids_moving</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">bool</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">eligeble_households_index</span>
 
     <span class="c1"># Get the old household_id for the moving kids to retrieve the county_id</span>
-    <span class="c1"># TODO: Parametrize county_id</span>
     <span class="n">old_household_id</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 

@@ -10,7 +10,6 @@ DEMOS documentation
    :maxdepth: 3
    :caption: Contents:
 
-   README.md
    pages/intro.md
    api/modules
    pages/configuration

@@ -198,13 +198,13 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/aging_module.html">Aging Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/mortality_module.html">Mortality Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -274,24 +274,32 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">STEP_NAME</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">household_reorg</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">get_new_households</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This module executes the logic of three sub-modules: Cohabitations, Marriage and Divorce. The logic of each</span>
-<span class="sd">    sub-module is controlled by estimated models. These models are run all together at the beginning of the</span>
-<span class="sd">    module&#39;s execution.</span>
-<span class="sd">    </span>
-<span class="sd">    If simultaneous calibration data is provided through the configuration file, then</span>
-<span class="sd">    a simultaneous calibration procedure is run in which the expected output of the three models combined is used</span>
-<span class="sd">    to assess the fitness to the calibration data. That is, given the current output of the estimated models,</span>
-<span class="sd">    we calculate how many married and divorced people are expected after their execution, and update the coefficient</span>
-<span class="sd">    of the estimated model&#39;s parameters if needed.</span>
+<span class="sd">    Main step for household reorganization: executes marriage, divorce, and cohabitation sub-models.</span>
 
-<span class="sd">    **Required tables:**</span>
-<span class="sd">        - persons</span>
-<span class="sd">        - households</span>
+<span class="sd">    This function runs all three estimated models, optionally calibrates them to observed data, and updates</span>
+<span class="sd">    the persons and households tables in place. It handles the creation and dissolution of households,</span>
+<span class="sd">    changes in marital status, and cohabitation transitions.</span>
 
-<span class="sd">    **Modifies State Variables:**</span>
-<span class="sd">        - persons.relate</span>
-<span class="sd">        - persons.MAR</span>
-<span class="sd">        - persons.household_id</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table containing individual-level attributes.</span>
+<span class="sd">    households : orca.Table</span>
+<span class="sd">        The households table containing household-level attributes.</span>
+<span class="sd">    year : int</span>
+<span class="sd">        The current simulation year.</span>
+<span class="sd">    get_new_households : callable</span>
+<span class="sd">        Function to generate new unique household IDs as needed.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - The outputs of the estimated models are used to update the simulation state in place.</span>
+<span class="sd">    - Simultaneous calibration is performed if calibration data is provided in the configuration.</span>
+<span class="sd">    - See module-level docstring for details on model outputs and caveats.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">marriage_model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="s2">&quot;marriage&quot;</span><span class="p">)</span>
@@ -373,8 +381,25 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">injectable</span><span class="p">(</span><span class="n">autocall</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_new_households</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Auxiliary orca injectable that creates IDs for new households, maintaining consistency across</span>
-<span class="sd">    the persons and graveyard table so that household IDs never repeat.</span>
+<span class="sd">    Generate new unique household IDs for use in household reorganization.</span>
+
+<span class="sd">    Ensures that new household IDs do not overlap with any existing or historical IDs</span>
+<span class="sd">    in the persons, graveyard, or rebalanced_persons tables. Also expands the households table index as needed.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    n : int</span>
+<span class="sd">        Number of new household IDs to generate.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    np.ndarray</span>
+<span class="sd">        Array of new unique household IDs.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - This function is used internally by the household reorganization logic.</span>
+<span class="sd">    - The method for adding empty rows to the households table may change in the future.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">persons</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
     <span class="n">graveyard</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;graveyard&quot;</span><span class="p">)</span>
@@ -397,7 +422,21 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">injectable</span><span class="p">()</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">persons_grouped_household</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Auxiliary injectable that precomputes `persons.groupby(&#39;household_id&#39;)`</span>
+<span class="sd">    Precompute a groupby object for persons by household_id.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.core.groupby.DataFrameGroupBy</span>
+<span class="sd">        GroupBy object for persons grouped by household_id.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Used for efficient aggregation in household-level orca columns.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span></div>
 
@@ -522,7 +561,34 @@
 <div class="viewcode-block" id="simultaneous_calibration">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.simultaneous_calibration">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">simultaneous_calibration</span><span class="p">(</span><span class="n">sim_cal_config</span><span class="p">,</span> <span class="n">persons</span><span class="p">,</span> <span class="n">marriage_model</span><span class="p">,</span> <span class="n">cohab_model</span><span class="p">,</span> <span class="n">divorce_model</span><span class="p">,</span> <span class="n">marriage_data</span><span class="p">,</span> <span class="n">cohab_data</span><span class="p">,</span> <span class="n">divorce_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform simultaneous calibration of marriage, divorce, and cohabitation models.</span>
 
+<span class="sd">    Adjusts model parameters so that the combined outputs of the three estimated models</span>
+<span class="sd">    (marriage, divorce, cohabitation) match observed aggregate statistics for married and divorced persons.</span>
+<span class="sd">    Uses a simple gradient-based optimization with optional momentum.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    sim_cal_config : SimultaneousCalibrationConfig</span>
+<span class="sd">        Configuration for the calibration procedure (learning rate, tolerance, etc).</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table.</span>
+<span class="sd">    marriage_model, cohab_model, divorce_model : EstimatedModel</span>
+<span class="sd">        Fitted estimated model objects for each sub-model.</span>
+<span class="sd">    marriage_data, cohab_data, divorce_data : pandas.DataFrame</span>
+<span class="sd">        Data for each model to make predictions on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Only runs if calibration data is provided in the configuration.</span>
+<span class="sd">    - Updates model parameters in place.</span>
+<span class="sd">    - See module-level docstring for caveats.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">marital_status_table</span> <span class="o">=</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s2">&quot;marital_status_output&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">compute_error</span><span class="p">(</span><span class="n">n_married</span><span class="p">,</span> <span class="n">n_divorced</span><span class="p">,</span> <span class="n">target_married</span><span class="p">,</span> <span class="n">target_divorced</span><span class="p">):</span>
@@ -614,6 +680,24 @@
 <div class="viewcode-block" id="run_models">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.run_models">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">run_models</span><span class="p">(</span><span class="n">marriage_model</span><span class="p">,</span> <span class="n">cohab_model</span><span class="p">,</span> <span class="n">divorce_model</span><span class="p">,</span> <span class="n">marriage_data</span><span class="p">,</span> <span class="n">cohab_data</span><span class="p">,</span> <span class="n">divorce_data</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run all three estimated models and return their outputs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    marriage_model, cohab_model, divorce_model : EstimatedModel</span>
+<span class="sd">        Fitted estimated model objects for each sub-model.</span>
+<span class="sd">    marriage_data, cohab_data, divorce_data : pandas.DataFrame</span>
+<span class="sd">        Data for each model to make predictions on.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (marriage_list, divorce_list, cohabitate_x_list):</span>
+<span class="sd">        - marriage_list: pd.Series, 0 = stay single, 1 = cohabitate, 2 = get married</span>
+<span class="sd">        - divorce_list: pd.Series, 0 = stay married, 1 = divorce</span>
+<span class="sd">        - cohabitate_x_list: pd.Series, 0 = stay cohabitating, 1 = break up, 2 = get married</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">marriage_list</span> <span class="o">=</span> <span class="n">marriage_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">marriage_data</span><span class="p">)</span>
     <span class="n">divorce_list</span> <span class="o">=</span> <span class="n">divorce_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">divorce_data</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
     <span class="n">cohabitate_x_list</span> <span class="o">=</span> <span class="n">cohab_model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">cohab_data</span><span class="p">)</span>
@@ -623,6 +707,18 @@
 <div class="viewcode-block" id="print_marital_count">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.print_marital_count">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_marital_count</span><span class="p">(</span><span class="n">persons_df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the number of people with each marital status (MAR=1 or MAR=3).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons_df : pandas.DataFrame</span>
+<span class="sd">        DataFrame of persons, must include &#39;MAR&#39; column.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">]:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of people with MAR=</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
@@ -630,6 +726,33 @@
 <div class="viewcode-block" id="compute_expected_marital_status">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.compute_expected_marital_status">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">compute_expected_marital_status</span><span class="p">(</span><span class="n">persons_df</span><span class="p">,</span> <span class="n">cohabitate_x_list</span><span class="p">,</span> <span class="n">marriage_list</span><span class="p">,</span> <span class="n">divorce_list</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compute the expected number of married and divorced persons after applying model outputs.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons_df : pandas.DataFrame</span>
+<span class="sd">        DataFrame of persons, must include &#39;MAR&#39;, &#39;relate&#39;, &#39;person_sex&#39;, and &#39;household_id&#39;.</span>
+<span class="sd">    cohabitate_x_list : pd.Series</span>
+<span class="sd">        Output of the cohabitation model (see module docstring for values).</span>
+<span class="sd">    marriage_list : pd.Series</span>
+<span class="sd">        Output of the marriage model (see module docstring for values).</span>
+<span class="sd">    divorce_list : pd.Series</span>
+<span class="sd">        Output of the divorce model (see module docstring for values).</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple</span>
+<span class="sd">        (n_married_after, min_div, max_div):</span>
+<span class="sd">        - n_married_after: int, expected number of married persons after updates</span>
+<span class="sd">        - min_div: int, minimum expected number of divorced persons</span>
+<span class="sd">        - max_div: int, maximum expected number of divorced persons</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Used for calibration and reporting.</span>
+<span class="sd">    - Logic is based on current and predicted statuses.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">starting_married</span> <span class="o">=</span> <span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">starting_n_married</span> <span class="o">=</span> <span class="n">starting_married</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
     <span class="n">starting_divorced</span> <span class="o">=</span> <span class="p">(</span><span class="n">persons_df</span><span class="o">.</span><span class="n">MAR</span> <span class="o">==</span> <span class="mi">3</span><span class="p">)</span>
@@ -685,12 +808,6 @@
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.print_household_stats">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="s2">&quot;print_household_stats&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">print_household_stats</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Function to print the number of households from both the households and pers</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        persons (DataFrame): Pandas DataFrame of the persons table</span>
-<span class="sd">        households (DataFrame): Pandas DataFrame of the households table</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households size from persons table: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="s1">&#39;household_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Households size from households table: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;households&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Persons Size: </span><span class="si">{</span><span class="n">orca</span><span class="o">.</span><span class="n">get_table</span><span class="p">(</span><span class="s1">&#39;persons&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -762,8 +879,6 @@
 <div class="viewcode-block" id="fix_erroneous_households">
 <a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.fix_erroneous_households">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">fix_erroneous_households</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">n_partners_df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">13</span><span class="p">)]</span> \
         <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> \
         <span class="o">.</span><span class="n">nunique</span><span class="p">()</span> \

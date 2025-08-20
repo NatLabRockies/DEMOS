@@ -199,13 +199,13 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">DEMOS Modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="aging_module.html">Aging Module</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mortality_module.html">Mortality Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -257,56 +257,119 @@
         <article role="main" id="furo-main-content">
           <section id="employment-module">
 <h1>Employment Module<a class="headerlink" href="#employment-module" title="Link to this heading">¶</a></h1>
+<p>This module simulates labor force transitions for persons in the synthetic population.
+It applies estimated models to determine which individuals enter or exit the workforce,
+updates employment status and earnings, and provides household-level employment and income summaries.</p>
+<ul class="simple">
+<li><p>Supports calibration and simultaneous calibration procedures.</p></li>
+<li><p>Relies on estimated logit models for labor force transitions.</p></li>
+</ul>
+<section id="module-function">
+<h2>Module function<a class="headerlink" href="#module-function" title="Link to this heading">¶</a></h2>
 <p>Module configuration options: <a class="reference internal" href="configuration_module.html#demos.config.EmploymentModuleConfig" title="demos.config.EmploymentModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">EmploymentModuleConfig</span></code></a></p>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.employment">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">employment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#employment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.employment" title="Link to this definition">¶</a></dt>
-<dd><p>Executes the <cite>enter_</cite> and <cite>exit_laborforce</cite> estimated models to determine which unemployed
-persons change to employed and which employed change to unemployed. Elegible persons are those
-18 years or older.</p>
-<p>The <cite>earning</cite> column stores the annual income of each individual. For those unemployed, <cite>earning</cite> is set
-to 0, for the rest, the <cite>new_earning</cite> lazily-computed orca column is used to determine the new income.</p>
-<dl class="simple">
-<dt><strong>Required tables:</strong></dt><dd><ul class="simple">
-<li><p>persons</p></li>
-</ul>
+<dd><p>Simulate labor force transitions for eligible persons.</p>
+<p>This step applies estimated models to determine which unemployed persons become employed
+and which employed persons exit the workforce. Only persons aged 18 or older are considered.
+The function updates the <cite>worker</cite> and <cite>earning</cite> columns in the <cite>persons</cite> table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing individual-level attributes.</p>
 </dd>
-<dt><strong>Modifies State Variables:</strong></dt><dd><ul class="simple">
-<li><p>persons.worker</p></li>
-<li><p>persons.earning</p></li>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Requires the <cite>persons</cite> table with columns: <cite>age</cite>, <cite>worker</cite>, <cite>earning</cite>.</p></li>
+<li><p>Modifies <cite>persons.worker</cite> and <cite>persons.earning</cite> in place.</p></li>
+<li><p>Uses module configuration from the TOML config file.</p></li>
+<li><p>Triggers caching of the <cite>income_dist</cite> table for income assignment.</p></li>
 </ul>
+<p class="rubric">Example</p>
+<dl class="simple">
+<dt>This step is executed as part of the annual simulation loop:</dt><dd><p><cite>orca.run([‘employment’], iter_vars=[…])</cite></p>
 </dd>
 </dl>
 </dd></dl>
 
+</section>
 <section id="orca-columns">
 <h2>Orca Columns<a class="headerlink" href="#orca-columns" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.new_earning">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">new_earning</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">income_dist</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#new_earning"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.new_earning" title="Link to this definition">¶</a></dt>
-<dd><p>Sample income for new workers according to income distribution (<cite>income_dist</cite>) computed from the original synthetic population.
-The income distribution is computed once and cached to be used in <cite>new_earning</cite> calls.</p>
-<p>Click <cite>[source]</cite> (top right) for more details</p>
+<dd><p>Compute new earnings for persons entering the workforce.</p>
+<p>For each eligible person, samples income from a lognormal distribution
+parameterized by age and education group, using the cached <cite>income_dist</cite> table.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table.</p></li>
+<li><p><strong>income_dist</strong> (<em>orca.Table</em>) – Table with income distribution parameters.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sampled earnings for each person.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.income_dist">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">income_dist</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#income_dist"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.income_dist" title="Link to this definition">¶</a></dt>
-<dd><p>This table is computed the first time it is called, and stores the average and standard deviation of the income
-of workers at the beginning of the simulation by age and education group. These values are used in the employment
-model to assign an income for people that get into the workforce.</p>
+<dd><p>Compute and cache income distribution parameters by age and education group.</p>
+<p>This table is used to sample earnings for new workers in the employment model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with columns: age_group, education_group, data_mean, data_std, mu, sigma.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.DataFrame</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.hh_workers">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">hh_workers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#hh_workers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.hh_workers" title="Link to this definition">¶</a></dt>
-<dd><p>Number of workers per household</p>
+<dd><p>Compute the number of workers per household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Categorical summary: “none”, “one”, or “two or more” workers per household.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.income">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.income" title="Link to this definition">¶</a></dt>
-<dd><p>Household-level income from person-level income. NOTE: This is for HOUSEHOLDS table</p>
+<dd><p>Aggregate household income from person-level earnings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Total income per household.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This is for <cite>HOUSEHOLDS</cite> table</p>
 </dd></dl>
 
 </section>
@@ -315,16 +378,39 @@ model to assign an income for people that get into the workforce.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.sample_income">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">sample_income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#sample_income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.sample_income" title="Link to this definition">¶</a></dt>
-<dd><p>Auxiliary function to sample from a lognormal distribution</p>
+<dd><p>Draw samples from a lognormal distribution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mean</strong> (<em>float</em><em> or </em><em>array-like</em>) – The mean(s) of the underlying normal distribution.</p></li>
+<li><p><strong>std</strong> (<em>float</em><em> or </em><em>array-like</em>) – The standard deviation(s) of the underlying normal distribution.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Sample(s) from the lognormal distribution.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float or np.ndarray</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.run_and_calibrate_in_workforce_model">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">run_and_calibrate_in_workforce_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_procedure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#run_and_calibrate_in_workforce_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.run_and_calibrate_in_workforce_model" title="Link to this definition">¶</a></dt>
-<dd><p>Execute <cite>enter_labor_force</cite> estimated model on elegible people according to the calibration procedure.</p>
+<dd><p>Run the ‘enter_labor_force’ estimated model for eligible persons.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>persons</strong> (<em>pandas.DataFrame</em>) – DataFrame of persons with required model variables.</p></li>
+<li><p><strong>calibration_procedure</strong> (<em>CalibrationConfig</em><em> or </em><em>None</em>) – Calibration procedure to apply, if any.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Model predictions for each eligible person (0 = remain unemployed, 1 = become employed).</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></span></p>
+<dd class="field-odd"><p>pandas.Series</p>
 </dd>
 </dl>
 </dd></dl>
@@ -332,10 +418,19 @@ model to assign an income for people that get into the workforce.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.run_and_calibrate_out_workforce_model">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">run_and_calibrate_out_workforce_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">calibration_procedure</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#run_and_calibrate_out_workforce_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.run_and_calibrate_out_workforce_model" title="Link to this definition">¶</a></dt>
-<dd><p>Execute <cite>exit_labor_force</cite> estimated model on elegible people according to the calibration procedure.</p>
+<dd><p>Run the ‘exit_labor_force’ estimated model for eligible persons.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>persons</strong> (<em>pandas.DataFrame</em>) – DataFrame of persons with required model variables.</p></li>
+<li><p><strong>calibration_procedure</strong> (<em>CalibrationConfig</em><em> or </em><em>None</em>) – Calibration procedure to apply, if any.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Model predictions for each eligible person (0 = remain employed, 1 = become unemployed).</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></span></p>
+<dd class="field-odd"><p>pandas.Series</p>
 </dd>
 </dl>
 </dd></dl>
@@ -343,10 +438,19 @@ model to assign an income for people that get into the workforce.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.employment.run_simultaenous_calibration">
 <span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">run_simultaenous_calibration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simultaneous_calibration_config</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#run_simultaenous_calibration"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.run_simultaenous_calibration" title="Link to this definition">¶</a></dt>
-<dd><p>Execute both <cite>enter_labor_force</cite> and <cite>exit_labor_force</cite> estimated models on elegible people according to the calibration procedure.</p>
+<dd><p>Run simultaneous calibration for both ‘enter’ and ‘exit’ labor force models.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>persons</strong> (<em>pandas.DataFrame</em>) – DataFrame of persons with required model variables.</p></li>
+<li><p><strong>simultaneous_calibration_config</strong> (<em>SimultaneousCalibrationConfig</em>) – Configuration for simultaneous calibration.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Predictions for entering and exiting the workforce.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Series</span></code></span></p>
+<dd class="field-odd"><p>tuple of pandas.Series</p>
 </dd>
 </dl>
 </dd></dl>
@@ -410,7 +514,10 @@ model to assign an income for people that get into the workforce.</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Employment Module</a><ul>
+<li><a class="reference internal" href="#module-function">Module function</a><ul>
 <li><a class="reference internal" href="#demos.models.employment.employment"><code class="docutils literal notranslate"><span class="pre">employment()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#orca-columns">Orca Columns</a><ul>
 <li><a class="reference internal" href="#demos.models.employment.new_earning"><code class="docutils literal notranslate"><span class="pre">new_earning()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.employment.income_dist"><code class="docutils literal notranslate"><span class="pre">income_dist()</span></code></a></li>

@@ -199,13 +199,13 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="modules.html">DEMOS Modules</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Aging Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mortality_module.html">Mortality Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -257,43 +257,93 @@
         <article role="main" id="furo-main-content">
           <section id="aging-module">
 <h1>Aging Module<a class="headerlink" href="#aging-module" title="Link to this heading">¶</a></h1>
+<p>This module handles the annual aging process for all persons in the simulation.
+It also provides orca columns for identifying children, seniors, and age groups.</p>
+<ul class="simple">
+<li><p>Increments age for all persons each simulation year.</p></li>
+<li><p>Identifies children and seniors based on configurable criteria.</p></li>
+<li><p>Categorizes persons into age groups for use in other modules and models.</p></li>
+</ul>
+<section id="module-function">
+<h2>Module function<a class="headerlink" href="#module-function" title="Link to this heading">¶</a></h2>
 <p>Module configuration options: <a class="reference internal" href="configuration_module.html#demos.config.AgingModuleConfig" title="demos.config.AgingModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">AgingModuleConfig</span></code></a></p>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.aging.aging">
 <span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">aging</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#aging"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.aging" title="Link to this definition">¶</a></dt>
-<dd><p>Increases the age of every person in the persons table by 1</p>
-<dl class="simple">
-<dt><strong>Required tables:</strong></dt><dd><ul class="simple">
-<li><p>persons</p></li>
-</ul>
-</dd>
-<dt><strong>Modifies State Variables:</strong></dt><dd><ul class="simple">
-<li><p>persons.age</p></li>
-</ul>
+<dd><p>Increment the age of every person by one year.</p>
+<p>This step updates the <cite>age</cite> column in the <cite>persons</cite> table, simulating the passage of one year
+for all agents in the population.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing the <cite>age</cite> column.</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Modifies <cite>persons.age</cite> in place.</p></li>
+<li><p>Should be run once per simulation year.</p></li>
+</ul>
 </dd></dl>
 
+</section>
 <section id="orca-columns">
 <h2>Orca Columns<a class="headerlink" href="#orca-columns" title="Link to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.aging.child">
 <span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persons.relate'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#child"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.child" title="Link to this definition">¶</a></dt>
-<dd><p>This column returns a binary value equal to 1 if the person has a <cite>relate</cite> value
-of <cite>2</cite>, <cite>3</cite>, <cite>4</cite> or <cite>14</cite>.</p>
+<dd><p>Identify children in the persons table.</p>
+<p>Returns a binary indicator (1 or 0) for each person, where 1 indicates the person is a child
+based on the <cite>relate</cite> code (values 2, 3, 4, or 14).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pandas.Series</em>) – The <cite>relate</cite> column from the persons table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Binary indicator for child status.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.aging.senior">
 <span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">senior</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persons.age'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#senior"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.senior" title="Link to this definition">¶</a></dt>
-<dd><p>Returns a binary value for each row in persons table set to 1 if the person
-is above <cite>aging_module_config.senior_age</cite> (defaults to <cite>65</cite>).</p>
+<dd><p>Identify seniors in the persons table.</p>
+<p>Returns a binary indicator (1 or 0) for each person, where 1 indicates the person is a senior,
+defined as having an age greater than or equal to the threshold specified in the aging module config
+(default is 65).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pandas.Series</em>) – The <cite>age</cite> column from the persons table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Binary indicator for senior status.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.aging.age_group">
 <span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">age_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'persons.age'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#age_group"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.age_group" title="Link to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Assign each person to an age group.</p>
+<p>Categorizes persons into predefined age intervals for use in modeling and reporting.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> (<em>pandas.Series</em>) – The <cite>age</cite> column from the persons table.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Categorical age group labels as strings.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
+</dd></dl>
 
 </section>
 <section id="module-demos.models.aging">
@@ -357,7 +407,10 @@ is above <cite>aging_module_config.senior_age</cite> (defaults to <cite>65</cite
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Aging Module</a><ul>
+<li><a class="reference internal" href="#module-function">Module function</a><ul>
 <li><a class="reference internal" href="#demos.models.aging.aging"><code class="docutils literal notranslate"><span class="pre">aging()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#orca-columns">Orca Columns</a><ul>
 <li><a class="reference internal" href="#demos.models.aging.child"><code class="docutils literal notranslate"><span class="pre">child()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.aging.senior"><code class="docutils literal notranslate"><span class="pre">senior()</span></code></a></li>

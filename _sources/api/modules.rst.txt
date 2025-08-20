@@ -1,11 +1,6 @@
 DEMOS Modules
 =============
 
-.. automodule:: demos
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. toctree::
    :maxdepth: 2
    :caption: Modules
@@ -14,3 +9,4 @@ DEMOS Modules
    employment_module
    hh_reorg_module
    kids_move_module
+   mortality_module

@@ -198,13 +198,13 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/aging_module.html">Aging Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/mortality_module.html">Mortality Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -272,19 +272,28 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">STEP_NAME</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">employment</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Executes the `enter_` and `exit_laborforce` estimated models to determine which unemployed</span>
-<span class="sd">    persons change to employed and which employed change to unemployed. Elegible persons are those</span>
-<span class="sd">    18 years or older.</span>
+<span class="sd">    Simulate labor force transitions for eligible persons.</span>
 
-<span class="sd">    The `earning` column stores the annual income of each individual. For those unemployed, `earning` is set</span>
-<span class="sd">    to 0, for the rest, the `new_earning` lazily-computed orca column is used to determine the new income.</span>
+<span class="sd">    This step applies estimated models to determine which unemployed persons become employed</span>
+<span class="sd">    and which employed persons exit the workforce. Only persons aged 18 or older are considered.</span>
+<span class="sd">    The function updates the `worker` and `earning` columns in the `persons` table.</span>
 
-<span class="sd">    **Required tables:**</span>
-<span class="sd">        - persons</span>
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table containing individual-level attributes.</span>
 
-<span class="sd">    **Modifies State Variables:**</span>
-<span class="sd">        - persons.worker</span>
-<span class="sd">        - persons.earning</span>
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Requires the `persons` table with columns: `age`, `worker`, `earning`.</span>
+<span class="sd">    - Modifies `persons.worker` and `persons.earning` in place.</span>
+<span class="sd">    - Uses module configuration from the TOML config file.</span>
+<span class="sd">    - Triggers caching of the `income_dist` table for income assignment.</span>
+
+<span class="sd">    Example</span>
+<span class="sd">    -------</span>
+<span class="sd">    This step is executed as part of the annual simulation loop:</span>
+<span class="sd">        `orca.run([&#39;employment&#39;], iter_vars=[...])`</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
@@ -319,7 +328,19 @@
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.sample_income">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">sample_income</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Auxiliary function to sample from a lognormal distribution</span>
+<span class="sd">    Draw samples from a lognormal distribution.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    mean : float or array-like</span>
+<span class="sd">        The mean(s) of the underlying normal distribution.</span>
+<span class="sd">    std : float or array-like</span>
+<span class="sd">        The standard deviation(s) of the underlying normal distribution.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    float or np.ndarray</span>
+<span class="sd">        Sample(s) from the lognormal distribution.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">lognormal</span><span class="p">(</span><span class="n">mean</span><span class="p">,</span> <span class="n">std</span><span class="p">)</span></div>
 
@@ -329,7 +350,19 @@
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.run_and_calibrate_in_workforce_model">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_in_workforce_model</span><span class="p">(</span><span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">CalibrationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Execute `enter_labor_force` estimated model on elegible people according to the calibration procedure.</span>
+<span class="sd">    Run the &#39;enter_labor_force&#39; estimated model for eligible persons.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : pandas.DataFrame</span>
+<span class="sd">        DataFrame of persons with required model variables.</span>
+<span class="sd">    calibration_procedure : CalibrationConfig or None</span>
+<span class="sd">        Calibration procedure to apply, if any.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Model predictions for each eligible person (0 = remain unemployed, 1 = become employed).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get model data</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="s2">&quot;enter_labor_force&quot;</span><span class="p">)</span>
@@ -348,7 +381,19 @@
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.run_and_calibrate_out_workforce_model">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_out_workforce_model</span><span class="p">(</span><span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">calibration_procedure</span><span class="p">:</span> <span class="n">CalibrationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Execute `exit_labor_force` estimated model on elegible people according to the calibration procedure.</span>
+<span class="sd">    Run the &#39;exit_labor_force&#39; estimated model for eligible persons.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : pandas.DataFrame</span>
+<span class="sd">        DataFrame of persons with required model variables.</span>
+<span class="sd">    calibration_procedure : CalibrationConfig or None</span>
+<span class="sd">        Calibration procedure to apply, if any.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Model predictions for each eligible person (0 = remain employed, 1 = become unemployed).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get model data</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="s2">&quot;exit_labor_force&quot;</span><span class="p">)</span>
@@ -367,7 +412,19 @@
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.run_simultaenous_calibration">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">run_simultaenous_calibration</span><span class="p">(</span><span class="n">persons</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">simultaneous_calibration_config</span><span class="p">:</span> <span class="n">SimultaneousCalibrationConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Execute both `enter_labor_force` and `exit_labor_force` estimated models on elegible people according to the calibration procedure.</span>
+<span class="sd">    Run simultaneous calibration for both &#39;enter&#39; and &#39;exit&#39; labor force models.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : pandas.DataFrame</span>
+<span class="sd">        DataFrame of persons with required model variables.</span>
+<span class="sd">    simultaneous_calibration_config : SimultaneousCalibrationConfig</span>
+<span class="sd">        Configuration for simultaneous calibration.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    tuple of pandas.Series</span>
+<span class="sd">        Predictions for entering and exiting the workforce.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Get enter model data</span>
     <span class="n">enter_model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="s2">&quot;enter_labor_force&quot;</span><span class="p">)</span>
@@ -424,14 +481,27 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">new_earning</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">income_dist</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Sample income for new workers according to income distribution (`income_dist`) computed from the original synthetic population.</span>
-<span class="sd">    The income distribution is computed once and cached to be used in `new_earning` calls.</span>
+<span class="sd">    Compute new earnings for persons entering the workforce.</span>
 
-<span class="sd">    Click `[source]` (top right) for more details</span>
+<span class="sd">    For each eligible person, samples income from a lognormal distribution</span>
+<span class="sd">    parameterized by age and education group, using the cached `income_dist` table.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table.</span>
+<span class="sd">    income_dist : orca.Table</span>
+<span class="sd">        Table with income distribution parameters.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Sampled earnings for each person.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">persons_df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">])</span>
     <span class="n">merged_df</span> <span class="o">=</span> <span class="n">persons_df</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">income_dist</span><span class="o">.</span><span class="n">local</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;age_group&#39;</span><span class="p">,</span> <span class="s1">&#39;education_group&#39;</span><span class="p">],</span> <span class="n">how</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">sample_income</span><span class="p">(</span><span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;mu&quot;</span><span class="p">],</span> <span class="n">merged_df</span><span class="p">[</span><span class="s2">&quot;sigma&quot;</span><span class="p">]),</span> <span class="n">index</span><span class="o">=</span><span class="n">persons_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span></div>
+
 
 
 <div class="viewcode-block" id="hh_workers">
@@ -439,7 +509,17 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hh_workers</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Number of workers per household</span>
+<span class="sd">    Compute the number of workers per household.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Categorical summary: &quot;none&quot;, &quot;one&quot;, or &quot;two or more&quot; workers per household.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">])</span> \
            <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span> \
@@ -448,12 +528,27 @@
                   <span class="p">(</span><span class="s2">&quot;one&quot;</span> <span class="k">if</span> <span class="n">r</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="s2">&quot;two or more&quot;</span><span class="p">))</span></div>
 
 
+
 <div class="viewcode-block" id="income">
 <a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.income">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">income</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Household-level income from person-level income. NOTE: This is for HOUSEHOLDS table</span>
+<span class="sd">    Aggregate household income from person-level earnings.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Total income per household.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    This is for `HOUSEHOLDS` table</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])</span> \
                   <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span> \
@@ -465,9 +560,19 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cache_scope</span><span class="o">=</span><span class="s1">&#39;forever&#39;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">income_dist</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This table is computed the first time it is called, and stores the average and standard deviation of the income</span>
-<span class="sd">    of workers at the beginning of the simulation by age and education group. These values are used in the employment</span>
-<span class="sd">    model to assign an income for people that get into the workforce.</span>
+<span class="sd">    Compute and cache income distribution parameters by age and education group.</span>
+
+<span class="sd">    This table is used to sample earnings for new workers in the employment model.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.DataFrame</span>
+<span class="sd">        DataFrame with columns: age_group, education_group, data_mean, data_std, mu, sigma.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">income_dist</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;worker&quot;</span><span class="p">,</span> <span class="s2">&quot;age_group&quot;</span><span class="p">,</span> <span class="s2">&quot;education_group&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;worker&quot;</span><span class="p">]</span><span class="o">==</span><span class="mi">1</span><span class="p">]</span>\
         <span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s1">&#39;age_group&#39;</span><span class="p">,</span> <span class="s1">&#39;education_group&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>

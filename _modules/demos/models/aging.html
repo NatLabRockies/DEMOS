@@ -198,13 +198,13 @@
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../../../README.html">Demographic Microsimulator(DEMOS)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../pages/intro.html">Get Started</a></li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../api/modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/aging_module.html">Aging Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../api/mortality_module.html">Mortality Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -251,7 +251,6 @@
           <h1>Source code for demos.models.aging</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">orca</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging_logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_execution_time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEMOSConfig</span><span class="p">,</span> <span class="n">AgingModuleConfig</span><span class="p">,</span> <span class="n">get_config</span>
@@ -266,14 +265,20 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">STEP_NAME</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">aging</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Increases the age of every person in the persons table by 1</span>
+<span class="sd">    Increment the age of every person by one year.</span>
 
-<span class="sd">    **Required tables:**</span>
-<span class="sd">        - persons</span>
-<span class="sd">    </span>
-<span class="sd">    **Modifies State Variables:**</span>
-<span class="sd">        - persons.age</span>
+<span class="sd">    This step updates the `age` column in the `persons` table, simulating the passage of one year</span>
+<span class="sd">    for all agents in the population.</span>
 
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table containing the `age` column.</span>
+
+<span class="sd">    Notes</span>
+<span class="sd">    -----</span>
+<span class="sd">    - Modifies `persons.age` in place.</span>
+<span class="sd">    - Should be run once per simulation year.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
@@ -286,8 +291,20 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">child</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;persons.relate&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    This column returns a binary value equal to 1 if the person has a `relate` value</span>
-<span class="sd">    of `2`, `3`, `4` or `14`.</span>
+<span class="sd">    Identify children in the persons table.</span>
+
+<span class="sd">    Returns a binary indicator (1 or 0) for each person, where 1 indicates the person is a child</span>
+<span class="sd">    based on the `relate` code (values 2, 3, 4, or 14).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : pandas.Series</span>
+<span class="sd">        The `relate` column from the persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Binary indicator for child status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span></div>
 
@@ -298,8 +315,21 @@
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">senior</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;persons.age&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a binary value for each row in persons table set to 1 if the person</span>
-<span class="sd">    is above `aging_module_config.senior_age` (defaults to `65`).</span>
+<span class="sd">    Identify seniors in the persons table.</span>
+
+<span class="sd">    Returns a binary indicator (1 or 0) for each person, where 1 indicates the person is a senior,</span>
+<span class="sd">    defined as having an age greater than or equal to the threshold specified in the aging module config</span>
+<span class="sd">    (default is 65).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : pandas.Series</span>
+<span class="sd">        The `age` column from the persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Binary indicator for senior status.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Load calibration config</span>
     <span class="n">demos_config</span><span class="p">:</span> <span class="n">DEMOSConfig</span> <span class="o">=</span> <span class="n">get_config</span><span class="p">()</span>
@@ -312,6 +342,21 @@
 <a class="viewcode-back" href="../../../api/aging_module.html#demos.models.aging.age_group">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">age_group</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;persons.age&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Assign each person to an age group.</span>
+
+<span class="sd">    Categorizes persons into predefined age intervals for use in modeling and reporting.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    data : pandas.Series</span>
+<span class="sd">        The `age` column from the persons table.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Categorical age group labels as strings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">age_intervals</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">65</span><span class="p">,</span> <span class="mi">900</span><span class="p">]</span>
     <span class="n">age_labels</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;lte19&#39;</span><span class="p">,</span> <span class="s1">&#39;20-29&#39;</span><span class="p">,</span> <span class="s1">&#39;30-39&#39;</span><span class="p">,</span> <span class="s1">&#39;40-49&#39;</span><span class="p">,</span> <span class="s1">&#39;50-64&#39;</span><span class="p">,</span> <span class="s1">&#39;gte65&#39;</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">age_intervals</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">age_labels</span><span class="p">,</span> <span class="n">include_lowest</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span></div>
