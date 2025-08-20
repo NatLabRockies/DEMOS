@@ -21,24 +21,32 @@ REQUIRED_COLUMNS = [
 @orca.step(STEP_NAME)
 def household_reorg(persons, households, year, get_new_households):
     """
-    This module executes the logic of three sub-modules: Cohabitations, Marriage and Divorce. The logic of each
-    sub-module is controlled by estimated models. These models are run all together at the beginning of the
-    module's execution.
-    
-    If simultaneous calibration data is provided through the configuration file, then
-    a simultaneous calibration procedure is run in which the expected output of the three models combined is used
-    to assess the fitness to the calibration data. That is, given the current output of the estimated models,
-    we calculate how many married and divorced people are expected after their execution, and update the coefficient
-    of the estimated model's parameters if needed.
+    Main step for household reorganization: executes marriage, divorce, and cohabitation sub-models.
 
-    **Required tables:**
-        - persons
-        - households
+    This function runs all three estimated models, optionally calibrates them to observed data, and updates
+    the persons and households tables in place. It handles the creation and dissolution of households,
+    changes in marital status, and cohabitation transitions.
 
-    **Modifies State Variables:**
-        - persons.relate
-        - persons.MAR
-        - persons.household_id
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes.
+    households : orca.Table
+        The households table containing household-level attributes.
+    year : int
+        The current simulation year.
+    get_new_households : callable
+        Function to generate new unique household IDs as needed.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - The outputs of the estimated models are used to update the simulation state in place.
+    - Simultaneous calibration is performed if calibration data is provided in the configuration.
+    - See module-level docstring for details on model outputs and caveats.
     """
     start_time = time.time()
     marriage_model = mm.get_step("marriage")
@@ -117,8 +125,25 @@ def household_reorg(persons, households, year, get_new_households):
 @orca.injectable(autocall=False)
 def get_new_households(n):
     """
-    Auxiliary orca injectable that creates IDs for new households, maintaining consistency across
-    the persons and graveyard table so that household IDs never repeat.
+    Generate new unique household IDs for use in household reorganization.
+
+    Ensures that new household IDs do not overlap with any existing or historical IDs
+    in the persons, graveyard, or rebalanced_persons tables. Also expands the households table index as needed.
+
+    Parameters
+    ----------
+    n : int
+        Number of new household IDs to generate.
+
+    Returns
+    -------
+    np.ndarray
+        Array of new unique household IDs.
+
+    Notes
+    -----
+    - This function is used internally by the household reorganization logic.
+    - The method for adding empty rows to the households table may change in the future.
     """
     persons = orca.get_table("persons")
     graveyard = orca.get_table("graveyard")
@@ -138,7 +163,21 @@ def get_new_households(n):
 @orca.injectable()
 def persons_grouped_household(persons):
     """
-    Auxiliary injectable that precomputes `persons.groupby('household_id')`
+    Precompute a groupby object for persons by household_id.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table.
+
+    Returns
+    -------
+    pandas.core.groupby.DataFrameGroupBy
+        GroupBy object for persons grouped by household_id.
+
+    Notes
+    -----
+    - Used for efficient aggregation in household-level orca columns.
     """
     return persons.to_frame().groupby("household_id")
 
@@ -230,7 +269,34 @@ def hh_size(persons_grouped_household):
 
 
 def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
+    """
+    Perform simultaneous calibration of marriage, divorce, and cohabitation models.
 
+    Adjusts model parameters so that the combined outputs of the three estimated models
+    (marriage, divorce, cohabitation) match observed aggregate statistics for married and divorced persons.
+    Uses a simple gradient-based optimization with optional momentum.
+
+    Parameters
+    ----------
+    sim_cal_config : SimultaneousCalibrationConfig
+        Configuration for the calibration procedure (learning rate, tolerance, etc).
+    persons : orca.Table
+        The persons table.
+    marriage_model, cohab_model, divorce_model : EstimatedModel
+        Fitted estimated model objects for each sub-model.
+    marriage_data, cohab_data, divorce_data : pandas.DataFrame
+        Data for each model to make predictions on.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Only runs if calibration data is provided in the configuration.
+    - Updates model parameters in place.
+    - See module-level docstring for caveats.
+    """
     marital_status_table = orca.get_table("marital_status_output")
 
     def compute_error(n_married, n_divorced, target_married, target_divorced):
@@ -319,16 +385,73 @@ def simultaneous_calibration(sim_cal_config, persons, marriage_model, cohab_mode
 
 
 def run_models(marriage_model, cohab_model, divorce_model, marriage_data, cohab_data, divorce_data):
+    """
+    Run all three estimated models and return their outputs.
+
+    Parameters
+    ----------
+    marriage_model, cohab_model, divorce_model : EstimatedModel
+        Fitted estimated model objects for each sub-model.
+    marriage_data, cohab_data, divorce_data : pandas.DataFrame
+        Data for each model to make predictions on.
+
+    Returns
+    -------
+    tuple
+        (marriage_list, divorce_list, cohabitate_x_list):
+        - marriage_list: pd.Series, 0 = stay single, 1 = cohabitate, 2 = get married
+        - divorce_list: pd.Series, 0 = stay married, 1 = divorce
+        - cohabitate_x_list: pd.Series, 0 = stay cohabitating, 1 = break up, 2 = get married
+    """
     marriage_list = marriage_model.predict(marriage_data)
     divorce_list = divorce_model.predict(divorce_data).astype(int)
     cohabitate_x_list = cohab_model.predict(cohab_data)
     return marriage_list, divorce_list, cohabitate_x_list
 
 def print_marital_count(persons_df):
+    """
+    Print the number of people with each marital status (MAR=1 or MAR=3).
+
+    Parameters
+    ----------
+    persons_df : pandas.DataFrame
+        DataFrame of persons, must include 'MAR' column.
+
+    Returns
+    -------
+    None
+    """
     for i in [1, 3]:
         logger.debug(f"Number of people with MAR={i}: {(persons_df.MAR == i).sum():,}")
 
 def compute_expected_marital_status(persons_df, cohabitate_x_list, marriage_list, divorce_list):
+    """
+    Compute the expected number of married and divorced persons after applying model outputs.
+
+    Parameters
+    ----------
+    persons_df : pandas.DataFrame
+        DataFrame of persons, must include 'MAR', 'relate', 'person_sex', and 'household_id'.
+    cohabitate_x_list : pd.Series
+        Output of the cohabitation model (see module docstring for values).
+    marriage_list : pd.Series
+        Output of the marriage model (see module docstring for values).
+    divorce_list : pd.Series
+        Output of the divorce model (see module docstring for values).
+
+    Returns
+    -------
+    tuple
+        (n_married_after, min_div, max_div):
+        - n_married_after: int, expected number of married persons after updates
+        - min_div: int, minimum expected number of divorced persons
+        - max_div: int, maximum expected number of divorced persons
+
+    Notes
+    -----
+    - Used for calibration and reporting.
+    - Logic is based on current and predicted statuses.
+    """
     starting_married = (persons_df.MAR == 1)
     starting_n_married = starting_married.sum()
     starting_divorced = (persons_df.MAR == 3)
@@ -381,12 +504,6 @@ def compute_expected_marital_status(persons_df, cohabitate_x_list, marriage_list
 
 @orca.step("print_household_stats")
 def print_household_stats():
-    """Function to print the number of households from both the households and pers
-
-    Args:
-        persons (DataFrame): Pandas DataFrame of the persons table
-        households (DataFrame): Pandas DataFrame of the households table
-    """
     logger.debug(f"Households size from persons table: {orca.get_table('persons').local['household_id'].unique().shape[0]}")
     logger.debug(f"Households size from households table: {orca.get_table('households').local.index.unique().shape[0]}")
     logger.debug(f"Persons Size: {orca.get_table('persons').local.index.unique().shape[0]}")
@@ -452,8 +569,6 @@ def update_cohabitating_households(persons, households, cohabitate_list, get_new
 
 
 def fix_erroneous_households(persons):
-    """
-    """
     n_partners_df = persons.local[(persons["relate"] == 1) | (persons["relate"] == 13)] \
         .groupby("household_id")["relate"] \
         .nunique() \

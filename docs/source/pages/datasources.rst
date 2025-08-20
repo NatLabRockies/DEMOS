@@ -1,5 +1,5 @@
 Data Sources
-===========
+============
 
 Documentation for configuration of data sources currently implemented
 

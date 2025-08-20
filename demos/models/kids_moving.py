@@ -68,7 +68,6 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     kids_moving_index = kids_moving.reindex(persons.local.index).fillna(0).astype(bool) & eligeble_households_index
 
     # Get the old household_id for the moving kids to retrieve the county_id
-    # TODO: Parametrize county_id
     old_household_id = persons.local.loc[kids_moving_index, "household_id"].values
     county_assignment = households.local.loc[old_household_id, module_config.geoid_col].values
 

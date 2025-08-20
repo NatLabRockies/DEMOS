@@ -19,19 +19,28 @@ REQUIRED_COLUMNS = [
 @orca.step(STEP_NAME)
 def employment(persons):
     """
-    Executes the `enter_` and `exit_laborforce` estimated models to determine which unemployed
-    persons change to employed and which employed change to unemployed. Elegible persons are those
-    18 years or older.
+    Simulate labor force transitions for eligible persons.
 
-    The `earning` column stores the annual income of each individual. For those unemployed, `earning` is set
-    to 0, for the rest, the `new_earning` lazily-computed orca column is used to determine the new income.
+    This step applies estimated models to determine which unemployed persons become employed
+    and which employed persons exit the workforce. Only persons aged 18 or older are considered.
+    The function updates the `worker` and `earning` columns in the `persons` table.
 
-    **Required tables:**
-        - persons
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes.
 
-    **Modifies State Variables:**
-        - persons.worker
-        - persons.earning
+    Notes
+    -----
+    - Requires the `persons` table with columns: `age`, `worker`, `earning`.
+    - Modifies `persons.worker` and `persons.earning` in place.
+    - Uses module configuration from the TOML config file.
+    - Triggers caching of the `income_dist` table for income assignment.
+
+    Example
+    -------
+    This step is executed as part of the annual simulation loop:
+        `orca.run(['employment'], iter_vars=[...])`
     """
     start_time = time.time()
 
@@ -63,14 +72,38 @@ def employment(persons):
 
 def sample_income(mean, std):
     """
-    Auxiliary function to sample from a lognormal distribution
+    Draw samples from a lognormal distribution.
+
+    Parameters
+    ----------
+    mean : float or array-like
+        The mean(s) of the underlying normal distribution.
+    std : float or array-like
+        The standard deviation(s) of the underlying normal distribution.
+
+    Returns
+    -------
+    float or np.ndarray
+        Sample(s) from the lognormal distribution.
     """
     return np.random.lognormal(mean, std)
 
 
 def run_and_calibrate_in_workforce_model(persons: pd.DataFrame, calibration_procedure: CalibrationConfig) -> pd.Series:
     """
-    Execute `enter_labor_force` estimated model on elegible people according to the calibration procedure.
+    Run the 'enter_labor_force' estimated model for eligible persons.
+
+    Parameters
+    ----------
+    persons : pandas.DataFrame
+        DataFrame of persons with required model variables.
+    calibration_procedure : CalibrationConfig or None
+        Calibration procedure to apply, if any.
+
+    Returns
+    -------
+    pandas.Series
+        Model predictions for each eligible person (0 = remain unemployed, 1 = become employed).
     """
     # Get model data
     model = mm.get_step("enter_labor_force")
@@ -86,7 +119,19 @@ def run_and_calibrate_in_workforce_model(persons: pd.DataFrame, calibration_proc
 
 def run_and_calibrate_out_workforce_model(persons: pd.DataFrame, calibration_procedure: CalibrationConfig) -> pd.Series:
     """
-    Execute `exit_labor_force` estimated model on elegible people according to the calibration procedure.
+    Run the 'exit_labor_force' estimated model for eligible persons.
+
+    Parameters
+    ----------
+    persons : pandas.DataFrame
+        DataFrame of persons with required model variables.
+    calibration_procedure : CalibrationConfig or None
+        Calibration procedure to apply, if any.
+
+    Returns
+    -------
+    pandas.Series
+        Model predictions for each eligible person (0 = remain employed, 1 = become unemployed).
     """
     # Get model data
     model = mm.get_step("exit_labor_force")
@@ -102,7 +147,19 @@ def run_and_calibrate_out_workforce_model(persons: pd.DataFrame, calibration_pro
 
 def run_simultaenous_calibration(persons: pd.DataFrame, simultaneous_calibration_config: SimultaneousCalibrationConfig) -> pd.Series:
     """
-    Execute both `enter_labor_force` and `exit_labor_force` estimated models on elegible people according to the calibration procedure.
+    Run simultaneous calibration for both 'enter' and 'exit' labor force models.
+
+    Parameters
+    ----------
+    persons : pandas.DataFrame
+        DataFrame of persons with required model variables.
+    simultaneous_calibration_config : SimultaneousCalibrationConfig
+        Configuration for simultaneous calibration.
+
+    Returns
+    -------
+    tuple of pandas.Series
+        Predictions for entering and exiting the workforce.
     """
     # Get enter model data
     enter_model = mm.get_step("enter_labor_force")
@@ -156,19 +213,42 @@ def run_simultaenous_calibration(persons: pd.DataFrame, simultaneous_calibration
 @orca.column(table_name="persons")
 def new_earning(persons, income_dist):
     """
-    Sample income for new workers according to income distribution (`income_dist`) computed from the original synthetic population.
-    The income distribution is computed once and cached to be used in `new_earning` calls.
+    Compute new earnings for persons entering the workforce.
 
-    Click `[source]` (top right) for more details
+    For each eligible person, samples income from a lognormal distribution
+    parameterized by age and education group, using the cached `income_dist` table.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table.
+    income_dist : orca.Table
+        Table with income distribution parameters.
+
+    Returns
+    -------
+    pandas.Series
+        Sampled earnings for each person.
     """
     persons_df = persons.to_frame(["age_group", "education_group"])
     merged_df = persons_df.merge(income_dist.local, on=['age_group', 'education_group'], how='left')
     return pd.Series(sample_income(merged_df["mu"], merged_df["sigma"]), index=persons_df.index)
 
+
 @orca.column(table_name="households")
 def hh_workers(persons):
     """
-    Number of workers per household
+    Compute the number of workers per household.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Categorical summary: "none", "one", or "two or more" workers per household.
     """
     return persons.to_frame(["household_id", "worker"]) \
            .groupby("household_id") \
@@ -176,10 +256,25 @@ def hh_workers(persons):
            .apply(lambda r: "none" if r == 0 else
                   ("one" if r == 1 else "two or more"))
 
+
 @orca.column(table_name="households")
 def income(persons):
     """
-    Household-level income from person-level income. NOTE: This is for HOUSEHOLDS table
+    Aggregate household income from person-level earnings.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Total income per household.
+
+    Notes
+    -----
+    This is for `HOUSEHOLDS` table
     """
     return persons.to_frame(["household_id", "earning"]) \
                   .groupby("household_id") \
@@ -188,9 +283,19 @@ def income(persons):
 @orca.table(cache=True, cache_scope='forever')
 def income_dist(persons):
     """
-    This table is computed the first time it is called, and stores the average and standard deviation of the income
-    of workers at the beginning of the simulation by age and education group. These values are used in the employment
-    model to assign an income for people that get into the workforce.
+    Compute and cache income distribution parameters by age and education group.
+
+    This table is used to sample earnings for new workers in the employment model.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table.
+
+    Returns
+    -------
+    pandas.DataFrame
+        DataFrame with columns: age_group, education_group, data_mean, data_std, mu, sigma.
     """
     income_dist = persons.to_frame(["worker", "age_group", "education_group", "earning"])[persons["worker"]==1]\
         .groupby(['age_group', 'education_group']).agg(

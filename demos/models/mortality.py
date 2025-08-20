@@ -7,22 +7,28 @@ from logging_logic import log_execution_time
 from config import DEMOSConfig, get_config
 from templates.utils.models import columns_in_formula
 
-@orca.step("fatality_model")
-def fatality_model(persons, households, observed_fatalities_data, relational_adjustment_mapping, graveyard, year):
-    """Function to run the fatality model at the persons level.
-    The function also updates the persons and households tables,
-    and saves the mortalities table.
+STEP_NAME = "mortality"
+REQUIRED_COLUMNS = [
+    "persons.MAR",
+    "persons.relate",
+]
+@orca.step(STEP_NAME)
+def mortality(persons, households, relational_adjustment_mapping, graveyard):
+    """Executes the `mortality` estimated model and updates the households and persons
+    table accordingly. Importantly, this module updates the `relate` column according to the
+    `relational_adjustment_mapping` table.
+    
+    **Required tables:**
+        - persons
+        - households
+        - relational_adjustment_mapping
 
-    Modifies State Variables:
+    **Modifies State Variables:**
         - persons.MAR
         - persons.relate
         - (Adds rows from `graveyard` table)
         - (Removes rows from `persons` table)
         - (Removes rows from `households` table)
-
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of persons table
-        households (DataFrameWrapper): DataFrameWrapper of households table
     """
     start_time = time.time()
 

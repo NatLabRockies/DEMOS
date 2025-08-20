@@ -27,7 +27,7 @@ Docker imposes a global limit on how much RAM containers can allocate. DEMOS eas
 docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
 ```
 
-
+### From Source
 
 1. Clone this repository
 	```

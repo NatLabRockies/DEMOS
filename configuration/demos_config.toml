@@ -22,7 +22,7 @@ modules = [
     "employment",
     "household_reorg",
     "kids_moving",
-    # "fatality_model",
+    "mortality",
     # "birth_model",
     # "education_model",
     "household_rebalancing",

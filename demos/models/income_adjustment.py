@@ -17,6 +17,7 @@ def update_income(persons, households, income_rates, year):
         year (int): simulation year
     """
     start_time = time.time()
+    # TODO: CountyID is not being updated by default
     # Update income according to county rate
     persons.local.earning *= 1 + income_rates.local.loc[year] \
                                        .set_index("lcm_county_id")["rate"] \
