@@ -7,7 +7,8 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
 
 ### Using Docker (Recommended)
 
-**While the pipeline to build a docker image is implemented, there is no publick docker image available, please execute** [from source](#From-Source)
+**Important Note:**
+> While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source)
 
 1. **Clone the repository**:
     ```bash
