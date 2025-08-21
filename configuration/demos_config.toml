@@ -23,10 +23,10 @@ modules = [
     "household_reorg",
     "kids_moving",
     "mortality",
-    # "birth_model",
-    # "education_model",
+    "birth_model",
+    "education_model",
     "household_rebalancing",
-    # "update_income"
+    "update_income"
 ]
 
 # Data sources
