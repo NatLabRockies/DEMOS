@@ -262,6 +262,7 @@
 <h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <section id="using-docker-recommended">
 <h3>Using Docker (Recommended)<a class="headerlink" href="#using-docker-recommended" title="Link to this heading">¶</a></h3>
+<p><strong>While the pipeline to build a docker image is implemented, there is no publick docker image available, please execute</strong> <a class="reference internal" href="#From-Source"><span class="xref myst">from source</span></a></p>
 <ol class="arabic">
 <li><p><strong>Clone the repository</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NREL/DEMOS_NREL.git
@@ -306,6 +307,14 @@ pip<span class="w"> </span>install<span class="w"> </span>.
 </li>
 </ol>
 </section>
+<section id="compiling-documentation-optional-but-recommended">
+<h3>Compiling documentation (Optional but recommended)<a class="headerlink" href="#compiling-documentation-optional-but-recommended" title="Link to this heading">¶</a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
+make<span class="w"> </span>html
+open<span class="w"> </span>build/html/index.html
+</pre></div>
+</div>
+</section>
 </section>
 <section id="preparing-your-configuration">
 <h2>2. Preparing Your Configuration<a class="headerlink" href="#preparing-your-configuration" title="Link to this heading">¶</a></h2>
@@ -324,19 +333,49 @@ At minimum, you must define the <code class="docutils literal notranslate"><span
 <span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
 </pre></div>
 </div>
-<p>Other tables and module configurations can be added as needed.<br />
-See the example config for more options, including output tables, calibration, and module selection.</p>
+<p>Other tables and module configurations can be added as needed. The default configuration exposes all options with default values.</p>
+<!-- See the example config for more options, including output tables, calibration, and module selection. -->
+</section>
+<section id="file-tree-structure-for-data-and-configuration">
+<h2>3. File Tree Structure for Data and Configuration<a class="headerlink" href="#file-tree-structure-for-data-and-configuration" title="Link to this heading">¶</a></h2>
+<p>To run DEMOS, organize your files as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>DEMOS_NREL/
+├── configuration/
+│   └── demos_config.toml # Main configuration file (TOML)
+├── data/
+|   ├── custom_mpo_06197001_model_data.h5 # Example HDF5 data file
+│   ├── relmap_06197001.csv # Example CSV data file
+│   ├── income_rates_06197001.csv # Example CSV data file
+│   ├── hsize_ct_06197001.csv # Example CSV data file 
+|   └── calibrated_configs/ # Here is were the parameters of the estimated models go
+|       └── ...
+├── demos/ # Source code 
+├── docs/ # Documentation
+├── simulate.py # Main entry point for running DEMOS 
+└── ...
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Place your <strong>TOML configuration file</strong> in the <code class="docutils literal notranslate"><span class="pre">configuration/</span></code> directory.</p></li>
+<li><p>Place all <strong>input data files</strong> (CSV, HDF5, etc.) in the <code class="docutils literal notranslate"><span class="pre">data/</span></code> directory.</p></li>
+<li><p>Make sure the paths in your <code class="docutils literal notranslate"><span class="pre">demos_config.toml</span></code> match the location of your data files.</p></li>
+</ul>
+<blockquote>
+<div><p><strong>Tip:</strong><br />
+You can use different data files or directories, but make sure the paths in your configuration file are correct relative to the project root (<code class="docutils literal notranslate"><span class="pre">DEMOS_NREL/</span></code>).</p>
+</div></blockquote>
 </section>
 <section id="running-demos">
-<h2>3. Running DEMOS<a class="headerlink" href="#running-demos" title="Link to this heading">¶</a></h2>
+<h2>4. Running DEMOS<a class="headerlink" href="#running-demos" title="Link to this heading">¶</a></h2>
 <p>From the project root, run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>simulate.py<span class="w"> </span>-cfg<span class="w"> </span>configuration/demos_config.toml
 </pre></div>
 </div>
 <p>Or use Docker as described above.</p>
+<p>The output of DEMOS will be stored in <code class="docutils literal notranslate"><span class="pre">data/output/demos_output_{year}.h5</span></code>.</p>
 </section>
 <section id="understanding-the-workflow">
-<h2>4. Understanding the Workflow<a class="headerlink" href="#understanding-the-workflow" title="Link to this heading">¶</a></h2>
+<h2>5. Understanding the Workflow<a class="headerlink" href="#understanding-the-workflow" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Tables</strong>: Each row in the <code class="docutils literal notranslate"><span class="pre">persons</span></code> and <code class="docutils literal notranslate"><span class="pre">households</span></code> tables represents an agent or entity.</p></li>
 <li><p><strong>Modules</strong>: Simulation logic is organized into modules, each operating on the tables for each simulated year.</p></li>
@@ -345,7 +384,7 @@ See the example config for more options, including output tables, calibration, a
 </ul>
 </section>
 <section id="troubleshooting-common-errors">
-<h2>5. Troubleshooting Common Errors<a class="headerlink" href="#troubleshooting-common-errors" title="Link to this heading">¶</a></h2>
+<h2>6. Troubleshooting Common Errors<a class="headerlink" href="#troubleshooting-common-errors" title="Link to this heading">¶</a></h2>
 <ul>
 <li><p><strong>Missing Required Tables</strong>:<br />
 If either <code class="docutils literal notranslate"><span class="pre">persons</span></code> or <code class="docutils literal notranslate"><span class="pre">households</span></code> is missing from your config, DEMOS will raise an error:</p>
@@ -369,7 +408,7 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 </ul>
 </section>
 <section id="next-steps">
-<h2>6. Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<h2>7. Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Explore the <a class="reference internal" href="default_configuration.html"><span class="doc std std-doc">example configuration</span></a> for more options.</p></li>
 <li><p>Review the <a class="reference internal" href="configuration.html"><span class="doc std std-doc">configuration fields and structure</span></a> to understand all available settings.</p></li>
@@ -377,7 +416,7 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 </ul>
 </section>
 <section id="need-help">
-<h2>7. Need Help?<a class="headerlink" href="#need-help" title="Link to this heading">¶</a></h2>
+<h2>8. Need Help?<a class="headerlink" href="#need-help" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/DEMOS_NREL">DEMOS GitHub Repository</a></p></li>
 <li><p><a class="reference external" href="https://github.com/UDST/orca">Orca Documentation</a></p></li>
@@ -445,14 +484,16 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 <li><a class="reference internal" href="#installation">1. Installation</a><ul>
 <li><a class="reference internal" href="#using-docker-recommended">Using Docker (Recommended)</a></li>
 <li><a class="reference internal" href="#from-source">From Source</a></li>
+<li><a class="reference internal" href="#compiling-documentation-optional-but-recommended">Compiling documentation (Optional but recommended)</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#preparing-your-configuration">2. Preparing Your Configuration</a></li>
-<li><a class="reference internal" href="#running-demos">3. Running DEMOS</a></li>
-<li><a class="reference internal" href="#understanding-the-workflow">4. Understanding the Workflow</a></li>
-<li><a class="reference internal" href="#troubleshooting-common-errors">5. Troubleshooting Common Errors</a></li>
-<li><a class="reference internal" href="#next-steps">6. Next Steps</a></li>
-<li><a class="reference internal" href="#need-help">7. Need Help?</a></li>
+<li><a class="reference internal" href="#file-tree-structure-for-data-and-configuration">3. File Tree Structure for Data and Configuration</a></li>
+<li><a class="reference internal" href="#running-demos">4. Running DEMOS</a></li>
+<li><a class="reference internal" href="#understanding-the-workflow">5. Understanding the Workflow</a></li>
+<li><a class="reference internal" href="#troubleshooting-common-errors">6. Troubleshooting Common Errors</a></li>
+<li><a class="reference internal" href="#next-steps">7. Next Steps</a></li>
+<li><a class="reference internal" href="#need-help">8. Need Help?</a></li>
 </ul>
 </li>
 </ul>

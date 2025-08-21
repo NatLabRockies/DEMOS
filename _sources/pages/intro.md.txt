@@ -7,6 +7,8 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
 
 ### Using Docker (Recommended)
 
+**While the pipeline to build a docker image is implemented, there is no publick docker image available, please execute** [from source](#From-Source)
+
 1. **Clone the repository**:
     ```bash
     git clone https://github.com/NREL/DEMOS_NREL.git
@@ -45,6 +47,14 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
     pip install .
     ```
 
+### Compiling documentation (Optional but recommended)
+
+```bash
+cd docs
+make html
+open build/html/index.html
+```
+
 
 ## 2. Preparing Your Configuration
 
@@ -65,11 +75,38 @@ filepath = "../data/custom_mpo_06197001_model_data.h5"
 h5_key = "households"
 ```
 
-Other tables and module configurations can be added as needed.  
-See the example config for more options, including output tables, calibration, and module selection.
+Other tables and module configurations can be added as needed. The default configuration exposes all options with default values.
+<!-- See the example config for more options, including output tables, calibration, and module selection. -->
 
+## 3. File Tree Structure for Data and Configuration
 
-## 3. Running DEMOS
+To run DEMOS, organize your files as follows:
+
+```
+DEMOS_NREL/
+├── configuration/
+│   └── demos_config.toml # Main configuration file (TOML)
+├── data/
+|   ├── custom_mpo_06197001_model_data.h5 # Example HDF5 data file
+│   ├── relmap_06197001.csv # Example CSV data file
+│   ├── income_rates_06197001.csv # Example CSV data file
+│   ├── hsize_ct_06197001.csv # Example CSV data file 
+|   └── calibrated_configs/ # Here is were the parameters of the estimated models go
+|       └── ...
+├── demos/ # Source code 
+├── docs/ # Documentation
+├── simulate.py # Main entry point for running DEMOS 
+└── ...
+```
+
+- Place your **TOML configuration file** in the `configuration/` directory.
+- Place all **input data files** (CSV, HDF5, etc.) in the `data/` directory.
+- Make sure the paths in your `demos_config.toml` match the location of your data files.
+
+> **Tip:**  
+> You can use different data files or directories, but make sure the paths in your configuration file are correct relative to the project root (`DEMOS_NREL/`).
+
+## 4. Running DEMOS
 
 From the project root, run:
 
@@ -79,8 +116,10 @@ python simulate.py -cfg configuration/demos_config.toml
 
 Or use Docker as described above.
 
+The output of DEMOS will be stored in `data/output/demos_output_{year}.h5`.
 
-## 4. Understanding the Workflow
+
+## 5. Understanding the Workflow
 
 - **Tables**: Each row in the `persons` and `households` tables represents an agent or entity.
 - **Modules**: Simulation logic is organized into modules, each operating on the tables for each simulated year.
@@ -88,7 +127,7 @@ Or use Docker as described above.
 - **Configuration**: All simulation options, data sources, and module settings are controlled via the TOML config file.
 
 
-## 5. Troubleshooting Common Errors
+## 6. Troubleshooting Common Errors
 
 - **Missing Required Tables**:  
   If either `persons` or `households` is missing from your config, DEMOS will raise an error:
@@ -109,14 +148,14 @@ Or use Docker as described above.
 - **Memory Errors (Docker)**:  
   DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker's memory allocation.
 
-## 6. Next Steps
+## 7. Next Steps
 
 - Explore the [example configuration](default_configuration) for more options.
 - Review the [configuration fields and structure](configuration) to understand all available settings.
 - See the documentation for details on [modules](../api/modules.rst), orca columns, and model calibration.
 
 
-## 7. Need Help?
+## 8. Need Help?
 
 - [DEMOS GitHub Repository](https://github.com/NREL/DEMOS_NREL)
 - [Orca Documentation](https://github.com/UDST/orca)
