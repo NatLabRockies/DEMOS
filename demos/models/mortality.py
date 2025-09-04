@@ -7,7 +7,7 @@ from logging_logic import log_execution_time
 from config import DEMOSConfig, get_config
 from templates.utils.models import columns_in_formula
 
-STEP_NAME = "mortality"
+STEP_NAME = "mortality_model"
 REQUIRED_COLUMNS = [
     "persons.MAR",
     "persons.relate",
@@ -34,7 +34,7 @@ def mortality(persons, households, relational_adjustment_mapping, graveyard):
     """
     start_time = time.time()
 
-    persons["dead"] = -99
+    # persons["dead"] = -99
     fatality_list = run_and_calibrate_mortality_model(persons)
 
     # Updates necessary:
