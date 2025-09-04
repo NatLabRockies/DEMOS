@@ -1,5 +1,8 @@
 services:
   demos:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: demos:0.0.1
     platform: linux/amd64
     environment:
