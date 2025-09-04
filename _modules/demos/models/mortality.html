@@ -258,7 +258,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">config</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEMOSConfig</span><span class="p">,</span> <span class="n">get_config</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">templates.utils.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">columns_in_formula</span>
 
-<span class="n">STEP_NAME</span> <span class="o">=</span> <span class="s2">&quot;mortality&quot;</span>
+<span class="n">STEP_NAME</span> <span class="o">=</span> <span class="s2">&quot;mortality_model&quot;</span>
 <span class="n">REQUIRED_COLUMNS</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;persons.MAR&quot;</span><span class="p">,</span>
     <span class="s2">&quot;persons.relate&quot;</span><span class="p">,</span>
@@ -287,7 +287,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
 
-    <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;dead&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="mi">99</span>
+    <span class="c1"># persons[&quot;dead&quot;] = -99</span>
     <span class="n">fatality_list</span> <span class="o">=</span> <span class="n">run_and_calibrate_mortality_model</span><span class="p">(</span><span class="n">persons</span><span class="p">)</span>
 
     <span class="c1"># Updates necessary:</span>
