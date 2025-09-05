@@ -15,17 +15,31 @@ REQUIRED_COLUMNS = [
 @orca.step(STEP_NAME)
 def kids_moving(persons, households, get_new_households):
     """
-    Executes the `kids_move` estimated model and updates the household of kids
-    moving out of their parent's home accordingly.
+    Simulate children or young adults moving out of their parental households.
 
-    **Required tables:**
-        - persons
-        - households
+    This step applies the `kids_move` estimated model to eligible persons (age >= 16 and specific `relate` codes)
+    to determine who moves out. Movers are assigned to new households, and both the persons and households tables
+    are updated in place.
 
-    **Modifies State Variables:**
-        - persons.household_id
-        - persons.relate
-        - households.lcm_county_id
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes.
+    households : orca.Table
+        The households table containing household-level attributes.
+    get_new_households : callable
+        Function to generate new unique household IDs as needed.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Modifies `persons.household_id`, `persons.relate`, and `households.lcm_county_id` in place.
+    - Only persons with `relate` codes [2, 3, 4, 7, 9, 14] and age >= 16 are considered.
+    - Movers are only reassigned if their departure does not leave the household empty, unless all are moving.
+    - Geographic assignment for new households is inherited from the original household.
     """
     start_time = time.time()
 
@@ -42,6 +56,33 @@ def kids_moving(persons, households, get_new_households):
 
 
 def update_households_after_kids(persons, households, kids_moving, get_new_households):
+    """
+    Update persons and households tables after kids move out.
+
+    Assigns new household IDs to movers, updates their relationship code, and ensures
+    new households inherit the geographic assignment from the original household.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table.
+    households : orca.Table
+        The households table.
+    kids_moving : pandas.Series
+        Boolean Series indicating which persons are moving.
+    get_new_households : callable
+        Function to generate new unique household IDs.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Movers are only reassigned if their departure does not leave the household empty, unless all are moving.
+    - The `relate` code for movers is set to 0 (head of household).
+    - The geographic assignment column is specified in the module config.
+    """
     # Load module config
     demos_config: DEMOSConfig = get_config()
     module_config: KidsMovingModuleConfig = demos_config.kids_moving_module_config

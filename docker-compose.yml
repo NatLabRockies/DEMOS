@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     image: demos:0.0.1
+    tty: true
     platform: linux/amd64
     environment:
       - PYTHONUNBUFFERED=1

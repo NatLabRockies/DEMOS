@@ -6,23 +6,44 @@ import time
 from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
 
+STEP_NAME = "education"
+REQUIRED_COLUMNS = [
+    "persons.edu",
+    "persons.student",
+]
 
-@orca.step("education_model")
-def education_model(
+@orca.step(STEP_NAME)
+def education(
     persons, edu_highschool_proportion, edu_highschool_grads_proportion, year
 ):
     """
-    Run the education model and update the persons table
+    Simulate educational attainment and student status transitions.
 
-    Modifies State Variables:
-        - persons.edu
-        - persons.student
+    This step applies the education model to eligible persons (age > 15 and currently students)
+    to determine who drops out. It advances students through grades and degrees, maintains
+    proportions of high school and GED graduates, and updates the persons table in place.
 
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes.
+    edu_highschool_proportion : pandas.Series
+        Proportion of students in 11th and 12th grade.
+    edu_highschool_grads_proportion : pandas.Series
+        Proportion of students with GED or high school diploma.
+    year : int
+        The current simulation year.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Modifies `persons.edu` and `persons.student` in place.
+    - Only persons older than 15 and currently students are considered for dropout modeling.
+    - Proportions for transitions (e.g., GED vs. diploma) are maintained using observed data.
+    - Some transitions use random assignment based on empirical proportions.
     """
     start_time = time.time()
 
@@ -88,16 +109,57 @@ def education_model(
 
 @orca.injectable(name="edu_highschool_proportion")
 def edu_highschool_proportion(data="persons.edu"):
+    """
+    Calculate the proportion of students in 11th and 12th grade.
+
+    Parameters
+    ----------
+    data : pandas.Series
+        The `edu` column from the persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Proportion of students in 11th (15) and 12th (16) grade.
+    """
     return data[data.isin([15, 16])].value_counts(normalize=True)
 
 
 @orca.injectable(name="edu_highschool_grads_proportion")
 def edu_highschool_grads_proportion(data="persons.edu"):
+    """
+    Calculate the proportion of students with GED or high school diploma.
+
+    Parameters
+    ----------
+    data : pandas.Series
+        The `edu` column from the persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Proportion of students with GED (16) or high school diploma (17).
+    """
     return data[data.isin([16, 17])].value_counts(normalize=True)
 
 
 @orca.column(table_name="persons")
 def education_group(data="persons.edu"):
+    """
+    Assign each person to an education group.
+
+    Categorizes persons into predefined education intervals for use in modeling and reporting.
+
+    Parameters
+    ----------
+    data : pandas.Series
+        The `edu` column from the persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Categorical education group labels as strings.
+    """
     education_intervals = [0, 18, 22, 200]
     education_labels = ["lte17", "18-21", "gte22"]
     return pd.cut(

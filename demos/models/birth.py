@@ -7,9 +7,25 @@ import time
 from logging_logic import log_execution_time
 from config import DEMOSConfig, get_config
 
+STEP_NAME = "birth"
+REQUIRED_COLUMNS = []
+
 
 @orca.injectable(autocall=False)
 def get_new_person_id(n):
+    """
+    Generate new unique person IDs for newborns.
+
+    Parameters
+    ----------
+    n : int
+        Number of new person IDs to generate.
+
+    Returns
+    -------
+    np.ndarray
+        Array of new unique person IDs.
+    """
     persons = orca.get_table("persons")
     graveyard = orca.get_table("graveyard")
     rebalanced_persons = orca.get_table("rebalanced_persons")
@@ -28,21 +44,33 @@ def get_new_person_id(n):
     )
 
 
-@orca.step("birth_model")
-def birth_model(persons, households, observed_births_data, get_new_person_id, year):
+@orca.step(STEP_NAME)
+def birth(persons, households, get_new_person_id):
     """
-    Function to run the birth model at the household level.
-    The function updates the persons table.
+    Simulate household-level births and add new persons to the population.
 
-    Modifies State Variables:
-        - (Adds rows to `persons` table)
+    This step applies the birth model to eligible households, determines which have a birth event,
+    and adds new babies to the persons table with default and inferred attributes.
 
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
-        households (DataFrameWrapper): DataFrameWrapper of the households table
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes.
+    households : orca.Table
+        The households table containing household-level attributes.
+    get_new_person_id : callable
+        Function to generate new unique person IDs as needed.
 
-    Returns:
-        None
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Adds new rows to the persons table for each birth event.
+    - Babies are assigned default values for most attributes.
+    - Race is assigned based on household head if all members share the same race; otherwise, "other".
+    - Some attributes may be duplicated or missing if not set in input data.
     """
     start_time = time.time()
     birth_list = run_and_calibrate_birth_model(persons, households)

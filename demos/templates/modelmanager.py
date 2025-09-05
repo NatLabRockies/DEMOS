@@ -179,7 +179,8 @@ def register(step, save_to_disk=True):
     def run_step():
         return step.run()
 
-    orca.add_step(name, run_step)
+    # NOTE: This was causing collision with names of modules and was never used.
+    # orca.add_step(name, run_step)
 
     if hasattr(step, "meta"):
         if step.meta.autorun:

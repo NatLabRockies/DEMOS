@@ -7,7 +7,7 @@ from logging_logic import log_execution_time
 from config import DEMOSConfig, get_config
 from templates.utils.models import columns_in_formula
 
-STEP_NAME = "mortality_model"
+STEP_NAME = "fatality"
 REQUIRED_COLUMNS = [
     "persons.MAR",
     "persons.relate",
@@ -15,22 +15,38 @@ REQUIRED_COLUMNS = [
 
 
 @orca.step(STEP_NAME)
-def mortality(persons, households, relational_adjustment_mapping, graveyard):
-    """Executes the `mortality` estimated model and updates the households and persons
-    table accordingly. Importantly, this module updates the `relate` column according to the
-    `relational_adjustment_mapping` table.
+def fatality(persons, households, relational_adjustment_mapping, graveyard):
+    """
+    Simulate mortality events and update the persons and households tables.
 
-    **Required tables:**
-        - persons
-        - households
-        - relational_adjustment_mapping
+    This step applies the `mortality` estimated model to determine which persons die in the current year.
+    It removes deceased persons from the persons table, updates marital status and household relationships,
+    and moves the deceased to the graveyard table. The `relate` column is updated using the relational
+    adjustment mapping to ensure consistency.
 
-    **Modifies State Variables:**
-        - persons.MAR
-        - persons.relate
-        - (Adds rows from `graveyard` table)
-        - (Removes rows from `persons` table)
-        - (Removes rows from `households` table)
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes.
+    households : orca.Table
+        The households table containing household-level attributes.
+    relational_adjustment_mapping : orca.Table
+        Table mapping old relationship codes to new ones after a head of household dies.
+    graveyard : orca.Table
+        Table for storing records of deceased individuals.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Modifies `persons.MAR`, `persons.relate`, and removes rows from `persons` and `households` tables.
+    - Adds rows to the `graveyard` table for deceased individuals.
+    - Updates marital status: surviving spouses/partners become widowed.
+    - If a household head dies, a partner or the oldest remaining member becomes the new head.
+    - The `relate` column for all household members is updated using the mapping table.
+    - Some errors (e.g., multiple spouses per household) are handled silently.
     """
     start_time = time.time()
 
