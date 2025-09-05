@@ -12,6 +12,7 @@ REQUIRED_COLUMNS = [
     "persons.student",
 ]
 
+
 @orca.step(STEP_NAME)
 def education(
     persons, edu_highschool_proportion, edu_highschool_grads_proportion, year

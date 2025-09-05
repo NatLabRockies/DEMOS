@@ -1,8 +1,6 @@
 name: Code style (Black)
 
 on:
-  push:
-    paths: ["**/*.py", "pyproject.toml"]
   pull_request:
 
 jobs:
