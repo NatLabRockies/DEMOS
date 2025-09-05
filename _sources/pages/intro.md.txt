@@ -7,22 +7,33 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
 
 ### Using Docker (Recommended)
 
-**Important Note:**
-> While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source)
+<!-- **Important Note:**
+> While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source) -->
 
 1. **Clone the repository**:
     ```bash
     git clone https://github.com/NREL/DEMOS_NREL.git
     cd DEMOS_NREL
     ```
+  
+    **Build Docker Image** *(Development only)*
+    ```bash
+    docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
+    ```
 
-2. **Run with Docker Compose**:
+1. **Run with Docker Compose**:
+    ```bash
+    docker-compose up
+    ```
+
+    By default, this assumes that your config file is located in `./configuration/demos_config.toml` and the data folder is `./data`, with `./` being the root of the project (See the [file stucture section](#file-tree-structure-for-data-and-configuration) for details on how to organize the input data).
+    If you need to specify a different location for them, you can run:
+
     ```bash
     DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker-compose up
     ```
-    By default, `DEMOS_CONFIG_PATH=./demos_config.toml` and `DEMOS_DATA_DIR=./data`.
 
-3. **Or run with Docker directly**:
+1. **Or run with Docker directly**:
     ```bash
     docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
     ```
@@ -48,8 +59,14 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
     pip install .
     ```
 
-### Compiling documentation (Optional but recommended)
+3. **Run DEMOS**:
+    ```bash
+    cd demos
+    python simulate.py -cfg ../configuration/demos_config.toml
+    ```
 
+### Compiling documentation (Optional but recommended)
+From the root of the project:
 ```bash
 cd docs
 make html
@@ -59,7 +76,7 @@ open build/html/index.html
 
 ## 2. Preparing Your Configuration
 
-DEMOS is configured via a TOML file (see `configuration/demos_config.toml` for a full example).  
+DEMOS is configured via a TOML file (see [example configuration](default_configuration) for a full example).  
 At minimum, you must define the `persons` and `households` tables:
 
 ```toml
@@ -77,8 +94,65 @@ h5_key = "households"
 ```
 
 Other tables and module configurations can be added as needed. The default configuration exposes all options with default values.
+
+---
+
+Examples of important configuration options are:
+
+### Selection of modules to run:
+
+The `modules` parameter accepts a list of strings identifying the modules. By default all are included, but if you'd like to only run a selection of them you can change it. For instance to run only `aging` and `education`:
+```
+modules = [
+    "aging",
+    "education_model",
+]
+```
+
+### Configuration of calibration procedures:
+
+Certain modules support calibration of the simulation to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely `employment` and `household_reorganization`) implement simultaneous calibration. While the `employment` module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.
+
+Calibration configuration is defined at `module-level-config.calibration_procedure` (`module-level-config` is defined differently for every module. The options are displayed [here](../api/configuration_module.rst) and in each module's documentation). We will use the `employment` module as an example.
+
+**If you want to use simultaneous calibration for the `employment` module**
+
+```toml
+[employment_module_config.simultaneous_calibration_config]
+tolerance = 100
+max_iter = 2
+learning_rate = 2
+momentum_weight = 0.3
+```
+
+Due to the complexity and nuances of simultaneous calibration, the required tables of observed values (`observed_entering_workforce` and `observed_exiting_workforce`) are hard-coded, and an error will be raised if they are not present.
+
+**If you instead want to use simple calibration**
+
+We need to define the following:
+```toml
+[employment_module_config.enter_model_calibration_procedure]
+procedure_type = "rmse_error"
+observed_values_table = "observed_entering_workforce"
+tolerance_type = "relative"
+tolerance = 0.01
+max_iter = 1000
+
+[employment_module_config.exit_model_calibration_procedure]
+procedure_type = "rmse_error"
+observed_values_table = "observed_exiting_workforce"
+tolerance_type = "relative"
+tolerance = 0.01
+max_iter = 1000
+```
+
+This will allow DEMOS to execute calibration on each of the two modules in the employment module.
+
+**If you want to skip calibration, just delete these entrances from the configuration file.**
+
 <!-- See the example config for more options, including output tables, calibration, and module selection. -->
 
+(file-tree-structure-for-data-and-configuration)=
 ## 3. File Tree Structure for Data and Configuration
 
 To run DEMOS, organize your files as follows:
@@ -95,8 +169,8 @@ DEMOS_NREL/
 |   └── calibrated_configs/ # Here is were the parameters of the estimated models go
 |       └── ...
 ├── demos/ # Source code 
+|   └── simulate.py # Main entry point for running DEMOS 
 ├── docs/ # Documentation
-├── simulate.py # Main entry point for running DEMOS 
 └── ...
 ```
 
@@ -112,6 +186,7 @@ DEMOS_NREL/
 From the project root, run:
 
 ```bash
+cd demos
 python simulate.py -cfg configuration/demos_config.toml
 ```
 

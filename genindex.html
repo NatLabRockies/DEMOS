@@ -203,7 +203,9 @@
 <li class="toctree-l2"><a class="reference internal" href="api/employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/kids_move_module.html">Kids Moving Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/mortality_module.html">Mortality Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/mortality_module.html">Fatality Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/birth_module.html">Birth Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/education_module.html">Education Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -212,7 +214,6 @@
 <li class="toctree-l2"><a class="reference internal" href="pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="pages/developer_guide.html">Developer Guide</a></li>
 </ul>
 
 </div>
@@ -278,6 +279,8 @@
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/birth_module.html#demos.models.birth.birth">birth() (in module demos.models.birth)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.BirthModuleConfig">BirthModuleConfig (class in demos.config)</a>
 </li>
     </ul></td>
@@ -364,12 +367,14 @@
   <h2>E</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/employment_module.html#demos.models.employment.employment">employment() (in module demos.models.employment)</a>
+        <li><a href="api/education_module.html#demos.models.education.education">education() (in module demos.models.education)</a>
 </li>
-        <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig">EmploymentModuleConfig (class in demos.config)</a>
+        <li><a href="api/employment_module.html#demos.models.employment.employment">employment() (in module demos.models.employment)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig">EmploymentModuleConfig (class in demos.config)</a>
+</li>
         <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig.enter_model_calibration_procedure">enter_model_calibration_procedure (demos.config.EmploymentModuleConfig attribute)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.EmploymentModuleConfig.exit_model_calibration_procedure">exit_model_calibration_procedure (demos.config.EmploymentModuleConfig attribute)</a>
@@ -382,20 +387,22 @@
   <h2>F</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
+        <li><a href="api/mortality_module.html#demos.models.fatality.fatality">fatality() (in module demos.models.fatality)</a>
+</li>
         <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.file_type">file_type (demos.datasources.CSVTableSource attribute)</a>
 
         <ul>
           <li><a href="pages/datasources.html#demos.datasources.H5TableSource.file_type">(demos.datasources.H5TableSource attribute)</a>
 </li>
         </ul></li>
+    </ul></td>
+    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.filepath">filepath (demos.datasources.CSVTableSource attribute)</a>
 
         <ul>
           <li><a href="pages/datasources.html#demos.datasources.H5TableSource.filepath">(demos.datasources.H5TableSource attribute)</a>
 </li>
         </ul></li>
-    </ul></td>
-    <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/hh_reorg_module.html#demos.models.household_reorg.fix_erroneous_households">fix_erroneous_households() (in module demos.models.household_reorg)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.forecast_year">forecast_year (demos.config.DEMOSConfig attribute)</a>
@@ -516,8 +523,6 @@
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.modules">modules (demos.config.DEMOSConfig attribute)</a>
-</li>
-        <li><a href="api/mortality_module.html#demos.models.mortality.mortality">mortality() (in module demos.models.mortality)</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.MortalityModuleConfig">MortalityModuleConfig (class in demos.config)</a>
 </li>

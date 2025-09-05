@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="DEMOS Configuration" href="../pages/configuration.html" /><link rel="prev" title="Kids Moving Module" href="kids_move_module.html" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Birth Module" href="birth_module.html" /><link rel="prev" title="Kids Moving Module" href="kids_move_module.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>Mortality Module - demos documentation</title>
+        <title>Fatality Module - demos documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -205,7 +205,9 @@
 <li class="toctree-l2"><a class="reference internal" href="employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kids_move_module.html">Kids Moving Module</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Mortality Module</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fatality Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="birth_module.html">Birth Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="education_module.html">Education Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -214,7 +216,6 @@
 <li class="toctree-l2"><a class="reference internal" href="../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../pages/developer_guide.html">Developer Guide</a></li>
 </ul>
 
 </div>
@@ -255,33 +256,64 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="mortality-module">
-<h1>Mortality Module<a class="headerlink" href="#mortality-module" title="Link to this heading">¶</a></h1>
+          <section id="fatality-module">
+<h1>Fatality Module<a class="headerlink" href="#fatality-module" title="Link to this heading">¶</a></h1>
+<p>This module simulates mortality events in the synthetic population using an estimated model.
+It updates the persons and households tables to reflect deaths, reassigns household heads as needed,
+and ensures relational consistency using a mapping table. Deceased individuals are moved to a graveyard table.</p>
+<p>Key features:</p>
+<ul class="simple">
+<li><p>Applies a logit model to determine which persons die in the current year.</p></li>
+<li><p>Removes deceased persons from the persons table and adds them to the graveyard.</p></li>
+<li><p>Updates marital status: surviving spouses/partners become widowed.</p></li>
+<li><p>Reassigns household heads if the current head dies, using partners or the oldest remaining member.</p></li>
+<li><p>Updates the <cite>relate</cite> column for all household members using the relational adjustment mapping.</p></li>
+<li><p>Cleans up households and persons to maintain simulation invariants.</p></li>
+</ul>
+<p>Caveats:</p>
+<ul class="simple">
+<li><p>The module assumes the presence of a <cite>relational_adjustment_mapping</cite> table to update relationships.</p></li>
+<li><p>If a household head dies and no partner remains, the oldest person becomes the new head.</p></li>
+<li><p>Some errors or inconsistencies (e.g., multiple spouses per household) are handled silently.</p></li>
+<li><p>The logic for updating relationships may need to be revisited if the mapping table changes structure.</p></li>
+<li><p>Designed for use as-is; users should not override orca columns or internal logic.</p></li>
+</ul>
+<section id="module-function">
+<h2>Module function<a class="headerlink" href="#module-function" title="Link to this heading">¶</a></h2>
 <p>This module does not have configuration options</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.mortality.mortality">
-<span class="sig-prename descclassname"><span class="pre">demos.models.mortality.</span></span><span class="sig-name descname"><span class="pre">mortality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relational_adjustment_mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graveyard</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/mortality.html#mortality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.mortality.mortality" title="Link to this definition">¶</a></dt>
-<dd><p>Executes the <cite>mortality</cite> estimated model and updates the households and persons
-table accordingly. Importantly, this module updates the <cite>relate</cite> column according to the
-<cite>relational_adjustment_mapping</cite> table.</p>
-<dl class="simple">
-<dt><strong>Required tables:</strong></dt><dd><ul class="simple">
-<li><p>persons</p></li>
-<li><p>households</p></li>
-<li><p>relational_adjustment_mapping</p></li>
+<dt class="sig sig-object py" id="demos.models.fatality.fatality">
+<span class="sig-prename descclassname"><span class="pre">demos.models.fatality.</span></span><span class="sig-name descname"><span class="pre">fatality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relational_adjustment_mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graveyard</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/fatality.html#fatality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.fatality.fatality" title="Link to this definition">¶</a></dt>
+<dd><p>Simulate mortality events and update the persons and households tables.</p>
+<p>This step applies the <cite>mortality</cite> estimated model to determine which persons die in the current year.
+It removes deceased persons from the persons table, updates marital status and household relationships,
+and moves the deceased to the graveyard table. The <cite>relate</cite> column is updated using the relational
+adjustment mapping to ensure consistency.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing individual-level attributes.</p></li>
+<li><p><strong>households</strong> (<em>orca.Table</em>) – The households table containing household-level attributes.</p></li>
+<li><p><strong>relational_adjustment_mapping</strong> (<em>orca.Table</em>) – Table mapping old relationship codes to new ones after a head of household dies.</p></li>
+<li><p><strong>graveyard</strong> (<em>orca.Table</em>) – Table for storing records of deceased individuals.</p></li>
 </ul>
 </dd>
-<dt><strong>Modifies State Variables:</strong></dt><dd><ul class="simple">
-<li><p>persons.MAR</p></li>
-<li><p>persons.relate</p></li>
-<li><p>(Adds rows from <cite>graveyard</cite> table)</p></li>
-<li><p>(Removes rows from <cite>persons</cite> table)</p></li>
-<li><p>(Removes rows from <cite>households</cite> table)</p></li>
-</ul>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Modifies <cite>persons.MAR</cite>, <cite>persons.relate</cite>, and removes rows from <cite>persons</cite> and <cite>households</cite> tables.</p></li>
+<li><p>Adds rows to the <cite>graveyard</cite> table for deceased individuals.</p></li>
+<li><p>Updates marital status: surviving spouses/partners become widowed.</p></li>
+<li><p>If a household head dies, a partner or the oldest remaining member becomes the new head.</p></li>
+<li><p>The <cite>relate</cite> column for all household members is updated using the mapping table.</p></li>
+<li><p>Some errors (e.g., multiple spouses per household) are handled silently.</p></li>
+</ul>
 </dd></dl>
 
+</section>
 </section>
 
         </article>
@@ -289,12 +321,12 @@ table accordingly. Importantly, this module updates the <cite>relate</cite> colu
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="../pages/configuration.html">
+          <a class="next-page" href="birth_module.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">DEMOS Configuration</div>
+                <div class="title">Birth Module</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
@@ -339,8 +371,11 @@ table accordingly. Importantly, this module updates the <cite>relate</cite> colu
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Mortality Module</a><ul>
-<li><a class="reference internal" href="#demos.models.mortality.mortality"><code class="docutils literal notranslate"><span class="pre">mortality()</span></code></a></li>
+<li><a class="reference internal" href="#">Fatality Module</a><ul>
+<li><a class="reference internal" href="#module-function">Module function</a><ul>
+<li><a class="reference internal" href="#demos.models.fatality.fatality"><code class="docutils literal notranslate"><span class="pre">fatality()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

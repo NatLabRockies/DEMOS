@@ -13,4 +13,3 @@ DEMOS documentation
    pages/intro.md
    api/modules
    pages/configuration
-   pages/developer_guide.md
