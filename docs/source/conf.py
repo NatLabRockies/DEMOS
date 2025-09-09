@@ -67,6 +67,7 @@ myst_enable_extensions = [
     "deflist",
     "html_admonition",
     "html_image",
+    "colon_fence"
 ]
 
 # Sphinx multiversion config

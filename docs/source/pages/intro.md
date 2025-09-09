@@ -2,6 +2,14 @@
 
 DEMOS is a modular demographic microsimulator. It operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.
 
+This document summarizes instructions to install, configure and run DEMOS. Sections 1-4 will help you correctly organize the data and configuration file, so we recommend reading them once before attempting to run DEMOS.
+
+```{contents}
+:local:
+:depth: 2
+:backlinks: none
+:class: this-will-duplicate-information-and-it-is-still-useful-here
+```
 
 ## 1. Installation
 
@@ -23,14 +31,14 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
 
 1. **Run with Docker Compose**:
     ```bash
-    docker-compose up
+    docker compose up
     ```
 
     By default, this assumes that your config file is located in `./configuration/demos_config.toml` and the data folder is `./data`, with `./` being the root of the project (See the [file stucture section](#file-tree-structure-for-data-and-configuration) for details on how to organize the input data).
     If you need to specify a different location for them, you can run:
 
     ```bash
-    DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker-compose up
+    DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
     ```
 
 1. **Or run with Docker directly**:
