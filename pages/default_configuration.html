@@ -343,7 +343,7 @@
 <span class="linenos"> 80</span><span class="c1"># Modules configuration</span>
 <span class="linenos"> 81</span><span class="k">[employment_module_config.simultaneous_calibration_config]</span>
 <span class="linenos"> 82</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
-<span class="linenos"> 83</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="linenos"> 83</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
 <span class="linenos"> 84</span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
 <span class="linenos"> 85</span><span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
 <span class="linenos"> 86</span>
@@ -352,7 +352,7 @@
 <span class="linenos"> 89</span><span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
 <span class="linenos"> 90</span><span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
 <span class="linenos"> 91</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-<span class="linenos"> 92</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c1"># 1000</span>
+<span class="linenos"> 92</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
 <span class="linenos"> 93</span><span class="k">[mortality_module_config.calibration_procedure.observed_values_table]</span>
 <span class="linenos"> 94</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
 <span class="linenos"> 95</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_fatalities_data&quot;</span>
@@ -364,7 +364,7 @@
 <span class="linenos">101</span><span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
 <span class="linenos">102</span><span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
 <span class="linenos">103</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-<span class="linenos">104</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c1"># 1000</span>
+<span class="linenos">104</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
 <span class="linenos">105</span><span class="k">[birth_module_config.calibration_procedure.observed_values_table]</span>
 <span class="linenos">106</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
 <span class="linenos">107</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_births_data&quot;</span>
@@ -376,8 +376,8 @@
 <span class="linenos">113</span><span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
 <span class="linenos">114</span>
 <span class="linenos">115</span><span class="k">[hh_reorg_module_config.simultaneous_calibration_config]</span>
-<span class="linenos">116</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1_000</span>
-<span class="linenos">117</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w"> </span><span class="c1"># 100</span>
+<span class="linenos">116</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5_000</span>
+<span class="linenos">117</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
 <span class="linenos">118</span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5</span>
 <span class="linenos">119</span><span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
 <span class="linenos">120</span>

@@ -259,6 +259,30 @@
           <section id="get-started">
 <h1>Get Started<a class="headerlink" href="#get-started" title="Link to this heading">¶</a></h1>
 <p>DEMOS is a modular demographic microsimulator. It operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.</p>
+<p>This document summarizes instructions to install, configure and run DEMOS. Sections 1-4 will help you correctly organize the data and configuration file, so we recommend reading them once before attempting to run DEMOS.</p>
+<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#installation" id="id2">1. Installation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#using-docker-recommended" id="id3">Using Docker (Recommended)</a></p></li>
+<li><p><a class="reference internal" href="#from-source" id="id4">From Source</a></p></li>
+<li><p><a class="reference internal" href="#compiling-documentation-optional-but-recommended" id="id5">Compiling documentation (Optional but recommended)</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#preparing-your-configuration" id="id6">2. Preparing Your Configuration</a></p>
+<ul>
+<li><p><a class="reference internal" href="#selection-of-modules-to-run" id="id7">Selection of modules to run:</a></p></li>
+<li><p><a class="reference internal" href="#configuration-of-calibration-procedures" id="id8">Configuration of calibration procedures:</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#file-tree-structure-for-data-and-configuration" id="id9">3. File Tree Structure for Data and Configuration</a></p></li>
+<li><p><a class="reference internal" href="#running-demos" id="id10">4. Running DEMOS</a></p></li>
+<li><p><a class="reference internal" href="#understanding-the-workflow" id="id11">5. Understanding the Workflow</a></p></li>
+<li><p><a class="reference internal" href="#troubleshooting-common-errors" id="id12">6. Troubleshooting Common Errors</a></p></li>
+<li><p><a class="reference internal" href="#next-steps" id="id13">7. Next Steps</a></p></li>
+<li><p><a class="reference internal" href="#need-help" id="id14">8. Need Help?</a></p></li>
+</ul>
+</nav>
 <section id="installation">
 <h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <section id="using-docker-recommended">
@@ -277,12 +301,12 @@
 </div>
 </li>
 <li><p><strong>Run with Docker Compose</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker-compose<span class="w"> </span>up
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up
 </pre></div>
 </div>
 <p>By default, this assumes that your config file is located in <code class="docutils literal notranslate"><span class="pre">./configuration/demos_config.toml</span></code> and the data folder is <code class="docutils literal notranslate"><span class="pre">./data</span></code>, with <code class="docutils literal notranslate"><span class="pre">./</span></code> being the root of the project (See the <a class="reference internal" href="#file-tree-structure-for-data-and-configuration">file stucture section</a> for details on how to organize the input data).
 If you need to specify a different location for them, you can run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DEMOS_CONFIG_PATH</span><span class="o">=</span>&lt;path-to-config&gt;<span class="w"> </span><span class="nv">DEMOS_DATA_DIR</span><span class="o">=</span>&lt;path-to-data-dir&gt;<span class="w"> </span>docker-compose<span class="w"> </span>up
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DEMOS_CONFIG_PATH</span><span class="o">=</span>&lt;path-to-config&gt;<span class="w"> </span><span class="nv">DEMOS_DATA_DIR</span><span class="o">=</span>&lt;path-to-data-dir&gt;<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up
 </pre></div>
 </div>
 </li>
