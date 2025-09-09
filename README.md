@@ -20,7 +20,7 @@ docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-dat
 ```
 
 #### IMPORTANT for MacOS and Windows users
-Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
+> Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
 
 #### Building the docker image (development only)
 ```bash
@@ -74,7 +74,3 @@ table_name = "households"
 filepath = "../data/custom_mpo_06197001_model_data.h5"
 h5_key = "households"
 ```
-
-### ii. project structure
-
->**TODO:** The previous description from Urbansim it outdated. Add description of DEMOS, aligning with the code (paper).
