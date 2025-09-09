@@ -4,6 +4,8 @@ DEMOS is a modular demographic microsimulator. It operates on tabular data repre
 
 This document summarizes instructions to install, configure and run DEMOS. Sections 1-4 will help you correctly organize the data and configuration file, so we recommend reading them once before attempting to run DEMOS.
 
+> DEMOS requires at least 16gb of available RAM to execute. This greatly depends on the size and resolution of the input data, but from our internal testing, we recommend at least 16gb of RAM
+
 ```{contents}
 :local:
 :depth: 2
