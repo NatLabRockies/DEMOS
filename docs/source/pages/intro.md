@@ -27,6 +27,7 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
     ```
   
     **Build Docker Image** *(Development only)*
+    > NOTE: Ideally, our DEMOS Docker image is hosted in a public image registry so users will not need to build it themselves
     ```bash
     docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
     ```
@@ -86,7 +87,7 @@ open build/html/index.html
 
 ## 2. Preparing Your Configuration
 
-DEMOS is configured via a TOML file (see [example configuration](default_configuration) for a full example).  
+DEMOS is configured via a TOML file (see [example configuration](default_configuration) for a full example and [configuration API](../api/configuration_module.rst) for descriptions on each of the accepted parameters).  
 At minimum, you must define the `persons` and `households` tables:
 
 ```toml
@@ -170,17 +171,20 @@ To run DEMOS, organize your files as follows:
 ```
 DEMOS_NREL/
 ├── configuration/
-│   └── demos_config.toml # Main configuration file (TOML)
+│   └── demos_config.toml                   # Main configuration file (TOML)
 ├── data/
-|   ├── custom_mpo_06197001_model_data.h5 # Example HDF5 data file
-│   ├── relmap_06197001.csv # Example CSV data file
-│   ├── income_rates_06197001.csv # Example CSV data file
-│   ├── hsize_ct_06197001.csv # Example CSV data file 
-|   └── calibrated_configs/ # Here is were the parameters of the estimated models go
+|   ├── custom_mpo_06197001_model_data.h5   # Example HDF5 data file
+│   ├── relmap_06197001.csv                 # Example CSV data file
+│   ├── income_rates_06197001.csv           # Example CSV data file
+│   ├── hsize_ct_06197001.csv               # Example CSV data file 
+|   └── calibrated_configs/                 # Here is were the parameters of the estimated models go
 |       └── ...
 ├── demos/ # Source code 
-|   └── simulate.py # Main entry point for running DEMOS 
-├── docs/ # Documentation
+|   ├── simulate.py                         # Main entry point for running DEMOS
+|   ├── models                              # Logic of individual modules
+|       └── ... 
+|   └── ... 
+├── docs/                                   # Documentation
 └── ...
 ```
 

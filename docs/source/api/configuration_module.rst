@@ -3,7 +3,7 @@ DEMOS Configuration Structure
 
 .. autoclass:: demos.config.DEMOSConfig
    :members:
-   :exclude-members: __init__, update, require_persons_and_households
+   :exclude-members: __init__, update, require_persons_and_households, model_post_init
 
 Individual Modules configuration
 --------------------------------
