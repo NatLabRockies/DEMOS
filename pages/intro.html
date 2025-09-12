@@ -299,6 +299,9 @@
 </pre></div>
 </div>
 <p><strong>Build Docker Image</strong> <em>(Development only)</em></p>
+<blockquote>
+<div><p>NOTE: Ideally, our DEMOS Docker image is hosted in a public image registry so users will not need to build it themselves</p>
+</div></blockquote>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>demos:0.0.1<span class="w"> </span>--platform<span class="o">=</span>linux/amd64<span class="w"> </span>-f<span class="w"> </span>Dockerfile<span class="w"> </span>.
 </pre></div>
 </div>
@@ -362,7 +365,7 @@ open<span class="w"> </span>build/html/index.html
 </section>
 <section id="preparing-your-configuration">
 <h2>2. Preparing Your Configuration<a class="headerlink" href="#preparing-your-configuration" title="Link to this heading">¶</a></h2>
-<p>DEMOS is configured via a TOML file (see <a class="reference internal" href="default_configuration.html"><span class="doc std std-doc">example configuration</span></a> for a full example).<br />
+<p>DEMOS is configured via a TOML file (see <a class="reference internal" href="default_configuration.html"><span class="doc std std-doc">example configuration</span></a> for a full example and <a class="reference internal" href="../api/configuration_module.html"><span class="std std-doc">configuration API</span></a> for descriptions on each of the accepted parameters).<br />
 At minimum, you must define the <code class="docutils literal notranslate"><span class="pre">persons</span></code> and <code class="docutils literal notranslate"><span class="pre">households</span></code> tables:</p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
 <span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
@@ -430,17 +433,20 @@ At minimum, you must define the <code class="docutils literal notranslate"><span
 <p>To run DEMOS, organize your files as follows:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>DEMOS_NREL/
 ├── configuration/
-│   └── demos_config.toml # Main configuration file (TOML)
+│   └── demos_config.toml                   # Main configuration file (TOML)
 ├── data/
-|   ├── custom_mpo_06197001_model_data.h5 # Example HDF5 data file
-│   ├── relmap_06197001.csv # Example CSV data file
-│   ├── income_rates_06197001.csv # Example CSV data file
-│   ├── hsize_ct_06197001.csv # Example CSV data file 
-|   └── calibrated_configs/ # Here is were the parameters of the estimated models go
+|   ├── custom_mpo_06197001_model_data.h5   # Example HDF5 data file
+│   ├── relmap_06197001.csv                 # Example CSV data file
+│   ├── income_rates_06197001.csv           # Example CSV data file
+│   ├── hsize_ct_06197001.csv               # Example CSV data file 
+|   └── calibrated_configs/                 # Here is were the parameters of the estimated models go
 |       └── ...
 ├── demos/ # Source code 
-|   └── simulate.py # Main entry point for running DEMOS 
-├── docs/ # Documentation
+|   ├── simulate.py                         # Main entry point for running DEMOS
+|   ├── models                              # Logic of individual modules
+|       └── ... 
+|   └── ... 
+├── docs/                                   # Documentation
 └── ...
 </pre></div>
 </div>

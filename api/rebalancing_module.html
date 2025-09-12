@@ -2,10 +2,11 @@
 <html class="no-js" lang="en" data-content_root="../">
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
-    <meta name="color-scheme" content="light dark"><link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" />
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.07.19 -->
-        <title>Overview: module code - demos documentation</title>
+        <title>Household Rebalancing Module - demos documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=25af2a20" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -177,7 +178,7 @@
           <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
         </button>
       </div>
-      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
         <div class="visually-hidden">Toggle table of contents sidebar</div>
         <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
       </label>
@@ -199,18 +200,18 @@
   <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../pages/intro.html">Get Started</a></li>
-<li class="toctree-l1 has-children"><a class="reference internal" href="../api/modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/aging_module.html">Aging Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/employment_module.html">Employment Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/hh_reorg_module.html">Household Reorganization Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/kids_move_module.html">Kids Moving Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/mortality_module.html">Fatality Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/birth_module.html">Birth Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/education_module.html">Education Module</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="modules.html">DEMOS Modules</a><input class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle navigation of DEMOS Modules</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="aging_module.html">Aging Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="employment_module.html">Employment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="hh_reorg_module.html">Household Reorganization Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mortality_module.html">Fatality Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="birth_module.html">Birth Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="education_module.html">Education Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
-<li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration_module.html">DEMOS Configuration Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -234,7 +235,13 @@
           <span>Back to top</span>
         </a>
         <div class="content-icon-container">
-          <div class="theme-toggle-container theme-toggle-content">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/api/rebalancing_module.rst.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
             <button class="theme-toggle">
               <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
               <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
@@ -243,24 +250,74 @@
               <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
             </button>
           </div>
-          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
             <div class="visually-hidden">Toggle table of contents sidebar</div>
             <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <h1>All modules for which code is available</h1>
-<ul><li><a href="demos/config.html">demos.config</a></li>
-<li><a href="demos/datasources.html">demos.datasources</a></li>
-<li><a href="demos/models/aging.html">demos.models.aging</a></li>
-<li><a href="demos/models/birth.html">demos.models.birth</a></li>
-<li><a href="demos/models/education.html">demos.models.education</a></li>
-<li><a href="demos/models/employment.html">demos.models.employment</a></li>
-<li><a href="demos/models/fatality.html">demos.models.fatality</a></li>
-<li><a href="demos/models/household_reorg.html">demos.models.household_reorg</a></li>
-<li><a href="demos/models/kids_moving.html">demos.models.kids_moving</a></li>
-<li><a href="demos/models/rebalancing.html">demos.models.rebalancing</a></li>
+          <section id="household-rebalancing-module">
+<h1>Household Rebalancing Module<a class="headerlink" href="#household-rebalancing-module" title="Link to this heading">¶</a></h1>
+<p>This module adjusts the synthetic population to match observed household size distributions by geography.
+It duplicates or removes households to align current counts with control totals, maintaining population
+consistency while preserving demographic characteristics. The module tracks marital status before and
+after rebalancing operations and stores removed households/persons in separate tables.</p>
+<p>Key features:</p>
+<ul class="simple">
+<li><p>Matches household counts to control totals by geography and household size.</p></li>
+<li><p>Duplicates households (and their members) when counts are below target.</p></li>
+<li><p>Removes households (and their members) when counts exceed target.</p></li>
+<li><p>Preserves demographic characteristics through exact duplication/removal.</p></li>
+<li><p>Tracks marital status changes for validation purposes.</p></li>
+<li><p>Stores removed records in rebalanced_households and rebalanced_persons tables.</p></li>
 </ul>
+<p>Caveats:</p>
+<ul class="simple">
+<li><p>Requires a control table with year, geography, household size, and target count columns.</p></li>
+<li><p>The control table index must be ‘year’ and must have exactly 3 columns.</p></li>
+<li><p>Sampling with replacement is used when duplicating more households than available.</p></li>
+<li><p>Most errors are handled with assertions; users should ensure data consistency.</p></li>
+<li><p>Geographic and household size columns must match between households and control tables.</p></li>
+</ul>
+<section id="module-function">
+<h2>Module function<a class="headerlink" href="#module-function" title="Link to this heading">¶</a></h2>
+<p>Module configuration options: <a class="reference internal" href="configuration_module.html#demos.config.HHRebalancingModuleConfig" title="demos.config.HHRebalancingModuleConfig"><code class="xref py py-class docutils literal notranslate"><span class="pre">HHRebalancingModuleConfig</span></code></a></p>
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.rebalancing.household_rebalancing">
+<span class="sig-prename descclassname"><span class="pre">demos.models.rebalancing.</span></span><span class="sig-name descname"><span class="pre">household_rebalancing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_new_households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_new_person_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebalanced_households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rebalanced_persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/rebalancing.html#household_rebalancing"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.rebalancing.household_rebalancing" title="Link to this definition">¶</a></dt>
+<dd><p>Adjust household counts to match control totals by geography and household size.</p>
+<p>This step compares current household counts with control totals and duplicates or removes
+households as needed. It maintains population consistency by also updating the persons table
+and stores removed records for tracking purposes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>households</strong> (<em>orca.Table</em>) – The households table containing household-level attributes.</p></li>
+<li><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing individual-level attributes.</p></li>
+<li><p><strong>year</strong> (<em>int</em>) – The current simulation year.</p></li>
+<li><p><strong>get_new_households</strong> (<em>callable</em>) – Function to generate new unique household IDs.</p></li>
+<li><p><strong>get_new_person_id</strong> (<em>callable</em>) – Function to generate new unique person IDs.</p></li>
+<li><p><strong>rebalanced_households</strong> (<em>orca.Table</em>) – Table for storing removed household records.</p></li>
+<li><p><strong>rebalanced_persons</strong> (<em>orca.Table</em>) – Table for storing removed person records.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Modifies households and persons tables in place by adding/removing records.</p></li>
+<li><p>Uses module configuration to determine control table and column mappings.</p></li>
+<li><p>Tracks marital status before and after operations in marital_rebalanced table.</p></li>
+<li><p>Skips processing if no control data exists for the current year.</p></li>
+<li><p>Sampling with replacement occurs when duplicating more households than available.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+</section>
+
         </article>
       </div>
       <footer>
@@ -286,8 +343,30 @@
         
       </footer>
     </div>
-    <aside class="toc-drawer no-toc">
+    <aside class="toc-drawer">
       
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Household Rebalancing Module</a><ul>
+<li><a class="reference internal" href="#module-function">Module function</a><ul>
+<li><a class="reference internal" href="#demos.models.rebalancing.household_rebalancing"><code class="docutils literal notranslate"><span class="pre">household_rebalancing()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
       
       
     </aside>

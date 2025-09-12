@@ -385,8 +385,6 @@
         <span class="n">default_factory</span><span class="o">=</span><span class="n">KidsMovingModuleConfig</span>
     <span class="p">)</span>
 
-<div class="viewcode-block" id="DEMOSConfig.model_post_init">
-<a class="viewcode-back" href="../../api/configuration_module.html#demos.config.DEMOSConfig.model_post_init">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_fname</span> <span class="o">=</span> <span class="p">(</span>
@@ -419,8 +417,7 @@
                 <span class="s2">&quot;education_model&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;household_rebalancing&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;update_income&quot;</span><span class="p">,</span>
-            <span class="p">]</span></div>
-
+            <span class="p">]</span>
 
     <span class="nd">@model_validator</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">&quot;after&quot;</span><span class="p">)</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">require_persons_and_households</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
