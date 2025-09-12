@@ -8,6 +8,7 @@ from logging_logic import log_execution_time
 
 STEP_NAME = "income_adjustment"
 
+
 @orca.step(STEP_NAME)
 def income_adjustment(persons, households, income_rates, year):
     """
