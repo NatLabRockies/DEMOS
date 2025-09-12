@@ -12,3 +12,5 @@ DEMOS Modules
    mortality_module
    birth_module
    education_module
+   rebalancing_module
+   income_module

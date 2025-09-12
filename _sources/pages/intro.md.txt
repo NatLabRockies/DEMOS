@@ -116,13 +116,13 @@ The `modules` parameter accepts a list of strings identifying the modules. By de
 ```
 modules = [
     "aging",
-    "education_model",
+    "education",
 ]
 ```
 
 ### Configuration of calibration procedures:
 
-Certain modules support calibration of the simulation to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely `employment` and `household_reorganization`) implement simultaneous calibration. While the `employment` module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.
+Certain modules support calibration of the simulation output to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely `employment` and `household_reorganization`) implement simultaneous calibration. While the `employment` module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.
 
 Calibration configuration is defined at `module-level-config.calibration_procedure` (`module-level-config` is defined differently for every module. The options are displayed [here](../api/configuration_module.rst) and in each module's documentation). We will use the `employment` module as an example.
 

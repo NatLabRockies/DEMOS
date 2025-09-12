@@ -208,6 +208,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/mortality_module.html">Fatality Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/birth_module.html">Birth Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/education_module.html">Education Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/rebalancing_module.html">Household Rebalancing Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/income_module.html">Income Adjustment Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><div class="visually-hidden">Toggle navigation of DEMOS Configuration</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul>
@@ -388,14 +390,14 @@ At minimum, you must define the <code class="docutils literal notranslate"><span
 <p>The <code class="docutils literal notranslate"><span class="pre">modules</span></code> parameter accepts a list of strings identifying the modules. By default all are included, but if you’d like to only run a selection of them you can change it. For instance to run only <code class="docutils literal notranslate"><span class="pre">aging</span></code> and <code class="docutils literal notranslate"><span class="pre">education</span></code>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">modules</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;aging&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;education_model&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;education&quot;</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 </div>
 </section>
 <section id="configuration-of-calibration-procedures">
 <h3>Configuration of calibration procedures:<a class="headerlink" href="#configuration-of-calibration-procedures" title="Link to this heading">¶</a></h3>
-<p>Certain modules support calibration of the simulation to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely <code class="docutils literal notranslate"><span class="pre">employment</span></code> and <code class="docutils literal notranslate"><span class="pre">household_reorganization</span></code>) implement simultaneous calibration. While the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.</p>
+<p>Certain modules support calibration of the simulation output to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely <code class="docutils literal notranslate"><span class="pre">employment</span></code> and <code class="docutils literal notranslate"><span class="pre">household_reorganization</span></code>) implement simultaneous calibration. While the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.</p>
 <p>Calibration configuration is defined at <code class="docutils literal notranslate"><span class="pre">module-level-config.calibration_procedure</span></code> (<code class="docutils literal notranslate"><span class="pre">module-level-config</span></code> is defined differently for every module. The options are displayed <a class="reference internal" href="../api/configuration_module.html"><span class="std std-doc">here</span></a> and in each module’s documentation). We will use the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module as an example.</p>
 <p><strong>If you want to use simultaneous calibration for the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module</strong></p>
 <div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[employment_module_config.simultaneous_calibration_config]</span>
