@@ -24,6 +24,7 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
     ```bash
     git clone https://github.com/NREL/DEMOS_NREL.git
     cd DEMOS_NREL
+    git checkout yep/docker-implementation # This line is only relevant during internal testing
     ```
   
     **Build Docker Image** *(Development only)*
