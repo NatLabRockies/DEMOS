@@ -107,7 +107,6 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     new_person_rows = new_person_rows.merge(hh_mapping, left_on="household_id", right_on="orig_hh")
     new_person_rows["household_id"] = new_person_rows["new_hh"]
     new_person_rows.drop(["orig_hh", "new_hh"], inplace=True, axis=1)
-    # new_person_rows.household_id = new_person_rows.household_id.map(dict(zip(to_duplicate_hh, new_hh_ids)))
     new_person_rows.index = get_new_person_id(len(new_person_rows))
     households.local.loc[new_hh_ids] = new_hh_rows
     persons.local = pd.concat([persons.local, new_person_rows])

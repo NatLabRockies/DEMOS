@@ -6,16 +6,38 @@ from templates import estimated_models, modelmanager as mm
 import time
 from logging_logic import log_execution_time
 
+STEP_NAME = "income_adjustment"
 
-@orca.step("update_income")
-def update_income(persons, households, income_rates, year):
+@orca.step(STEP_NAME)
+def income_adjustment(persons, households, income_rates, year):
     """
-    Updating income for persons and households
+    Update person-level earnings based on county-specific income growth rates.
 
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of persons table
-        households (DataFrameWrapper): DataFrameWrapper of households table
-        year (int): simulation year
+    This step applies multiplicative adjustments to person earnings using annual
+    growth rates that vary by county. It maintains geographic variation in income
+    trajectories while updating the entire population simultaneously.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing individual-level attributes including earnings.
+    households : orca.Table
+        The households table containing household-level attributes including county ID.
+    income_rates : orca.Table
+        Table with annual income growth rates by county.
+    year : int
+        The current simulation year.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Modifies `persons.earning` in place using multiplicative adjustment.
+    - Requires `income_rates` table with columns: year, lcm_county_id, rate.
+    - All persons in the same county receive the same proportional adjustment.
+    - Rate of 0.05 means 5% growth (earnings multiplied by 1.05).
     """
     start_time = time.time()
     # TODO: CountyID is not being updated by default

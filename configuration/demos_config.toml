@@ -13,7 +13,7 @@ modules = [
     "birth",
     "education",
     "household_rebalancing",
-    "update_income"
+    "income_adjustment"
 ]
 output_tables = [
     "persons",
