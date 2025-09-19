@@ -17,6 +17,9 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
 
 ### Using Docker (Recommended)
 
+> **Note:**  
+> Make sure the Docker Daemon is running. This changes from system to system but Docker Desktop should have a status flag indicating if the daemon is live, if Desktop is available
+
 <!-- **Important Note:**
 > While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source) -->
 
@@ -24,7 +27,6 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
     ```bash
     git clone https://github.com/NREL/DEMOS_NREL.git
     cd DEMOS_NREL
-    git checkout yep/docker-implementation # This line is only relevant during internal testing
     ```
   
     **Build Docker Image** *(Development only)*
@@ -45,10 +47,10 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
     DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
     ```
 
-1. **Or run with Docker directly**:
+<!-- 1. **Or run with Docker directly**:
     ```bash
     docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
-    ```
+    ``` -->
 
 > **Note for MacOS/Windows:**  
 > Increase Docker's memory allocation to at least 16–20 GB via Docker Desktop:  
@@ -198,14 +200,7 @@ DEMOS_NREL/
 
 ## 4. Running DEMOS
 
-From the project root, run:
-
-```bash
-cd demos
-python simulate.py -cfg configuration/demos_config.toml
-```
-
-Or use Docker as described above.
+After setting up your data and configuration, use Docker as described above.
 
 The output of DEMOS will be stored in `data/output/demos_output_{year}.h5`.
 

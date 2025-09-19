@@ -292,13 +292,16 @@
 <h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <section id="using-docker-recommended">
 <h3>Using Docker (Recommended)<a class="headerlink" href="#using-docker-recommended" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><p><strong>Note:</strong><br />
+Make sure the Docker Daemon is running. This changes from system to system but Docker Desktop should have a status flag indicating if the daemon is live, if Desktop is available</p>
+</div></blockquote>
 <!-- **Important Note:**
 > While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source) -->
 <ol class="arabic">
 <li><p><strong>Clone the repository</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NREL/DEMOS_NREL.git
 <span class="nb">cd</span><span class="w"> </span>DEMOS_NREL
-git<span class="w"> </span>checkout<span class="w"> </span>yep/docker-implementation<span class="w"> </span><span class="c1"># This line is only relevant during internal testing</span>
 </pre></div>
 </div>
 <p><strong>Build Docker Image</strong> <em>(Development only)</em></p>
@@ -319,12 +322,11 @@ If you need to specify a different location for them, you can run:</p>
 </pre></div>
 </div>
 </li>
-<li><p><strong>Or run with Docker directly</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>run<span class="w"> </span>--volume<span class="w"> </span>&lt;path-to-config&gt;:/demos/config.toml:ro<span class="w"> </span>--volume<span class="w"> </span>&lt;path-to-data-dir&gt;:/demos/data<span class="w"> </span>--platform<span class="o">=</span>linux/amd64<span class="w"> </span>demos
-</pre></div>
-</div>
-</li>
 </ol>
+<!-- 1. **Or run with Docker directly**:
+    ```bash
+    docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
+    ``` -->
 <blockquote>
 <div><p><strong>Note for MacOS/Windows:</strong><br />
 Increase Docker’s memory allocation to at least 16–20 GB via Docker Desktop:<br />
@@ -465,12 +467,7 @@ You can use different data files or directories, but make sure the paths in your
 </section>
 <section id="running-demos">
 <h2>4. Running DEMOS<a class="headerlink" href="#running-demos" title="Link to this heading">¶</a></h2>
-<p>From the project root, run:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>demos
-python<span class="w"> </span>simulate.py<span class="w"> </span>-cfg<span class="w"> </span>configuration/demos_config.toml
-</pre></div>
-</div>
-<p>Or use Docker as described above.</p>
+<p>After setting up your data and configuration, use Docker as described above.</p>
 <p>The output of DEMOS will be stored in <code class="docutils literal notranslate"><span class="pre">data/output/demos_output_{year}.h5</span></code>.</p>
 </section>
 <section id="understanding-the-workflow">
