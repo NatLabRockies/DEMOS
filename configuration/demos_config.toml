@@ -2,7 +2,7 @@
 random_seed = 100
 base_year = 2010
 forecast_year = 2019
-calibrated_models_dir = "../data/calibrated_configs/custom/06197001"
+calibrated_models_dir = "../data/sf_bay_example/calibrated_models_coefficients/"
 inconsistent_persons_table_behavior = "fix"
 modules = [
     "aging",
@@ -31,33 +31,33 @@ initialize_empty_tables = [
 [[tables]]
 file_type = "h5"
 table_name = "persons"
-filepath = "../data/custom_mpo_06197001_model_data.h5"
+filepath = "../data/sf_bay_example/custom_mpo_06197001_model_data.h5"
 h5_key = "persons"
 
 [[tables]]
 file_type = "h5"
 table_name = "households"
-filepath = "../data/custom_mpo_06197001_model_data.h5"
+filepath = "../data/sf_bay_example/custom_mpo_06197001_model_data.h5"
 h5_key = "households"
 
 ## Other static data tables
 [[tables]]
 file_type = "csv"
 table_name = "relational_adjustment_mapping"
-filepath = "../data/relmap_06197001.csv"
+filepath = "../data/sf_bay_example/relmap_06197001.csv"
 index_col = "index"
 
 [[tables]]
 file_type = "csv"
 table_name = "income_rates"
-filepath = "../data/income_rates_06197001.csv"
+filepath = "../data/sf_bay_example/observed_calibration_values/income_rates_06197001.csv"
 index_col = "year"
 custom_dtype_casting = {"lcm_county_id" = "object", "year" = "int", "rate" = "float"}
 
 [[tables]]
 file_type = "csv"
 table_name = "hsize_ct"
-filepath = "../data/hsize_ct_06197001.csv"
+filepath = "../data/sf_bay_example/observed_calibration_values/hsize_ct_06197001.csv"
 index_col = "year"
 custom_dtype_casting = {"lcm_county_id" = "object", "year" = "int", "hh_size" = "object", "total_number_of_households" = "int"}
 
@@ -67,13 +67,13 @@ custom_dtype_casting = {"lcm_county_id" = "object", "year" = "int", "hh_size" = 
 [[tables]]
 file_type = "csv"
 table_name = "observed_employment"
-filepath = "../data/calibrated_values/calibration/06197001/employment_obs.csv"
+filepath = "../data/sf_bay_example/observed_calibration_values/employment_obs.csv"
 index_col = "year"
 
 [[tables]]
 file_type = "csv"
 table_name = "observed_marrital_data"
-filepath = "../data/calibrated_values/calibration/06197001/marrital_status_over_time_obs.csv"
+filepath = "../data/sf_bay_example/observed_calibration_values/marrital_status_over_time_obs.csv"
 index_col = "year"
 
 
@@ -93,7 +93,7 @@ max_iter = 1000
 [mortality_module_config.calibration_procedure.observed_values_table]
 file_type = "csv"
 table_name = "observed_fatalities_data"
-filepath = "../data/calibrated_values/calibration/06197001/mortalities_over_time_obs.csv"
+filepath = "../data/sf_bay_example/observed_calibration_values/mortalities_over_time_obs.csv"
 index_col = "year"
 
 ## Birth
@@ -105,7 +105,7 @@ max_iter = 1000
 [birth_module_config.calibration_procedure.observed_values_table]
 file_type = "csv"
 table_name = "observed_births_data"
-filepath = "../data/calibrated_values/calibration/06197001/births_over_time_obs.csv"
+filepath = "../data/sf_bay_example/observed_calibration_values/births_over_time_obs.csv"
 index_col = "year"
 
 ## HH Reorg
