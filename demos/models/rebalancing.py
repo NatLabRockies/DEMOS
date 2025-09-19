@@ -1,3 +1,4 @@
+# fmt: off
 import orca
 import numpy as np
 import pandas as pd
@@ -8,10 +9,48 @@ from templates.utils.transition import GrowthRateTransition
 from config import DEMOSConfig, HHRebalancingModuleConfig, SimultaneousCalibrationConfig, get_config
 
 import time
-from datasources import log_execution_time
+from logging_logic import log_execution_time
 
-@orca.step('household_rebalancing')
+STEP_NAME = "household_rebalancing"
+
+@orca.step(STEP_NAME)
 def household_rebalancing(households, persons, year, get_new_households, get_new_person_id, rebalanced_households, rebalanced_persons):
+    """
+    Adjust household counts to match control totals by geography and household size.
+
+    This step compares current household counts with control totals and duplicates or removes
+    households as needed. It maintains population consistency by also updating the persons table
+    and stores removed records for tracking purposes.
+
+    Parameters
+    ----------
+    households : orca.Table
+        The households table containing household-level attributes.
+    persons : orca.Table
+        The persons table containing individual-level attributes.
+    year : int
+        The current simulation year.
+    get_new_households : callable
+        Function to generate new unique household IDs.
+    get_new_person_id : callable
+        Function to generate new unique person IDs.
+    rebalanced_households : orca.Table
+        Table for storing removed household records.
+    rebalanced_persons : orca.Table
+        Table for storing removed person records.
+
+    Returns
+    -------
+    None
+
+    Notes
+    -----
+    - Modifies households and persons tables in place by adding/removing records.
+    - Uses module configuration to determine control table and column mappings.
+    - Tracks marital status before and after operations in marital_rebalanced table.
+    - Skips processing if no control data exists for the current year.
+    - Sampling with replacement occurs when duplicating more households than available.
+    """
     start_time = time.time()
 
     # Load calibration config
@@ -41,15 +80,10 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     index_df = households.to_frame([GEOID_COL, CONTROL_COL]).sort_values([GEOID_COL, CONTROL_COL])
     indices = index_df.groupby([GEOID_COL, CONTROL_COL]).indices
     current_count = index_df.groupby([GEOID_COL, CONTROL_COL]).size()
-    hh_difference = control_table_wrapped.local.loc[year].set_index([GEOID_COL, CONTROL_COL])[value_column].loc[current_count.index] - current_count
-    
-    # TODO: Add assertions about rows being enough to make the sampling
+    hh_difference = control_table_wrapped.local.loc[year].astype({GEOID_COL: "str", CONTROL_COL:"str"}).set_index([GEOID_COL, CONTROL_COL])[value_column].loc[current_count.index] - current_count
 
     to_remove_hh = []
     to_duplicate_hh = []
-    # for geo_id, sub_series in hh_difference.groupby(level=0):
-    #     geo_index = index_df[GEOID_COL] == geo_id
-    #     for sub_index, adjustment in sub_series.items():
     for (geo_id, hh_size), adjustment in hh_difference.items():
             valid_indices = index_df.index[indices[(geo_id, hh_size)]]
             selected_hh = np.random.choice(valid_indices, size=abs(adjustment), replace=(adjustment > 0) and (abs(adjustment) > len(valid_indices))).tolist()
@@ -73,7 +107,6 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
     new_person_rows = new_person_rows.merge(hh_mapping, left_on="household_id", right_on="orig_hh")
     new_person_rows["household_id"] = new_person_rows["new_hh"]
     new_person_rows.drop(["orig_hh", "new_hh"], inplace=True, axis=1)
-    # new_person_rows.household_id = new_person_rows.household_id.map(dict(zip(to_duplicate_hh, new_hh_ids)))
     new_person_rows.index = get_new_person_id(len(new_person_rows))
     households.local.loc[new_hh_ids] = new_hh_rows
     persons.local = pd.concat([persons.local, new_person_rows])

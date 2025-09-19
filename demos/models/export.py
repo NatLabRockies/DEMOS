@@ -12,8 +12,9 @@ def compute_age_dist(year, age):
         "31-40": [((age >= 31) & (age <= 40)).sum()],
         "41-50": [((age >= 41) & (age <= 50)).sum()],
         "51-70": [((age >= 51) & (age <= 70)).sum()],
-        "70+":   [((age > 70) ).sum()]
+        "70+": [((age > 70)).sum()],
     }
+
 
 @orca.step("export_demo_stats")
 def export_demo_stats(year, forecast_year, persons):
@@ -45,7 +46,8 @@ def export_demo_stats(year, forecast_year, persons):
         export("mortalities")
         export("btable_elig")
         export("marrital")
-    
+
+
 def export(table_name):
     """
     Export the tables
@@ -53,9 +55,9 @@ def export(table_name):
     Args:
         table_name (string): Name of the orca table
     """
-    
+
     region_code = CONFIG.region_code
     output_folder = orca.get_injectable("output_folder")
     df = orca.get_table(table_name).to_frame()
-    csv_name = table_name + "_" + region_code +".csv"
-    df.to_csv(output_folder+csv_name, index=False)
+    csv_name = table_name + "_" + region_code + ".csv"
+    df.to_csv(output_folder + csv_name, index=False)

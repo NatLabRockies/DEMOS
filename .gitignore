@@ -4,3 +4,5 @@ demos/outputs/simulation/**/*
 demos/outputs/figures
 .DS_Store
 .vscode
+build/
+*.egg-info

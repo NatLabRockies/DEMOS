@@ -3,6 +3,7 @@ Use the ``TransitionModel`` class with the different transitioners to
 add or remove agents based on growth rates or target totals.
 
 """
+
 from __future__ import division
 
 import logging
@@ -50,7 +51,7 @@ def add_rows(data, nrows, starting_index=None, accounting_column=None):
         will have multiple entries.
 
     """
-    logger.debug('start: adding {} rows in transition model'.format(nrows))
+    logger.debug("start: adding {} rows in transition model".format(nrows))
     if nrows == 0:
         return data, _empty_index(), _empty_index()
 
@@ -59,12 +60,12 @@ def add_rows(data, nrows, starting_index=None, accounting_column=None):
 
     new_rows = sample_rows(nrows, data, accounting_column=accounting_column)
     copied_index = new_rows.index
-    added_index = pd.Index(np.arange(
-        starting_index, starting_index + len(new_rows.index), dtype=np.int))
+    added_index = pd.Index(
+        np.arange(starting_index, starting_index + len(new_rows.index), dtype=np.int)
+    )
     new_rows.index = added_index
 
-    logger.debug(
-        'finish: added {} rows in transition model'.format(len(new_rows)))
+    logger.debug("finish: added {} rows in transition model".format(len(new_rows)))
     return pd.concat([data, new_rows]), added_index, copied_index
 
 
@@ -89,18 +90,20 @@ def remove_rows(data, nrows, accounting_column=None):
         Indexes of the rows removed from the table.
 
     """
-    logger.debug('start: removing {} rows in transition model'.format(nrows))
+    logger.debug("start: removing {} rows in transition model".format(nrows))
     nrows = abs(nrows)  # in case a negative number came in
     unit_check = data[accounting_column].sum() if accounting_column else len(data)
     if nrows == 0:
         return data, _empty_index()
     elif nrows > unit_check:
-        raise ValueError('Number of rows to remove exceeds number of records in table.')
+        raise ValueError("Number of rows to remove exceeds number of records in table.")
 
-    remove_rows = sample_rows(nrows, data, accounting_column=accounting_column, replace=False)
+    remove_rows = sample_rows(
+        nrows, data, accounting_column=accounting_column, replace=False
+    )
     remove_index = remove_rows.index
 
-    logger.debug('finish: removed {} rows in transition model'.format(nrows))
+    logger.debug("finish: removed {} rows in transition model".format(nrows))
     return data.loc[data.index.difference(remove_index)], remove_index
 
 
@@ -134,8 +137,8 @@ def add_or_remove_rows(data, nrows, starting_index=None, accounting_column=None)
     """
     if nrows > 0:
         updated, added, copied = add_rows(
-            data, nrows, starting_index,
-            accounting_column=accounting_column)
+            data, nrows, starting_index, accounting_column=accounting_column
+        )
         removed = _empty_index()
 
     elif nrows < 0:
@@ -143,8 +146,12 @@ def add_or_remove_rows(data, nrows, starting_index=None, accounting_column=None)
         added, copied = _empty_index(), _empty_index()
 
     else:
-        updated, added, copied, removed = \
-            data, _empty_index(), _empty_index(), _empty_index()
+        updated, added, copied, removed = (
+            data,
+            _empty_index(),
+            _empty_index(),
+            _empty_index(),
+        )
 
     return updated, added, copied, removed
 
@@ -160,6 +167,7 @@ class GrowthRateTransition(object):
         Name of column with accounting totals/quanties to apply towards the control. If not provided
         then row counts will be used for accounting.
     """
+
     def __init__(self, growth_rate, accounting_column=None):
         self.growth_rate = growth_rate
         self.accounting_column = accounting_column
@@ -195,10 +203,14 @@ class GrowthRateTransition(object):
         else:
             nrows = int(round(data[self.accounting_column].sum() * self.growth_rate))
         with log_start_finish(
-                'adding {} rows via growth rate ({}) transition'.format(
-                    nrows, self.growth_rate),
-                logger):
-            return add_or_remove_rows(data, nrows, accounting_column=self.accounting_column)
+            "adding {} rows via growth rate ({}) transition".format(
+                nrows, self.growth_rate
+            ),
+            logger,
+        ):
+            return add_or_remove_rows(
+                data, nrows, accounting_column=self.accounting_column
+            )
 
     def __call__(self, data, year):
         """
@@ -222,6 +234,7 @@ class TabularGrowthRateTransition(object):
         Name of column with accounting totals/quanties to apply towards the control. If not provided
         then row counts will be used for accounting.
     """
+
     def __init__(self, growth_rates, rates_column, accounting_column=None):
         self.growth_rates = growth_rates
         self.rates_column = rates_column
@@ -284,13 +297,13 @@ class TabularGrowthRateTransition(object):
             Index of rows that were removed.
 
         """
-        logger.debug('start: tabular transition')
+        logger.debug("start: tabular transition")
         if year not in self._config_table.index:
-            raise ValueError('No targets for given year: {}'.format(year))
+            raise ValueError("No targets for given year: {}".format(year))
 
         # want this to be a DataFrame
         year_config = self._config_table.loc[[year]]
-        logger.debug('transitioning {} segments'.format(len(year_config)))
+        logger.debug("transitioning {} segments".format(len(year_config)))
 
         segments = []
         added_indexes = []
@@ -306,18 +319,19 @@ class TabularGrowthRateTransition(object):
 
             # Do not run on segment if it is empty
             if len(subset) == 0:
-                logger.debug('empty segment encountered')
+                logger.debug("empty segment encountered")
                 continue
 
             if self.accounting_column is None:
                 nrows = self._calc_nrows(len(subset), row[self._config_column])
             else:
                 nrows = self._calc_nrows(
-                    subset[self.accounting_column].sum(),
-                    row[self._config_column])
+                    subset[self.accounting_column].sum(), row[self._config_column]
+                )
 
-            updated, added, copied, removed = \
-                add_or_remove_rows(subset, nrows, starting_index, self.accounting_column)
+            updated, added, copied, removed = add_or_remove_rows(
+                subset, nrows, starting_index, self.accounting_column
+            )
             if nrows > 0:
                 # only update the starting index if rows were added
                 starting_index = starting_index + nrows
@@ -331,7 +345,7 @@ class TabularGrowthRateTransition(object):
         copied_indexes = models.concat_indexes(copied_indexes)
         removed_indexes = models.concat_indexes(removed_indexes)
 
-        logger.debug('finish: tabular transition')
+        logger.debug("finish: tabular transition")
         return updated, added_indexes, copied_indexes, removed_indexes
 
     def __call__(self, data, year):
@@ -356,6 +370,7 @@ class TabularTotalsTransition(TabularGrowthRateTransition):
         Name of column with accounting totals/quanties to apply towards the control. If not provided
         then row counts will be used for accounting.
     """
+
     def __init__(self, targets, totals_column, accounting_column=None):
         self.targets = targets
         self.totals_column = totals_column
@@ -417,7 +432,7 @@ class TabularTotalsTransition(TabularGrowthRateTransition):
             Index of rows that were removed.
 
         """
-        with log_start_finish('tabular totals transition', logger):
+        with log_start_finish("tabular totals transition", logger):
             return super(TabularTotalsTransition, self).transition(data, year)
 
 
@@ -445,26 +460,30 @@ def _update_linked_table(table, col_name, added, copied, removed):
     updated : pandas.DataFrame
 
     """
-    logger.debug('start: update linked table after transition')
+    logger.debug("start: update linked table after transition")
 
     # handle removals
     table = table.loc[~table[col_name].isin(set(removed))]
-    if (added is None or len(added) == 0):
+    if added is None or len(added) == 0:
         return table
 
     # map new IDs to the IDs from which they were copied
-    id_map = pd.concat([pd.Series(copied, name=col_name), pd.Series(added, name='temp_id')], axis=1)
+    id_map = pd.concat(
+        [pd.Series(copied, name=col_name), pd.Series(added, name="temp_id")], axis=1
+    )
 
     # join to linked table and assign new id
     new_rows = id_map.merge(table, on=col_name)
     new_rows.drop(col_name, axis=1, inplace=True)
-    new_rows.rename(columns={'temp_id': col_name}, inplace=True)
+    new_rows.rename(columns={"temp_id": col_name}, inplace=True)
 
     # index the new rows
     starting_index = table.index.values.max() + 1
-    new_rows.index = np.arange(starting_index, starting_index + len(new_rows), dtype=np.int)
+    new_rows.index = np.arange(
+        starting_index, starting_index + len(new_rows), dtype=np.int
+    )
 
-    logger.debug('finish: update linked table after transition')
+    logger.debug("finish: update linked table after transition")
     return pd.concat([table, new_rows])
 
 
@@ -480,6 +499,7 @@ class TransitionModel(object):
         of rows copied, and the indexes of rows removed.
 
     """
+
     def __init__(self, transitioner):
         self.transitioner = transitioner
 
@@ -509,17 +529,18 @@ class TransitionModel(object):
         updated_links : dict of pandas.DataFrame
 
         """
-        logger.debug('start: transition')
+        logger.debug("start: transition")
         linked_tables = linked_tables or {}
         updated_links = {}
 
-        with log_start_finish('add/remove rows', logger):
+        with log_start_finish("add/remove rows", logger):
             updated, added, copied, removed = self.transitioner(data, year)
 
         for table_name, (table, col) in linked_tables.items():
-            logger.debug('updating linked table {}'.format(table_name))
-            updated_links[table_name] = \
-                _update_linked_table(table, col, added, copied, removed)
+            logger.debug("updating linked table {}".format(table_name))
+            updated_links[table_name] = _update_linked_table(
+                table, col, added, copied, removed
+            )
 
-        logger.debug('finish: transition')
+        logger.debug("finish: transition")
         return updated, added, updated_links

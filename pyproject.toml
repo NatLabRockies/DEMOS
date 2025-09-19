@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nrel.demos"
+version = "0.0.1"
+description = "DEMOS is a demographic simulation tool."
+readme = "README.md"
+authors = [{ name = "National Renewable Energy Laboratory" }, { name = "Lawrence Berkley National Laboratory" }]
+# license = {}
+classifiers = [
+    "Programming Language :: Python :: 3.10"
+]
+keywords = ["simulation", "demographic", "agent-based"]
+dependencies = [
+    "pandas==2.3.1",
+    "numpy==2.2.6",
+    "orca==1.8",
+    "patsy==1.0.1",
+    "pydantic==2.11.7",
+    "pyyaml==6.0.2",
+    "toml==0.10.2",
+    "toolz==1.0.0",
+    "scipy==1.15.2",
+    "statsmodels==0.14.5",
+    "loguru==0.7.3"
+]
+requires-python = ">= 3.10"
+
+[tool.setuptools]
+packages = ["demos"]
+
+[project.urls]
+Homepage = "https://github.com/NREL/DEMOS_NREL"
+
+[project.optional-dependencies]
+reporting = [
+    "ipykernel",
+    "matplotlib",
+    "seaborn",
+]
+docs = [
+  "sphinx>=6.0",
+  "sphinx-rtd-theme",
+  "myst-parser",
+  "sphinx-autodoc-typehints",
+  "sphinxcontrib-napoleon",
+  "furo",
+  "sphinx-multiversion"
+]
+dev = [
+    "black"
+]
+
+[project.scripts]
+# TODO: Check these
+demos = "demos.simulate:simulate"
+# plotting = 

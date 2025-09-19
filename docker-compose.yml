@@ -1,0 +1,13 @@
+services:
+  demos:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: demos:0.0.1
+    tty: true
+    platform: linux/amd64
+    environment:
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - "${DEMOS_CONFIG_PATH:-./configuration/demos_config.toml}:/demos/config.toml:ro"
+      - "${DEMOS_DATA_DIR:-./data}:/data"

@@ -2,9 +2,11 @@
 Utilities used within the ``urbansim.models`` package.
 
 """
+
 import collections
 import logging
 import numbers
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -40,12 +42,12 @@ def apply_filter_query(df, filters=None):
     filtered_df : pandas.DataFrame
 
     """
-    with log_start_finish('apply filter query: {!r}'.format(filters), logger):
+    with log_start_finish("apply filter query: {!r}".format(filters), logger):
         if filters:
             if isinstance(filters, str):
                 query = filters
             else:
-                query = ' and '.join(filters)
+                query = " and ".join(filters)
             return df.query(query)
         else:
             return df
@@ -73,19 +75,19 @@ def _filterize(name, value):
     filter_exp : str
 
     """
-    if name.endswith('_min'):
+    if name.endswith("_min"):
         name = name[:-4]
-        comp = '>='
-    elif name.endswith('_max'):
+        comp = ">="
+    elif name.endswith("_max"):
         name = name[:-4]
-        comp = '<'
+        comp = "<"
     else:
-        comp = '=='
+        comp = "=="
 
-    result = '{} {} {!r}'.format(name, comp, value)
+    result = "{} {} {!r}".format(name, comp, value)
     logger.debug(
-        'converted name={} and value={} to filter {}'.format(
-            name, value, result))
+        "converted name={} and value={} to filter {}".format(name, value, result)
+    )
     return result
 
 
@@ -114,14 +116,16 @@ def filter_table(table, filter_series, ignore=None):
     filtered : pandas.DataFrame
 
     """
-    with log_start_finish('filter table', logger):
+    with log_start_finish("filter table", logger):
         ignore = ignore if ignore else set()
 
-        filters = [_filterize(name, val)
-                   for name, val in filter_series.iteritems()
-                   if not (name in ignore or
-                           (isinstance(val, numbers.Number) and
-                            np.isnan(val)))]
+        filters = [
+            _filterize(name, val)
+            for name, val in filter_series.iteritems()
+            if not (
+                name in ignore or (isinstance(val, numbers.Number) and np.isnan(val))
+            )
+        ]
 
         return apply_filter_query(table, filters)
 
@@ -158,8 +162,9 @@ def has_constant_expr(expr):
     has_constant : bool
 
     """
+
     def has_constant(node):
-        if node.type == 'ONE':
+        if node.type == "ONE":
             return True
 
         for n in node.args:
@@ -200,15 +205,15 @@ def str_model_expression(expr, add_constant=True):
     """
     if not isinstance(expr, str):
         if isinstance(expr, collections.Mapping):
-            left_side = expr.get('left_side')
-            right_side = str_model_expression(expr['right_side'], add_constant)
+            left_side = expr.get("left_side")
+            right_side = str_model_expression(expr["right_side"], add_constant)
         else:
             # some kind of iterable like a list
             left_side = None
-            right_side = ' + '.join(expr)
+            right_side = " + ".join(expr)
 
         if left_side:
-            model_expression = ' ~ '.join((left_side, right_side))
+            model_expression = " ~ ".join((left_side, right_side))
         else:
             model_expression = right_side
 
@@ -217,13 +222,13 @@ def str_model_expression(expr, add_constant=True):
 
     if not has_constant_expr(model_expression):
         if add_constant:
-            model_expression += ' + 1'
+            model_expression += " + 1"
         else:
-            model_expression += ' - 1'
+            model_expression += " - 1"
 
     logger.debug(
-        'converted expression: {!r} to model: {!r}'.format(
-            expr, model_expression))
+        "converted expression: {!r} to model: {!r}".format(expr, model_expression)
+    )
     return model_expression
 
 
@@ -274,10 +279,10 @@ def columns_in_filters(filters):
         return []
 
     if not isinstance(filters, str):
-        filters = ' '.join(filters)
+        filters = " ".join(filters)
 
     columns = []
-    reserved = {'and', 'or', 'in', 'not'}
+    reserved = {"and", "or", "in", "not"}
 
     for toknum, tokval, _, _, _ in generate_tokens(StringIO(filters).readline):
         if toknum == NAME and tokval not in reserved:
@@ -328,19 +333,20 @@ def columns_in_formula(formula):
         lambda x: x.extra,
         tz.remove(
             lambda x: x.extra is None,
-            _tokens_from_patsy(patsy.parse_formula.parse_formula(formula))))
+            _tokens_from_patsy(patsy.parse_formula.parse_formula(formula)),
+        ),
+    )
 
     for tok in tokens:
         # if there are parentheses in the expression we
         # want to drop them and everything outside
         # and start again from the top
-        if '(' in tok:
-            start = tok.find('(') + 1
-            fin = tok.rfind(')')
+        if "(" in tok:
+            start = tok.find("(") + 1
+            fin = tok.rfind(")")
             columns.extend(columns_in_formula(tok[start:fin]))
         else:
-            for toknum, tokval, _, _, _ in generate_tokens(
-                    StringIO(tok).readline):
+            for toknum, tokval, _, _, _ in generate_tokens(StringIO(tok).readline):
                 if toknum == NAME:
                     columns.append(tokval)
 

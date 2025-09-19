@@ -1,68 +1,102 @@
 import orca
-import numpy as np
-import pandas as pd
-from templates import estimated_models, modelmanager as mm
 import time
-from datasources import log_execution_time
+import pandas as pd
+from logging_logic import log_execution_time
+from config import DEMOSConfig, AgingModuleConfig, get_config
 
-@orca.step("update_age")
-def update_age(persons):
+STEP_NAME = "aging"
+REQUIRED_COLUMNS = ["persons.age"]
+
+
+@orca.step(STEP_NAME)
+def aging(persons):
     """
-    This function updates the age of the persons table and
-    updates the age of the household head in the household table.
+    Increment the age of every person by one year.
 
-    Modifies State Variables:
-        - persons.age
+    This step updates the `age` column in the `persons` table, simulating the passage of one year
+    for all agents in the population.
 
-    Args:
-        persons (DataFrameWrapper): DataFrameWrapper of the persons table
-        households (DataFrameWrapper): DataFrameWrapper of the households table
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing the `age` column.
 
-    Returns:
-        None
+    Notes
+    -----
+    - Modifies `persons.age` in place.
+    - Should be run once per simulation year.
     """
     start_time = time.time()
     persons["age"] += 1
-    log_execution_time(start_time, orca.get_injectable("year"), "aging")
+    log_execution_time(start_time, orca.get_injectable("year"), STEP_NAME)
 
 
-@orca.column(table_name="persons", cache=True, cache_scope="iteration")
+@orca.column(table_name="persons")
 def child(data="persons.relate"):
+    """
+    Identify children in the persons table.
+
+    Returns a binary indicator (1 or 0) for each person, where 1 indicates the person is a child
+    based on the `relate` code (values 2, 3, 4, or 14).
+
+    Parameters
+    ----------
+    data : pandas.Series
+        The `relate` column from the persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Binary indicator for child status.
+    """
     return data.isin([2, 3, 4, 14]).astype(int)
 
 
-@orca.column(table_name="persons", cache=True, cache_scope="iteration")
+@orca.column(table_name="persons")
 def senior(data="persons.age"):
-    return (data >= 65).astype(int)
+    """
+    Identify seniors in the persons table.
+
+    Returns a binary indicator (1 or 0) for each person, where 1 indicates the person is a senior,
+    defined as having an age greater than or equal to the threshold specified in the aging module config
+    (default is 65).
+
+    Parameters
+    ----------
+    data : pandas.Series
+        The `age` column from the persons table.
+
+    Returns
+    -------
+    pandas.Series
+        Binary indicator for senior status.
+    """
+    # Load calibration config
+    demos_config: DEMOSConfig = get_config()
+    aging_config: AgingModuleConfig = demos_config.aging_module_config
+
+    return (data >= aging_config.senior_age).astype(int)
 
 
-@orca.column(table_name="persons", cache=True, cache_scope="iteration")
-def age_gt55(data="persons.age"):
-    return (data >= 55).astype(int)
+@orca.column(table_name="persons")
+def age_group(data="persons.age"):
+    """
+    Assign each person to an age group.
 
+    Categorizes persons into predefined age intervals for use in modeling and reporting.
 
-@orca.column(table_name="households", cache=True, cache_scope="iteration")
-def hh_children(persons):
-    return persons.to_frame(["household_id", "child"]) \
-                  .groupby("household_id") \
-                  .sum()["child"].replace({0: "no", 1: "yes"})
+    Parameters
+    ----------
+    data : pandas.Series
+        The `age` column from the persons table.
 
-@orca.column(table_name="households", cache=True, cache_scope="iteration")
-def age_gt55(persons):
-    return (persons.to_frame(["household_id", "senior"]) \
-                  .groupby("household_id") \
-                  .sum()["senior"] > 0).astype(int)
-
-
-@orca.column(table_name="households", cache=True, cache_scope="iteration")
-def hh_seniors(data="households.gt55"):
-    return data.replace({0: "no", 1: "yes"})
-
-
-@orca.column(table_name="households", cache=True, cache_scope="iteration")
-def hh_age_of_head(data="households.age_of_head"):
-    return pd.Series(
-            np.where(data < 35,"lt35",
-            np.where(data < 65, "gt35-lt65", "gt65")),
-        index = data.index
-    )
+    Returns
+    -------
+    pandas.Series
+        Categorical age group labels as strings.
+    """
+    age_intervals = [0, 20, 30, 40, 50, 65, 900]
+    age_labels = ["lte19", "20-29", "30-39", "40-49", "50-64", "gte65"]
+    return pd.cut(
+        data, bins=age_intervals, labels=age_labels, include_lowest=True
+    ).astype(str)
