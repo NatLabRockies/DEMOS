@@ -705,12 +705,12 @@ def update_cohabitating_households(
 
     # If geoid_col is set, we copy the geoid from old households to new ones
     if module_config.geoid_col is not None:
-        county_assignment = households.local.loc[
+        geoid_assignment = households.local.loc[
             old_household_id, module_config.geoid_col
         ].values
-        households.local.loc[new_households, module_config.geoid_col] = (
-            county_assignment
-        )
+        households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
+    county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
+    households.local.loc[new_households, "lcm_county_id"] = county_assignment
 
 
 def fix_erroneous_households(persons):

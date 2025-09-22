@@ -2,16 +2,18 @@ modelmanager_version: 0.2.dev9
 saved_object:
   filters: (worker == 0) & (age >= 18)
   fitted_parameters:
-    - -0.0185182
-    - 0.3578597
-    - 0.8037832
-    - 1.2053345
-    - 2.3996862
-    - 4.3787252
-    - 0.2860831
-    - -0.4146881
-    - -0.7963939
-  model_expression: stay_out ~ agebin1_labor + agebin2_labor + agebin3_labor + agebin4_labor + agebin5_labor + gender2 + edubin2 + edubin3 + 1
+    - -0.031
+    - 0.559
+    - 1.190
+    - 2.386
+    - 4.369
+    - 0.313
+    - -0.416
+    - -0.764
+    - 0.013
+    - -0.205
+    - -0.175
+  model_expression: stay_out ~ agebin6_labor + agebin3_labor + agebin4_labor + agebin5_labor + gender2 + edubin2 + edubin3 + race_blk + race_asn + race_other + 1
   name: enter_labor_force
   out_column: null
   out_filters:
