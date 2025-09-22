@@ -4,15 +4,14 @@ saved_object:
     - (worker == 1) & (age >= 18)
   fitted_parameters:
     - -1.554846
-    - 0.100934
-    - -0.2373369
+    - -0.067
     - -0.3938537
     - 0.425738
     - 1.5008334
     - 0.3530349
     - -0.5569076
     - -0.9928796
-  model_expression: leaving_workforce ~ agebin1_labor + agebin2_labor + agebin3_labor + agebin4_labor + agebin5_labor + gender2 + edubin2 + edubin3 + 1
+  model_expression: leaving_workforce ~ agebin6_labor + agebin3_labor + agebin4_labor + agebin5_labor + gender2 + edubin2 + edubin3 + 1
   name: exit_labor_force
   out_column: null
   out_filters:

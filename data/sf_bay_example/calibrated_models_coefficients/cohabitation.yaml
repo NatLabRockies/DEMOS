@@ -3,7 +3,7 @@ modelmanager_version: 0.2.dev9
 saved_object:
   model_coeffs:
     breakup:
-    - 4.0
+    - -1.991
     - -0.712679
     - -1.741183
     - -3.350202
@@ -14,7 +14,7 @@ saved_object:
     - -0.97325
     - -0.490905
     marriage:
-    - 2.0
+    - -0.324
     - -1.532644
     - -2.978962
     - -5.814818

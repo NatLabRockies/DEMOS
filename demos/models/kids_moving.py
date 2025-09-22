@@ -127,11 +127,15 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
 
     # Get the old household_id for the moving kids to retrieve the county_id
     old_household_id = persons.local.loc[kids_moving_index, "household_id"].values
-    county_assignment = households.local.loc[
+    geoid_assignment = households.local.loc[
         old_household_id, module_config.geoid_col
+    ].values
+    county_assignment = households.local.loc[
+        old_household_id, "lcm_county_id"
     ].values
 
     new_households = get_new_households(kids_moving_index.sum())
     persons.local.loc[kids_moving_index, "household_id"] = new_households
     persons.local.loc[kids_moving_index, "relate"] = 0
-    households.local.loc[new_households, module_config.geoid_col] = county_assignment
+    households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
+    households.local.loc[new_households, "lcm_county_id"] = county_assignment

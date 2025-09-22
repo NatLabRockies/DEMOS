@@ -156,6 +156,15 @@ class DEMOSConfig(BaseModel):
             )
         return self
 
+    @model_validator(mode="after")
+    def require_lcm_county_column(self):
+        loaded_table_names = [t.table_name for t in self.tables]
+        if "lcm_county_id" not in orca.get_table("households").columns:
+            raise ValueError(
+                f"`lcm_county_id` (County FIPS) is required in the households table"
+            )
+        return self
+
 
 def load_config_file(dir: str) -> DEMOSConfig:
     global CONFIG

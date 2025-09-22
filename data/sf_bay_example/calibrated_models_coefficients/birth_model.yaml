@@ -3,10 +3,12 @@ modelmanager_version: 0.2.dev9
 saved_object:
     filters: null
     fitted_parameters:
-    - -3.2543275
-    - 0.9425
-    - 0.83806
-    model_expression: birth ~ hh_birth_agebin1 + hh_birth_agebin2 + 1
+    - -4.839
+    - 0.977
+    - 0.847
+    - 1.754
+    - 1.417
+    model_expression: birth ~ hh_birth_agebin1 + hh_birth_agebin2 + fsize_bin23 + fsize_bingt3 + 1
     name: birth
     out_column: birth
     out_filters: null
