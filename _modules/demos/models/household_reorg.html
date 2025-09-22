@@ -1015,12 +1015,18 @@
 
     <span class="c1"># If geoid_col is set, we copy the geoid from old households to new ones</span>
     <span class="k">if</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">geoid_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
             <span class="n">old_household_id</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span>
         <span class="p">]</span><span class="o">.</span><span class="n">values</span>
         <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">county_assignment</span>
-        <span class="p">)</span></div>
+            <span class="n">geoid_assignment</span>
+        <span class="p">)</span>
+    <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">old_household_id</span><span class="p">,</span> <span class="s2">&quot;lcm_county_id&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">values</span>
+    <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="s2">&quot;lcm_county_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">county_assignment</span>
+    <span class="p">)</span></div>
 
 
 
