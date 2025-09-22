@@ -624,7 +624,6 @@ def married_before(persons):
 @orca.column("persons")
 def marital25(persons):
     p = persons.to_frame(columns=["MAR"])
-    # print(persons.local.columns)
     return p.isin([2, 5]).astype(int)
 
 
