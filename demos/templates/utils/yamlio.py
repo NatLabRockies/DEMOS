@@ -2,6 +2,7 @@
 Utilities for doing IO to YAML files.
 
 """
+
 try:
     from itertools import izip as zip
 except ImportError:
@@ -49,8 +50,7 @@ def series_to_yaml_safe(series, ordered=False):
     values = series.values.tolist()
 
     if ordered:
-        return OrderedDict(
-            tuple((k, v)) for k, v in zip(index, values))
+        return OrderedDict(tuple((k, v)) for k, v in zip(index, values))
     else:
         return {i: v for i, v in zip(index, values)}
 
@@ -72,11 +72,14 @@ def frame_to_yaml_safe(frame, ordered=False):
 
     """
     if ordered:
-        return OrderedDict(tuple((col, series_to_yaml_safe(series, True))
-                                 for col, series in frame.iteritems()))
+        return OrderedDict(
+            tuple(
+                (col, series_to_yaml_safe(series, True))
+                for col, series in frame.iteritems()
+            )
+        )
     else:
-        return {col: series_to_yaml_safe(series)
-                for col, series in frame.iteritems()}
+        return {col: series_to_yaml_safe(series) for col, series in frame.iteritems()}
 
 
 def to_scalar_safe(obj):
@@ -108,30 +111,42 @@ def ordered_yaml(cfg, order=None):
 
     """
     if order is None:
-        order = ['name', 'model_type', 'segmentation_col', 'fit_filters',
-                 'predict_filters',
-                 'choosers_fit_filters', 'choosers_predict_filters',
-                 'alts_fit_filters', 'alts_predict_filters',
-                 'interaction_predict_filters',
-                 'choice_column', 'sample_size', 'estimation_sample_size',
-                 'prediction_sample_size',
-                 'model_expression', 'ytransform', 'min_segment_size',
-                 'default_config', 'models', 'coefficients', 'fitted']
+        order = [
+            "name",
+            "model_type",
+            "segmentation_col",
+            "fit_filters",
+            "predict_filters",
+            "choosers_fit_filters",
+            "choosers_predict_filters",
+            "alts_fit_filters",
+            "alts_predict_filters",
+            "interaction_predict_filters",
+            "choice_column",
+            "sample_size",
+            "estimation_sample_size",
+            "prediction_sample_size",
+            "model_expression",
+            "ytransform",
+            "min_segment_size",
+            "default_config",
+            "models",
+            "coefficients",
+            "fitted",
+        ]
 
     s = []
     for key in order:
         if key not in cfg:
             continue
-        s.append(
-            yaml.dump({key: cfg[key]}, default_flow_style=False, indent=4))
+        s.append(yaml.dump({key: cfg[key]}, default_flow_style=False, indent=4))
 
     for key in cfg:
         if key in order:
             continue
-        s.append(
-            yaml.dump({key: cfg[key]}, default_flow_style=False, indent=4))
+        s.append(yaml.dump({key: cfg[key]}, default_flow_style=False, indent=4))
 
-    return '\n'.join(s)
+    return "\n".join(s)
 
 
 def __represent_ordereddict(dumper, data):
@@ -151,7 +166,7 @@ def __represent_ordereddict(dumper, data):
 
         value.append((node_key, node_value))
 
-    return yaml.nodes.MappingNode(u'tag:yaml.org,2002:map', value)
+    return yaml.nodes.MappingNode("tag:yaml.org,2002:map", value)
 
 
 yaml.add_representer(OrderedDict, __represent_ordereddict)
@@ -187,7 +202,7 @@ def convert_to_yaml(cfg, str_or_buffer):
     if not str_or_buffer:
         return s
     elif isinstance(str_or_buffer, str):
-        with open(str_or_buffer, 'w') as f:
+        with open(str_or_buffer, "w") as f:
             f.write(s)
     else:
         str_or_buffer.write(s)
@@ -214,7 +229,7 @@ def yaml_to_dict(yaml_str=None, str_or_buffer=None, ordered=False):
 
     """
     if not yaml_str and not str_or_buffer:
-        raise ValueError('One of yaml_str or str_or_buffer is required.')
+        raise ValueError("One of yaml_str or str_or_buffer is required.")
 
     # determine which load method to use
     if ordered:
@@ -250,6 +265,6 @@ def __ordered_load(stream, Loader=yaml.Loader, object_pairs_hook=OrderedDict):
         return object_pairs_hook(loader.construct_pairs(node))
 
     OrderedLoader.add_constructor(
-        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG,
-        construct_mapping)
+        yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, construct_mapping
+    )
     return yaml.load(stream, OrderedLoader)

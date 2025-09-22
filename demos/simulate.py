@@ -1,110 +1,62 @@
-import argparse
-# import os
-
-import numpy as np
 import orca
+import argparse
+import numpy as np
+import pandas as pd
+from tables import HDF5ExtError
 from templates import modelmanager as mm
+from logging_logic import _StdoutToLoguru
+from config import load_config_file, get_config
+from loguru import logger
+import contextlib
 
 
-def run(
-        region_code, initial_run, base_year, forecast_year, random_seed,
-        calibrated, calibrated_folder, multi_level, segmented, capacity_boost,
-        all_local, freq_interval, output_fname, skim_source, random_match, table_save, scenario_name):
-    orca.add_injectable('running_calibration_routine', False)
-    orca.add_injectable('local_simulation', True)
-    orca.add_injectable('initial_run', initial_run)
-    orca.add_injectable('region_code', region_code)
-    orca.add_injectable('base_year', base_year)
-    orca.add_injectable('forecast_year', forecast_year)
-    orca.add_injectable('calibrated', calibrated)
-    orca.add_injectable('calibrated_folder', calibrated_folder)
-    orca.add_injectable('multi_level_lcms', multi_level)
-    orca.add_injectable('segmented_lcms', segmented)
-    orca.add_injectable('capacity_boost', capacity_boost)
-    orca.add_injectable('all_local', all_local)
-    orca.add_injectable('table_save', table_save)
-    orca.add_injectable('skim_source', skim_source)
-    orca.add_injectable('random_match', random_match)
-    orca.add_injectable('scenario_name', scenario_name)
-
-    import datasources
+def run():
+    # Load references and config
     import models
     import variables
 
-    if random_seed:
-        np.random.seed(random_seed)
+    CONFIG = get_config()
 
-    mm.initialize(datasources.configs_folder)
+    # Initialization
+    mm.initialize(CONFIG.calibrated_models_dir)
+    orca.add_table("run_times", pd.DataFrame())
+    orca.add_table("marital_rebalanced", pd.DataFrame())
+    orca.add_table("marital_status_output", pd.DataFrame())
 
-    if table_save:
-        out_tables = datasources.hdf_tables + ["graveyard"]
-    else:
-        out_tables = datasources.hdf_tables + ["graveyard"] #TODO: FIX THIS
-    iter_vars = list(range(
-        base_year + freq_interval, forecast_year + freq_interval, freq_interval))
-    orca.run(
-        orca.get_injectable('sim_steps'),
-        data_out=output_fname,
-        iter_vars=iter_vars,
-        out_base_tables=[],
-        out_run_tables=out_tables,
-        out_run_local=True,
-        out_interval= 1
-    )
+    if CONFIG.random_seed is not None:
+        np.random.seed(CONFIG.random_seed)
 
-if __name__ == '__main__':
+    # orca logs management, which by default are print statements.
+    # This class allows us to capture all stdout and redirect it through
+    # loguru with a custom and consistent format
+    stdout_to_log = _StdoutToLoguru(level="INFO", prefix="[external/orca] ")
+    with contextlib.redirect_stdout(stdout_to_log):
+        orca.run(["validate_persons_table"])
+
+        # Execute DEMOS, add error handling for common IO error
+        iter_vars = list(range(CONFIG.base_year + 1, CONFIG.forecast_year + 1, 1))
+        try:
+            orca.run(
+                orca.get_injectable("sim_steps"),
+                data_out=CONFIG.output_fname,
+                iter_vars=iter_vars,
+                out_base_tables=[],
+                out_run_tables=CONFIG.output_tables,
+                out_run_local=True,
+                out_interval=1,
+            )
+        except HDF5ExtError as e:
+            logger.error(
+                f"Error using the HDF5 interface. This typically occurs when the output file already exists and is corrupt. Try moving/renaming/deleting {CONFIG.output_fname}"
+            )
+            logger.error(e)
+
+
+if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("-r", "--region_code", type=str, help="region fips code")
-    parser.add_argument("--initial_run", action="store_true", help="generate calibration/validation charts")
-    parser.add_argument("-y", "--year", type=int, help="forecast year to simulate to")
-    parser.add_argument("-s", "--random_seed", type=int, help="value to set as random seed")
-    parser.add_argument("-c", "--calibrated", action="store_true", help="whether to run with calibrated coefficients")
-    parser.add_argument("-cf", "--calibrated_folder", type=str, help="name of the calibration folder to read configs from")
-    parser.add_argument("-sl", "--single_level_lcms", action="store_true", help="run with single_level LCMs")
-    parser.add_argument("-sg", "--segmented", action="store_true", help="run with segmented LCMs")
-    parser.add_argument("-b", "--capacity_boost", type=int, help="value to multiply capacities during simulation")
-    parser.add_argument("-l", "--all_local", action="store_true", help="no cloud access whatsoever")
-    parser.add_argument("-i", "--input_year", type=int, help="input data (base) year")
-    parser.add_argument("-f", "--freq_interval", type=int, help="intra-simulation frequency interval")
-    parser.add_argument("-o", "--output_fname", type=str, help="output file name")
-    parser.add_argument("-t", "--travel_model", type=str, help="source of skims data. e.g. beam, polaris")
-    parser.add_argument("-ts", "--table_save", action="store_true", help="store all other generated tables")
-    parser.add_argument("-rm", "--random_matching", action="store_true", help="random matching in marriage")
-    parser.add_argument("-sn", "--scenario_name", type=str, help="name of scenario of simulation")
-
+    parser.add_argument("-cfg", "--config_file", type=str, help="TOML config file")
     args = parser.parse_args()
-    region_code = args.region_code
-    initial_run = args.initial_run if args.initial_run else False
-    base_year = args.input_year if args.input_year else 2010
-    forecast_year = args.year if args.year else 2020
-    freq_interval = args.freq_interval if args.freq_interval else 1
-    random_seed = args.random_seed if args.random_seed else False
-    calibrated = args.calibrated if args.calibrated else False
-    calibrated_folder = args.calibrated_folder if args.calibrated_folder \
-        else 'multilevel_segmented_grouped_controls_200iters_0.05step'
-    multi_level = False if args.single_level_lcms else True
-    segmented = True if args.segmented else False
-    capacity_boost = args.capacity_boost if args.capacity_boost else 1
-    all_local = args.all_local if args.all_local else False
-    table_save = args.table_save if args.table_save else False
-    random_match = args.random_matching if args.random_matching else False
-    skim_source = args.travel_model if args.travel_model else 'beam'
-    scenario_name = args.scenario_name if args.scenario_name else False
-    output_fname = args.output_fname if args.output_fname \
-        else "data/model_data_{0}.h5".format(forecast_year)
 
-    run(
-        region_code, initial_run, base_year, forecast_year, random_seed,
-        calibrated, calibrated_folder, multi_level, segmented, capacity_boost,
-        all_local, freq_interval, output_fname, skim_source, random_match, table_save, scenario_name)
-
-    # TODO: make sure output data has same permissions as input (only an
-    #       issue when running from inside docker which will execute this
-    #       script as root)
-    # input_data_name = orca.get_injectable('data_name')
-    # data_stats = os.stat('data/{0}'.format(input_data_name))
-    # uid = data_stats.st_uid
-    # gid = data_stats.st_gid
-    # breakpoint()
-    # uid = pwd.getpwnam(usernmae).pw_uid
-    # gid = grp.getgrnam(groupname).gr_gid
+    # Load config file
+    load_config_file(args.config_file)
+    run()
