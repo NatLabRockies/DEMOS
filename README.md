@@ -1,4 +1,4 @@
-# Demographic Microsimulator(DEMOS)
+# Demographic Microsimulator (DEMOS)
 
 [![Docs](https://github.com/NREL/DEMOS_NREL/actions/workflows/docs.yml/badge.svg)](https://nrel.github.io/DEMOS_NREL/)
 
