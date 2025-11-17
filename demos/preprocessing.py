@@ -49,11 +49,11 @@ synpop_pp = synpop_pp.merge(relate, on=["relshipp"])
 edu = pd.DataFrame({'schg': [0,1,2,3,4,5,6,7,8, 9,10,11,12,13,14,15,16], 
                     'edu':  [0,2,3,4,5,6,7,8,9,10,11,12,13,14,15,19,21]})
 synpop_pp = synpop_pp.merge(edu, on=["schg"])
-synpop_pp['edu'] = np.where((synpop_pp['schg'].isin([14,15]) & (synpop_pp['eduatt']==2)), 16, synpop_pp['edu'])
-synpop_pp['edu'] = np.where((synpop_pp['schg'].isin([14,15,16]) & (synpop_pp['eduatt']==3)), 20, synpop_pp['edu'])
+synpop_pp['edu'] = np.where(((synpop_pp['eduatt']==2)), 16, synpop_pp['edu'])
+synpop_pp['edu'] = np.where(((synpop_pp['eduatt']==3)), 20, synpop_pp['edu'])
 synpop_pp['edu'] = np.where(((synpop_pp['schg']==15) & (synpop_pp['eduatt']==1)), 17, synpop_pp['edu']) # IS IT TRUE?
-synpop_pp['edu'] = np.where(((synpop_pp['schg']==15) & (synpop_pp['eduatt']==4)), 21, synpop_pp['edu'])
-synpop_pp['edu'] = np.where((synpop_pp['schg'].isin([15,16]) & synpop_pp['eduatt']==5), 22, synpop_pp['edu'])
+synpop_pp['edu'] = np.where(((synpop_pp['eduatt']==4)), 21, synpop_pp['edu'])
+synpop_pp['edu'] = np.where((synpop_pp['eduatt']==5), 22, synpop_pp['edu'])
 
 synpop_pp['worker'] = np.where(synpop_pp['worker']==1, 1, 0)
 
@@ -130,3 +130,8 @@ synpop_hh = synpop_hh.drop(columns=['puma10', 'htier2tazid', 'htier2tazseq', 'rt
 
 synpop_hh.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/households.csv", index=False)
 synpop_pp.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/synpop_2019/persons.csv", index=False)
+
+############
+countycontrol_rtp24plan = pd.read_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/countycontrol_rtp24plan.csv")
+total_worker = countycontrol_rtp24plan.groupby('year').agg({'Worker': 'sum'}).rename(columns={"Worker": "count"}).reset_index()
+total_worker.to_csv("C:/Users/gzhao/Documents/GitHub/DEMOS_NREL_SCAG/demos/data/scag_rtp24/calibration/workers_scag_cont_until_2050.csv", index=False)
