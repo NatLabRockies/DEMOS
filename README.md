@@ -2,8 +2,19 @@
 
 [![Docs](https://github.com/NREL/DEMOS_NREL/actions/workflows/docs.yml/badge.svg)](https://nrel.github.io/DEMOS_NREL/)
 
+## Overview
+Demographic Microsimulator (DEMOS) is an agent-based simulation framework used to evolve population demographic characteristics or lifecycle events such as education, marital status etc. DEMOS modules are designed to capture the interdependencies of short-term and long-term lifecycle events often influential in downstream transportation and land use modeling. An important facet of DEMOS is that it model captures the impact of an agent's demographic characteristics in year 't' on their demographic status in year 't+1'. This has important consequences on medium- and long-term transportation decisions such as household vehicle transactions (i.e., buying, selling, or replacing a vehicle), or work location choice. The key features of DEMOS include the modeling of 10+ lifecycel events, behaivoral patterns supported by long running panel data, the representation of model interdependencies, and flexible simulation structure and modularity. 
+
+The overall framework of DEMOS consists of three major components: i) migration module, ii) individual-level demographic evolution, and iii) household-level demographic evolution. The demographic evolution process is initiated with a baseline-year (t) synthetic population. Household-, and individual-level characteristics are then updated and provided as inputs to subsequent year's (t+1) population evolution. This process is repeated to evolve the population of a study region over a span of 10-30 years, which is the general duration for long range transportation planning. The model as such can be used to evolve populations for any duration of interest to the user.
+
+DEMOS technical memorandum can be found here. The memo provides an overview of DEMOS functionality, framework, input and output data and how DEMOS can be utilized to enhance transportation planning process and broder application scenarios.
+
+Inerested users can refer to the paper below for more details of DEMOS methodology.
+
+*Sun, Bingrong, Shivam Sharda, Venu M. Garikapati, Mohamed Amine Bouzaghrane, Juan Caicedo, Srinath Ravulaparthy, Isabel Viegas de Lima, Ling Jin, C. Anna Spurlock, and Paul Waddell. "Demographic Microsimulator for Integrated Urban Systems: Adapting Panel Survey of Income Dynamics to Capture the Continuum of Life." Transportation Research Record (2025): 03611981251333339.*
+
 ## Usage
-> A public Docker image of DEMOS has not been released. Please follow the `From Source` instructions.
+> A public Docker image of DEMOS has been released. Please follow the `From Source` instructions.
 
 ### Docker Container
 The docker image for demos is stored in `registry/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
