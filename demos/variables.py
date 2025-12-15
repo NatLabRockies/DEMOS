@@ -632,39 +632,39 @@ def marital34(persons):
     p = persons.to_frame(columns=["MAR"])
     return p.isin([3, 4]).astype(int)
 
-
-# PERSON VARIABLES
-# -----------------------------------------------------------------------------------------
-
-
-@orca.column("persons", cache=True)
-def mandatory_work_zone_id(persons):
-    return persons.work_zone_id.where(persons.age > 17, "-1").astype(str)
+######## NOTE: Not needed for now
+# # PERSON VARIABLES
+# # -----------------------------------------------------------------------------------------
 
 
-@orca.column("persons", cache=True)
-def mandatory_school_zone_id(persons):
-    return persons.school_zone_id.where(persons.age > 17, "-1").astype(str)
+# @orca.column("persons", cache=True)
+# def mandatory_work_zone_id(persons):
+#     return persons.work_zone_id.where(persons.age > 17, "-1").astype(str)
 
 
-@orca.column("persons", cache=True)
-def mandatory_work_dummy(persons):
-    has_work = persons.mandatory_work_zone_id != "-1"
-    return has_work.astype(int)
+# @orca.column("persons", cache=True)
+# def mandatory_school_zone_id(persons):
+#     return persons.school_zone_id.where(persons.age > 17, "-1").astype(str)
 
 
-@orca.column("persons", cache=True)
-def mandatory_school_dummy(persons):
-    has_school = persons.mandatory_school_zone_id != "-1"
-    return has_school.astype(int)
+# @orca.column("persons", cache=True)
+# def mandatory_work_dummy(persons):
+#     has_work = persons.mandatory_work_zone_id != "-1"
+#     return has_work.astype(int)
 
 
-@orca.column("persons", cache=True)
-def mandatory_activity_dummy(persons):
-    school_or_work = (persons.mandatory_school_dummy.astype(bool)) | (
-        persons.mandatory_work_dummy.astype(bool)
-    )
-    return school_or_work.astype(int)
+# @orca.column("persons", cache=True)
+# def mandatory_school_dummy(persons):
+#     has_school = persons.mandatory_school_zone_id != "-1"
+#     return has_school.astype(int)
+
+
+# @orca.column("persons", cache=True)
+# def mandatory_activity_dummy(persons):
+#     school_or_work = (persons.mandatory_school_dummy.astype(bool)) | (
+#         persons.mandatory_work_dummy.astype(bool)
+#     )
+#     return school_or_work.astype(int)
 
 
 # -----------------------------------------------------------------------------------------
