@@ -290,6 +290,8 @@
     <span class="n">start_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
     <span class="c1"># TODO: CountyID is not being updated by default</span>
     <span class="c1"># Update income according to county rate</span>
+    <span class="n">income_rates</span><span class="p">[</span><span class="s1">&#39;lcm_county_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">income_rates</span><span class="p">[</span><span class="s1">&#39;lcm_county_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s1">0&gt;5</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">earning</span> <span class="o">*=</span> <span class="p">(</span>
         <span class="mi">1</span>
         <span class="o">+</span> <span class="n">income_rates</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">year</span><span class="p">]</span>
