@@ -81,7 +81,7 @@ def education(
     ged_or_hs_index = persons["edu"].isin([16, 17])
     persons.local.loc[stayed_index & ged_or_hs_index, "edu"] = 18
 
-    ### Students in grade 12 move to either 15 or 16 based on weights
+    ### Students in grade 12 move to either 16 or 17 based on weights
     ### Proportion of no diploma to GED students is roughly maintained
     twelveth_grade_index = persons["edu"] == 15
     twelveth_grade_transition = np.random.choice(
@@ -108,7 +108,7 @@ def education(
     log_execution_time(start_time, orca.get_injectable("year"), "education")
 
 
-@orca.injectable(name="edu_highschool_proportion")
+@orca.injectable(name="edu_highschool_proportion", cache_scope="forever", cache=True)
 def edu_highschool_proportion(data="persons.edu"):
     """
     Calculate the proportion of students in 11th and 12th grade.
