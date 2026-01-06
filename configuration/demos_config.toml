@@ -127,5 +127,7 @@ geoid_col = "lcm_county_id"
 # Kids Moving
 [kids_moving_module_config]
 geoid_col = "lcm_county_id"
+calibration_target_share = 0.12
+calibration_tolerance = 0.001
 
 

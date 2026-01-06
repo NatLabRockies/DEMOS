@@ -1,6 +1,7 @@
 import orca
 from templates import estimated_models, modelmanager as mm
 import time
+import numpy as np
 from logging_logic import log_execution_time
 from templates.utils.models import columns_in_formula
 from config import DEMOSConfig, KidsMovingModuleConfig, get_config
@@ -43,14 +44,7 @@ def kids_moving(persons, households, get_new_households):
     """
     start_time = time.time()
 
-    # Get model data
-    model = mm.get_step("kids_move")
-    model_variables = columns_in_formula(model.model_expression)
-    model_filters = (persons.relate.isin([2, 3, 4, 7, 9, 14])) & (persons.age >= 16)
-    model_data = persons.to_frame(model_variables)[model_filters]
-
-    kids_moving = model.predict(model_data).astype(int)
-
+    kids_moving = run_and_calibrate_model(persons)
     update_households_after_kids(persons, households, kids_moving, get_new_households)
     log_execution_time(start_time, orca.get_injectable("year"), "kids_moving")
 
@@ -137,3 +131,43 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     persons.local.loc[kids_moving_index, "relate"] = 0
     households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
+
+
+def run_and_calibrate_model(persons):
+    # Load module config
+    demos_config: DEMOSConfig = get_config()
+    module_config: KidsMovingModuleConfig = demos_config.kids_moving_module_config
+
+    child_relate = [2, 3, 4, 7, 9, 14] # This is more `dependent` because `child` is determined by age
+    target_share = module_config.calibration_target_share
+
+    # Get model data
+    model = mm.get_step("kids_move")
+    model_variables = columns_in_formula(model.model_expression)
+    model_filters = (persons.relate.isin(child_relate)) & (persons.age >= 16)
+    model_data = persons.to_frame(model_variables)[model_filters]
+    kids_moving = model.predict(model_data).astype(int)
+
+    # NOTE: This could be much easier if we set the age at 18 because we could use model_filters
+    adult_filter = (persons.age >= 18)
+    age_moved = persons.age.loc[kids_moving[kids_moving == 1].index]
+    adult_stay = (adult_filter & persons.relate.isin(child_relate)).sum() - (age_moved >=18).sum()
+    observed_share = adult_stay / adult_filter.sum()
+    error = (observed_share - target_share)
+
+    print("Calibrating Kids moving model")
+    calibrate_iteration = 0
+    while abs(error) > module_config.calibration_tolerance: 
+        print(f"{calibrate_iteration} iteration error: {error}")
+        model.fitted_parameters[0] += np.log(observed_share/target_share)
+
+        kids_moving = model.predict(model_data).astype(int)
+        age_moved = persons.age.loc[kids_moving[kids_moving == 1].index]
+        adult_stay = (adult_filter & persons.relate.isin(child_relate)).sum() - (age_moved >=18).sum()
+        observed_share = adult_stay / adult_filter.sum()
+        error = (observed_share - target_share)
+
+        calibrate_iteration += 1
+    print(f"{calibrate_iteration} iteration error: {error}")
+
+    return kids_moving
