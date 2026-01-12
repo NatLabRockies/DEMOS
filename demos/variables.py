@@ -632,6 +632,7 @@ def marital34(persons):
     p = persons.to_frame(columns=["MAR"])
     return p.isin([3, 4]).astype(int)
 
+
 ######## NOTE: Not needed for now
 # # PERSON VARIABLES
 # # -----------------------------------------------------------------------------------------

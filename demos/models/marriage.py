@@ -201,8 +201,9 @@ def update_married_households_random(
             module_config.geoid_col,
         ].values
         households.local.loc[new_hh_ids, module_config.geoid_col] = new_hh_geoid
-    county_assignment = households.local.loc[all_df.loc[first_index & neither_head_index, "household_id"], 
-                                             "lcm_county_id"].values
+    county_assignment = households.local.loc[
+        all_df.loc[first_index & neither_head_index, "household_id"], "lcm_county_id"
+    ].values
     households.local.loc[new_hh_ids, "lcm_county_id"] = county_assignment
     ## Decide who is household head in the households where the head left
     head_left_index = (all_df.relate == 0) & (all_df.household_id != all_df.new_hh_id)
@@ -279,9 +280,7 @@ def update_divorce(persons, households, divorce_list, get_new_households):
         geoid_assignment = households.local.loc[
             old_household_id, module_config.geoid_col
         ].values
-        households.local.loc[new_households, module_config.geoid_col] = (
-            geoid_assignment
-        )
+        households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
 
