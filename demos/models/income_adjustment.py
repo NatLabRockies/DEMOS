@@ -43,7 +43,9 @@ def income_adjustment(persons, households, income_rates, year):
     start_time = time.time()
     # TODO: CountyID is not being updated by default
     # Update income according to county rate
-    income_rates['lcm_county_id'] = income_rates['lcm_county_id'].map(lambda x: f'{x:0>5}')
+    income_rates["lcm_county_id"] = income_rates["lcm_county_id"].map(
+        lambda x: f"{x:0>5}"
+    )
 
     persons.local.earning *= (
         1
