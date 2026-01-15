@@ -46,21 +46,6 @@ docker compose up
 #### IMPORTANT for MacOS and Windows users
 > Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
 
-### Other ways to run DEMOS
-
-If you need to change either the data or configuration path:
-```bash
-DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
-```
-
-<!-- By default `DEMOS_CONFIG_PATH` is set to `./demos_config.toml` and `DEMOS_DATA_DIR` is set to `./data`, so if `data` and `demos_config.toml` are part of the current directory, no additional input is needed. -->
-
-Alternatively, if you prefer not to use docker compose, you can do the following:
-```bash
-docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 ghcr.io/nrel/demos:latest
-```
-
-
 Documentation for custom data requirements, configuration and overall functionality of demos can be found [in the Docs](https://nrel.github.io/DEMOS/).
 
 ## Other ways to run DEMOS
