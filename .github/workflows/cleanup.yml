@@ -2,11 +2,6 @@ name: Cleanup GHCR package demos/demos
 
 on:
   workflow_dispatch:
-    inputs:
-      dry_run:
-        description: "If true, only prints what would be deleted"
-        required: true
-        default: "true"
 
 permissions:
   contents: read
@@ -22,7 +17,6 @@ jobs:
           script: |
             const owner = context.repo.owner;
             const package_name = 'demos/demos';
-            const dryRun = (core.getInput('dry_run') || 'true').toLowerCase() === 'true';
 
             const ownerInfo = await github.rest.users.getByUsername({ username: owner });
             const isOrg = ownerInfo.data.type === 'Organization';
@@ -49,11 +43,6 @@ jobs:
             for (const v of versions) {
               const tags = v.metadata?.container?.tags?.join(', ') || '';
               core.info(`FOUND id=${v.id} tags=[${tags}]`);
-            }
-
-            if (dryRun) {
-              core.warning('Dry run enabled — nothing deleted.');
-              return;
             }
 
             const deleteFn = isOrg
