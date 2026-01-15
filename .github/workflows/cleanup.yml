@@ -23,7 +23,6 @@ jobs:
 
             core.info(`Owner: ${owner} (${isOrg ? 'org' : 'user'})`);
             core.info(`Target package: ${package_name}`);
-            core.info(`Dry run: ${dryRun}`);
 
             const listFn = isOrg
               ? github.rest.packages.getAllPackageVersionsForContainerOwnedByOrganization
