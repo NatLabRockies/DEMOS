@@ -251,82 +251,69 @@
         <article role="main" id="furo-main-content">
           <section id="get-started">
 <h1>Get Started<a class="headerlink" href="#get-started" title="Link to this heading">¶</a></h1>
-<p>DEMOS is a modular demographic microsimulator. It operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.</p>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">¶</a></h2>
+<p>The Demographic Microsimulator (DEMOS) is an agent-based simulation framework used to model the evolution of population demographic characteristics and lifecycle events, such as education attainment, marital status, and other key transitions. DEMOS modules are designed to capture the interdependencies between short-term and long-term lifecycle events, which are often influential in downstream transportation and land-use modeling.</p>
+<p>A key feature of DEMOS is its ability to track changes in an agent’s demographic status from year <em>t</em> to year <em>t + 1</em>. This structure allows the model to evolve populations over any user-defined time horizon. As a result, DEMOS is well suited for analyzing medium- and long-term transportation-related decisions, including household vehicle transactions (e.g., purchasing, selling, or replacing vehicles) and work location choices.
+Core features of DEMOS include the modeling of more than ten lifecycle events, behaviorally realistic patterns informed by long-running panel data, explicit representation of interdependencies among lifecycle processes, and a flexible, modular simulation architecture.</p>
+<p>A technical memorandum describing DEMOS is available <a class="reference external" href="https://github.com/NREL/DEMOS/blob/main/DEMOS_Technical_Memo.pdf">here</a>. The memorandum provides an overview of the framework’s functionality, model structure, input and output data, and its applications in transportation planning and broader policy analysis contexts. Interested readers are also encouraged to consult the paper listed below for additional details on the DEMOS methodology.</p>
+<hr class="docutils" />
+<p>DEMOS operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.</p>
 <p>This document summarizes instructions to install, configure and run DEMOS. Sections 1-4 will help you correctly organize the data and configuration file, so we recommend reading them once before attempting to run DEMOS.</p>
 <blockquote>
 <div><p>DEMOS requires at least 16gb of available RAM to execute. This greatly depends on the size and resolution of the input data, but from our internal testing, we recommend at least 16gb of RAM</p>
 </div></blockquote>
-<nav class="contents this-will-duplicate-information-and-it-is-still-useful-here local" id="contents">
-<ul class="simple">
-<li><p><a class="reference internal" href="#installation" id="id2">1. Installation</a></p>
-<ul>
-<li><p><a class="reference internal" href="#using-docker-recommended" id="id3">Using Docker (Recommended)</a></p></li>
-<li><p><a class="reference internal" href="#from-source" id="id4">From Source</a></p></li>
-<li><p><a class="reference internal" href="#compiling-documentation-optional-but-recommended" id="id5">Compiling documentation (Optional but recommended)</a></p></li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#preparing-your-configuration" id="id6">2. Preparing Your Configuration</a></p>
-<ul>
-<li><p><a class="reference internal" href="#selection-of-modules-to-run" id="id7">Selection of modules to run:</a></p></li>
-<li><p><a class="reference internal" href="#configuration-of-calibration-procedures" id="id8">Configuration of calibration procedures:</a></p></li>
-</ul>
-</li>
-<li><p><a class="reference internal" href="#file-tree-structure-for-data-and-configuration" id="id9">3. File Tree Structure for Data and Configuration</a></p></li>
-<li><p><a class="reference internal" href="#running-demos" id="id10">4. Running DEMOS</a></p></li>
-<li><p><a class="reference internal" href="#understanding-the-workflow" id="id11">5. Understanding the Workflow</a></p></li>
-<li><p><a class="reference internal" href="#troubleshooting-common-errors" id="id12">6. Troubleshooting Common Errors</a></p></li>
-<li><p><a class="reference internal" href="#next-steps" id="id13">7. Next Steps</a></p></li>
-<li><p><a class="reference internal" href="#need-help" id="id14">8. Need Help?</a></p></li>
-</ul>
-</nav>
+</section>
 <section id="installation">
 <h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
-<section id="using-docker-recommended">
-<h3>Using Docker (Recommended)<a class="headerlink" href="#using-docker-recommended" title="Link to this heading">¶</a></h3>
+<section id="docker-compose-recommended">
+<h3>Docker Compose (recommended)<a class="headerlink" href="#docker-compose-recommended" title="Link to this heading">¶</a></h3>
+<p>The latest docker image for demos is stored in <code class="docutils literal notranslate"><span class="pre">ghcr.io/nrel/demos:latest</span></code>. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> workflow that can be used.</p>
+<section id="prepare-the-configuration-file-and-data-folder">
+<h4>Prepare the configuration file and data folder<a class="headerlink" href="#prepare-the-configuration-file-and-data-folder" title="Link to this heading">¶</a></h4>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a directory where to run DEMOS from</span>
+mkdir<span class="w"> </span>demos
+<span class="nb">cd</span><span class="w"> </span>demos
+
+<span class="c1"># Create the configuration folder and retrieve an example configuration</span>
+mkdir<span class="w"> </span>configuration
+<span class="nb">cd</span><span class="w"> </span>configuration
+curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>demos_config.toml<span class="w"> </span>https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+
+<span class="c1"># Create the data folder for the output to be stored</span>
+<span class="nb">cd</span><span class="w"> </span>..
+mkdir<span class="w"> </span>data
+<span class="c1"># Populate the data folder</span>
+
+<span class="c1"># Finally, retrieve the docker-compose.yml file</span>
+curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>docker-compose.yml<span class="w"> </span>https://raw.githubusercontent.com/nrel/DEMOS/main/docker-compose.yml
+</pre></div>
+</div>
+<p>Now you can run docker as follows:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up
+</pre></div>
+</div>
 <blockquote>
 <div><p><strong>Note:</strong><br />
 Make sure the Docker Daemon is running. This changes from system to system but Docker Desktop should have a status flag indicating if the daemon is live, if Desktop is available</p>
 </div></blockquote>
 <!-- **Important Note:**
 > While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source) -->
-<ol class="arabic">
-<li><p><strong>Clone the repository</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NREL/DEMOS_NREL.git
-<span class="nb">cd</span><span class="w"> </span>DEMOS_NREL
-</pre></div>
-</div>
-<p><strong>Build Docker Image</strong> <em>(Development only)</em></p>
-<blockquote>
-<div><p>NOTE: Ideally, our DEMOS Docker image is hosted in a public image registry so users will not need to build it themselves</p>
-</div></blockquote>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>demos:0.0.1<span class="w"> </span>--platform<span class="o">=</span>linux/amd64<span class="w"> </span>-f<span class="w"> </span>Dockerfile<span class="w"> </span>.
-</pre></div>
-</div>
-</li>
-<li><p><strong>Run with Docker Compose</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up
-</pre></div>
-</div>
 <p>By default, this assumes that your config file is located in <code class="docutils literal notranslate"><span class="pre">./configuration/demos_config.toml</span></code> and the data folder is <code class="docutils literal notranslate"><span class="pre">./data</span></code>, with <code class="docutils literal notranslate"><span class="pre">./</span></code> being the root of the project (See the <a class="reference internal" href="#file-tree-structure-for-data-and-configuration">file stucture section</a> for details on how to organize the input data).
 If you need to specify a different location for them, you can run:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">DEMOS_CONFIG_PATH</span><span class="o">=</span>&lt;path-to-config&gt;<span class="w"> </span><span class="nv">DEMOS_DATA_DIR</span><span class="o">=</span>&lt;path-to-data-dir&gt;<span class="w"> </span>docker<span class="w"> </span>compose<span class="w"> </span>up
 </pre></div>
 </div>
-</li>
-</ol>
-<!-- 1. **Or run with Docker directly**:
-    ```bash
-    docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
-    ``` -->
 <blockquote>
 <div><p><strong>Note for MacOS/Windows:</strong><br />
 Increase Docker’s memory allocation to at least 16–20 GB via Docker Desktop:<br />
 <code class="docutils literal notranslate"><span class="pre">Preferences</span> <span class="pre">→</span> <span class="pre">Resources</span> <span class="pre">→</span> <span class="pre">Memory</span></code>.</p>
 </div></blockquote>
 </section>
+</section>
 <hr class="docutils" />
-<section id="from-source">
-<h3>From Source<a class="headerlink" href="#from-source" title="Link to this heading">¶</a></h3>
+<section id="from-source-is-you-are-not-using-docker">
+<h3>From Source (is you are not using Docker)<a class="headerlink" href="#from-source-is-you-are-not-using-docker" title="Link to this heading">¶</a></h3>
 <ol class="arabic">
 <li><p><strong>Clone the repository</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NREL/DEMOS_NREL.git
@@ -348,15 +335,6 @@ python<span class="w"> </span>simulate.py<span class="w"> </span>-cfg<span class
 </div>
 </li>
 </ol>
-</section>
-<section id="compiling-documentation-optional-but-recommended">
-<h3>Compiling documentation (Optional but recommended)<a class="headerlink" href="#compiling-documentation-optional-but-recommended" title="Link to this heading">¶</a></h3>
-<p>From the root of the project:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>docs
-make<span class="w"> </span>html
-open<span class="w"> </span>build/html/index.html
-</pre></div>
-</div>
 </section>
 </section>
 <section id="preparing-your-configuration">
@@ -568,10 +546,13 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Get Started</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#installation">1. Installation</a><ul>
-<li><a class="reference internal" href="#using-docker-recommended">Using Docker (Recommended)</a></li>
-<li><a class="reference internal" href="#from-source">From Source</a></li>
-<li><a class="reference internal" href="#compiling-documentation-optional-but-recommended">Compiling documentation (Optional but recommended)</a></li>
+<li><a class="reference internal" href="#docker-compose-recommended">Docker Compose (recommended)</a><ul>
+<li><a class="reference internal" href="#prepare-the-configuration-file-and-data-folder">Prepare the configuration file and data folder</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#from-source-is-you-are-not-using-docker">From Source (is you are not using Docker)</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#preparing-your-configuration">2. Preparing Your Configuration</a><ul>
