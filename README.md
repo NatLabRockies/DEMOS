@@ -14,32 +14,59 @@ A technical memorandum describing DEMOS is available [here](./DEMOS_Technical_Me
 *Sun, Bingrong, Shivam Sharda, Venu M. Garikapati, Mohamed Amine Bouzaghrane, Juan Caicedo, Srinath Ravulaparthy, Isabel Viegas de Lima, Ling Jin, C. Anna Spurlock, and Paul Waddell. "Demographic Microsimulator for Integrated Urban Systems: Adapting Panel Survey of Income Dynamics to Capture the Continuum of Life." Transportation Research Record (2025): 03611981251333339.*
 
 ## Usage
-> A public Docker image of DEMOS has been released. Please follow the `From Source` instructions.
 
-### Docker Container
-The docker image for demos is stored in `registry/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
+### Docker Compose (recommended)
+The latest docker image for demos is stored in `ghcr.io/nrel/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
 
-For running the `docker-compose` workflow:
+#### Prepare the configuration file and data folder
+
 ```bash
-DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker-compose up
+# Create a directory where to run DEMOS from
+mkdir demos
+cd demos
+
+# Create the configuration folder and retrieve an example configuration
+mkdir configuration
+cd configuration
+curl -L -o demos_config_sfbay.toml https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+
+# Create the data folder for the output to be stored
+cd ..
+mkdir data
+# Populate the data folder
+
+# Finally, retrieve the docker-compose.yml file
+curl -L -o docker-compose.yml https://raw.githubusercontent.com/nrel/DEMOS/main/docker-compose.yml
 ```
 
-By default `DEMOS_CONFIG_PATH` is set to `./demos_config.toml` and `DEMOS_DATA_DIR` is set to `./data`, so if `data` and `demos_config.toml` are part of the current directory, no additional input is needed.
-
-Alternatively,
+Now you can run docker as follows:
 ```bash
-docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
+docker compose up
 ```
-
 #### IMPORTANT for MacOS and Windows users
 > Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
+
+### Other ways to run DEMOS
+
+If you need to change either the data or configuration path:
+```bash
+DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
+```
+
+<!-- By default `DEMOS_CONFIG_PATH` is set to `./demos_config.toml` and `DEMOS_DATA_DIR` is set to `./data`, so if `data` and `demos_config.toml` are part of the current directory, no additional input is needed. -->
+
+Alternatively, if you prefer not to use docker compose, you can do the following:
+```bash
+docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 ghcr.io/nrel/demos:latest
+```
+
 
 #### Building the docker image (development only)
 ```bash
 docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
 ```
 
-### From Source
+### Running from Source
 
 1. Clone this repository
 	```
