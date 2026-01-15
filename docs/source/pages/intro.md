@@ -1,6 +1,16 @@
 # Get Started
 
-DEMOS is a modular demographic microsimulator. It operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.
+## Overview
+The Demographic Microsimulator (DEMOS) is an agent-based simulation framework used to model the evolution of population demographic characteristics and lifecycle events, such as education attainment, marital status, and other key transitions. DEMOS modules are designed to capture the interdependencies between short-term and long-term lifecycle events, which are often influential in downstream transportation and land-use modeling.
+
+A key feature of DEMOS is its ability to track changes in an agent’s demographic status from year *t* to year *t + 1*. This structure allows the model to evolve populations over any user-defined time horizon. As a result, DEMOS is well suited for analyzing medium- and long-term transportation-related decisions, including household vehicle transactions (e.g., purchasing, selling, or replacing vehicles) and work location choices.
+Core features of DEMOS include the modeling of more than ten lifecycle events, behaviorally realistic patterns informed by long-running panel data, explicit representation of interdependencies among lifecycle processes, and a flexible, modular simulation architecture.
+
+A technical memorandum describing DEMOS is available [here](https://github.com/NREL/DEMOS/blob/main/DEMOS_Technical_Memo.pdf). The memorandum provides an overview of the framework’s functionality, model structure, input and output data, and its applications in transportation planning and broader policy analysis contexts. Interested readers are also encouraged to consult the paper listed below for additional details on the DEMOS methodology.
+
+---
+
+DEMOS operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.
 
 This document summarizes instructions to install, configure and run DEMOS. Sections 1-4 will help you correctly organize the data and configuration file, so we recommend reading them once before attempting to run DEMOS.
 
@@ -15,42 +25,48 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
 
 ## 1. Installation
 
-### Using Docker (Recommended)
+### Docker Compose (recommended)
+The latest docker image for demos is stored in `ghcr.io/nrel/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
 
+#### Prepare the configuration file and data folder
+
+```bash
+# Create a directory where to run DEMOS from
+mkdir demos
+cd demos
+
+# Create the configuration folder and retrieve an example configuration
+mkdir configuration
+cd configuration
+curl -L -o demos_config.toml https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+
+# Create the data folder for the output to be stored
+cd ..
+mkdir data
+# Populate the data folder
+
+# Finally, retrieve the docker-compose.yml file
+curl -L -o docker-compose.yml https://raw.githubusercontent.com/nrel/DEMOS/main/docker-compose.yml
+```
+
+Now you can run docker as follows:
+```bash
+docker compose up
+```
 > **Note:**  
 > Make sure the Docker Daemon is running. This changes from system to system but Docker Desktop should have a status flag indicating if the daemon is live, if Desktop is available
 
 <!-- **Important Note:**
 > While the pipeline to build a docker image is implemented, there is no public docker image available, please execute [from source](#From-Source) -->
 
-1. **Clone the repository**:
-    ```bash
-    git clone https://github.com/NREL/DEMOS_NREL.git
-    cd DEMOS_NREL
-    ```
-  
-    **Build Docker Image** *(Development only)*
-    > NOTE: Ideally, our DEMOS Docker image is hosted in a public image registry so users will not need to build it themselves
-    ```bash
-    docker build -t demos:0.0.1 --platform=linux/amd64 -f Dockerfile .
-    ```
 
-1. **Run with Docker Compose**:
-    ```bash
-    docker compose up
-    ```
 
-    By default, this assumes that your config file is located in `./configuration/demos_config.toml` and the data folder is `./data`, with `./` being the root of the project (See the [file stucture section](#file-tree-structure-for-data-and-configuration) for details on how to organize the input data).
-    If you need to specify a different location for them, you can run:
+By default, this assumes that your config file is located in `./configuration/demos_config.toml` and the data folder is `./data`, with `./` being the root of the project (See the [file stucture section](#file-tree-structure-for-data-and-configuration) for details on how to organize the input data).
+If you need to specify a different location for them, you can run:
 
-    ```bash
-    DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
-    ```
-
-<!-- 1. **Or run with Docker directly**:
-    ```bash
-    docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 demos
-    ``` -->
+```bash
+DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
+```
 
 > **Note for MacOS/Windows:**  
 > Increase Docker's memory allocation to at least 16–20 GB via Docker Desktop:  
@@ -58,7 +74,7 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
 
 ---
 
-### From Source
+### From Source (is you are not using Docker)
 
 1. **Clone the repository**:
     ```bash
@@ -78,14 +94,6 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
     cd demos
     python simulate.py -cfg ../configuration/demos_config.toml
     ```
-
-### Compiling documentation (Optional but recommended)
-From the root of the project:
-```bash
-cd docs
-make html
-open build/html/index.html
-```
 
 
 ## 2. Preparing Your Configuration

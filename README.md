@@ -1,6 +1,6 @@
 # Demographic Microsimulator (DEMOS)
 
-[![Docs](https://github.com/NREL/DEMOS_NREL/actions/workflows/docs.yml/badge.svg)](https://nrel.github.io/DEMOS/)
+[![Docs](https://github.com/NREL/DEMOS/actions/workflows/docs.yml/badge.svg)](https://nrel.github.io/DEMOS/)
 
 ## Overview
 The Demographic Microsimulator (DEMOS) is an agent-based simulation framework used to model the evolution of population demographic characteristics and lifecycle events, such as education attainment, marital status, and other key transitions. DEMOS modules are designed to capture the interdependencies between short-term and long-term lifecycle events, which are often influential in downstream transportation and land-use modeling.
@@ -28,7 +28,7 @@ cd demos
 # Create the configuration folder and retrieve an example configuration
 mkdir configuration
 cd configuration
-curl -L -o demos_config_sfbay.toml https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+curl -L -o demos_config.toml https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
 
 # Create the data folder for the output to be stored
 cd ..
