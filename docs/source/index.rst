@@ -13,3 +13,4 @@ DEMOS documentation
    pages/intro.md
    api/modules
    pages/configuration
+   pages/advanced_configuration.md

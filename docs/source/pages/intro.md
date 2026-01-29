@@ -6,7 +6,7 @@ The Demographic Microsimulator (DEMOS) is an agent-based simulation framework us
 A key feature of DEMOS is its ability to track changes in an agent’s demographic status from year *t* to year *t + 1*. This structure allows the model to evolve populations over any user-defined time horizon. As a result, DEMOS is well suited for analyzing medium- and long-term transportation-related decisions, including household vehicle transactions (e.g., purchasing, selling, or replacing vehicles) and work location choices.
 Core features of DEMOS include the modeling of more than ten lifecycle events, behaviorally realistic patterns informed by long-running panel data, explicit representation of interdependencies among lifecycle processes, and a flexible, modular simulation architecture.
 
-A technical memorandum describing DEMOS is available [here](https://github.com/NREL/DEMOS/blob/main/DEMOS_Technical_Memo.pdf). The memorandum provides an overview of the framework’s functionality, model structure, input and output data, and its applications in transportation planning and broader policy analysis contexts. Interested readers are also encouraged to consult the paper listed below for additional details on the DEMOS methodology.
+A technical memorandum describing DEMOS is available [here](https://github.com/NatLabRockies/DEMOS/blob/main/DEMOS_Technical_Memo.pdf). The memorandum provides an overview of the framework’s functionality, model structure, input and output data, and its applications in transportation planning and broader policy analysis contexts. Interested readers are also encouraged to consult the paper listed below for additional details on the DEMOS methodology.
 
 ---
 
@@ -26,9 +26,11 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
 ## 1. Installation
 
 ### Docker Compose (recommended)
-The latest docker image for demos is stored in `ghcr.io/nrel/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
+The latest docker image for demos is stored in `ghcr.io/NatLabRockies/demos:latest`. The input data and configuration file are fed to the container through volumes ([more info about Docker volumes](https://docs.docker.com/engine/storage/volumes/)). We provide a `docker-compose` workflow that can be used to make the process of mounting volumes easier.
 
 #### Prepare the configuration file and data folder
+
+Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):
 
 ```bash
 # Create a directory where to run DEMOS from
@@ -38,7 +40,7 @@ cd demos
 # Create the configuration folder and retrieve an example configuration
 mkdir configuration
 cd configuration
-curl -L -o demos_config.toml https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+curl -L -o demos_config.toml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_sfbay.toml
 
 # Create the data folder for the output to be stored
 cd ..
@@ -46,7 +48,7 @@ mkdir data
 # Populate the data folder
 
 # Finally, retrieve the docker-compose.yml file
-curl -L -o docker-compose.yml https://raw.githubusercontent.com/nrel/DEMOS/main/docker-compose.yml
+curl -L -o docker-compose.yml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/docker-compose.yml
 ```
 
 Now you can run docker as follows:
@@ -69,12 +71,13 @@ DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker comp
 ```
 
 > **Note for MacOS/Windows:**  
-> Increase Docker's memory allocation to at least 16–20 GB via Docker Desktop:  
-> `Preferences → Resources → Memory`.
+> Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`. The amount of memory required to run DEMOS will primarily depend on the size of the input data.
 
 ---
 
-### From Source (is you are not using Docker)
+### From Source (if you are not using Docker)
+
+If you prefer to create your own Python environment and run the Python code directly (for debugging or enhancing DEMOS capabilities), you can do so following these instructions:
 
 1. **Clone the repository**:
     ```bash
@@ -117,63 +120,6 @@ h5_key = "households"
 
 Other tables and module configurations can be added as needed. The default configuration exposes all options with default values.
 
----
-
-Examples of important configuration options are:
-
-### Selection of modules to run:
-
-The `modules` parameter accepts a list of strings identifying the modules. By default all are included, but if you'd like to only run a selection of them you can change it. For instance to run only `aging` and `education`:
-```
-modules = [
-    "aging",
-    "education",
-]
-```
-
-### Configuration of calibration procedures:
-
-Certain modules support calibration of the simulation output to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely `employment` and `household_reorganization`) implement simultaneous calibration. While the `employment` module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.
-
-Calibration configuration is defined at `module-level-config.calibration_procedure` (`module-level-config` is defined differently for every module. The options are displayed [here](../api/configuration_module.rst) and in each module's documentation). We will use the `employment` module as an example.
-
-**If you want to use simultaneous calibration for the `employment` module**
-
-```toml
-[employment_module_config.simultaneous_calibration_config]
-tolerance = 100
-max_iter = 2
-learning_rate = 2
-momentum_weight = 0.3
-```
-
-Due to the complexity and nuances of simultaneous calibration, the required tables of observed values (`observed_entering_workforce` and `observed_exiting_workforce`) are hard-coded, and an error will be raised if they are not present.
-
-**If you instead want to use simple calibration**
-
-We need to define the following:
-```toml
-[employment_module_config.enter_model_calibration_procedure]
-procedure_type = "rmse_error"
-observed_values_table = "observed_entering_workforce"
-tolerance_type = "relative"
-tolerance = 0.01
-max_iter = 1000
-
-[employment_module_config.exit_model_calibration_procedure]
-procedure_type = "rmse_error"
-observed_values_table = "observed_exiting_workforce"
-tolerance_type = "relative"
-tolerance = 0.01
-max_iter = 1000
-```
-
-This will allow DEMOS to execute calibration on each of the two modules in the employment module.
-
-**If you want to skip calibration, just delete these entrances from the configuration file.**
-
-<!-- See the example config for more options, including output tables, calibration, and module selection. -->
-
 (file-tree-structure-for-data-and-configuration)=
 ## 3. File Tree Structure for Data and Configuration
 
@@ -190,30 +136,26 @@ DEMOS_NREL/
 │   ├── hsize_ct_06197001.csv               # Example CSV data file 
 |   └── calibrated_configs/                 # Here is were the parameters of the estimated models go
 |       └── ...
-├── demos/ # Source code 
+├── demos/ # Source code (if not using docker)
 |   ├── simulate.py                         # Main entry point for running DEMOS
 |   ├── models                              # Logic of individual modules
 |       └── ... 
 |   └── ... 
-├── docs/                                   # Documentation
 └── ...
 ```
 
 - Place your **TOML configuration file** in the `configuration/` directory.
 - Place all **input data files** (CSV, HDF5, etc.) in the `data/` directory.
 - Make sure the paths in your `demos_config.toml` match the location of your data files.
+- If you are using the provided Docker Compose workflow, the data volume will always be accesible as `./data`, therefore, you should use `./data` in your configuration file as the name of the folder where the data for the tables is found, even if the folder is named differently in your computer.
 
 > **Tip:**  
-> You can use different data files or directories, but make sure the paths in your configuration file are correct relative to the project root (`DEMOS_NREL/`).
-
-## 4. Running DEMOS
-
-After setting up your data and configuration, use Docker as described above.
+> You can use different data files or directories, but make sure the paths in your configuration file are correct relative to the project root (`DEMOS/`).
 
 The output of DEMOS will be stored in `data/output/demos_output_{year}.h5`.
 
 
-## 5. Understanding the Workflow
+## 4. Understanding the Workflow
 
 - **Tables**: Each row in the `persons` and `households` tables represents an agent or entity.
 - **Modules**: Simulation logic is organized into modules, each operating on the tables for each simulated year.
@@ -221,7 +163,7 @@ The output of DEMOS will be stored in `data/output/demos_output_{year}.h5`.
 - **Configuration**: All simulation options, data sources, and module settings are controlled via the TOML config file.
 
 
-## 6. Troubleshooting Common Errors
+## 5. Troubleshooting Common Errors
 
 - **Missing Required Tables**:  
   If either `persons` or `households` is missing from your config, DEMOS will raise an error:
@@ -242,14 +184,14 @@ The output of DEMOS will be stored in `data/output/demos_output_{year}.h5`.
 - **Memory Errors (Docker)**:  
   DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker's memory allocation.
 
-## 7. Next Steps
+## 6. Next Steps
 
 - Explore the [example configuration](default_configuration) for more options.
 - Review the [configuration fields and structure](configuration) to understand all available settings.
 - See the documentation for details on [modules](../api/modules.rst), orca columns, and model calibration.
 
 
-## 8. Need Help?
+## 7. Need Help?
 
 - [DEMOS GitHub Repository](https://github.com/NREL/DEMOS_NREL)
 - [Orca Documentation](https://github.com/UDST/orca)
