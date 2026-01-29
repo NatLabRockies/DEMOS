@@ -211,6 +211,7 @@
 <li class="toctree-l2"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_configuration.html">Advanced Options for DEMOS</a></li>
 </ul>
 
 </div>
@@ -256,7 +257,7 @@
 <p>The Demographic Microsimulator (DEMOS) is an agent-based simulation framework used to model the evolution of population demographic characteristics and lifecycle events, such as education attainment, marital status, and other key transitions. DEMOS modules are designed to capture the interdependencies between short-term and long-term lifecycle events, which are often influential in downstream transportation and land-use modeling.</p>
 <p>A key feature of DEMOS is its ability to track changes in an agent’s demographic status from year <em>t</em> to year <em>t + 1</em>. This structure allows the model to evolve populations over any user-defined time horizon. As a result, DEMOS is well suited for analyzing medium- and long-term transportation-related decisions, including household vehicle transactions (e.g., purchasing, selling, or replacing vehicles) and work location choices.
 Core features of DEMOS include the modeling of more than ten lifecycle events, behaviorally realistic patterns informed by long-running panel data, explicit representation of interdependencies among lifecycle processes, and a flexible, modular simulation architecture.</p>
-<p>A technical memorandum describing DEMOS is available <a class="reference external" href="https://github.com/NREL/DEMOS/blob/main/DEMOS_Technical_Memo.pdf">here</a>. The memorandum provides an overview of the framework’s functionality, model structure, input and output data, and its applications in transportation planning and broader policy analysis contexts. Interested readers are also encouraged to consult the paper listed below for additional details on the DEMOS methodology.</p>
+<p>A technical memorandum describing DEMOS is available <a class="reference external" href="https://github.com/NatLabRockies/DEMOS/blob/main/DEMOS_Technical_Memo.pdf">here</a>. The memorandum provides an overview of the framework’s functionality, model structure, input and output data, and its applications in transportation planning and broader policy analysis contexts. Interested readers are also encouraged to consult the paper listed below for additional details on the DEMOS methodology.</p>
 <hr class="docutils" />
 <p>DEMOS operates on tabular data representing agents or entities (primarily persons and households), and is configured via a simple TOML file. DEMOS can be run from source or using Docker for reproducibility.</p>
 <p>This document summarizes instructions to install, configure and run DEMOS. Sections 1-4 will help you correctly organize the data and configuration file, so we recommend reading them once before attempting to run DEMOS.</p>
@@ -268,9 +269,10 @@ Core features of DEMOS include the modeling of more than ten lifecycle events, b
 <h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <section id="docker-compose-recommended">
 <h3>Docker Compose (recommended)<a class="headerlink" href="#docker-compose-recommended" title="Link to this heading">¶</a></h3>
-<p>The latest docker image for demos is stored in <code class="docutils literal notranslate"><span class="pre">ghcr.io/nrel/demos:latest</span></code>. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> workflow that can be used.</p>
+<p>The latest docker image for demos is stored in <code class="docutils literal notranslate"><span class="pre">ghcr.io/NatLabRockies/demos:latest</span></code>. The input data and configuration file are fed to the container through volumes (<a class="reference external" href="https://docs.docker.com/engine/storage/volumes/">more info about Docker volumes</a>). We provide a <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> workflow that can be used to make the process of mounting volumes easier.</p>
 <section id="prepare-the-configuration-file-and-data-folder">
 <h4>Prepare the configuration file and data folder<a class="headerlink" href="#prepare-the-configuration-file-and-data-folder" title="Link to this heading">¶</a></h4>
+<p>Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a directory where to run DEMOS from</span>
 mkdir<span class="w"> </span>demos
 <span class="nb">cd</span><span class="w"> </span>demos
@@ -278,7 +280,7 @@ mkdir<span class="w"> </span>demos
 <span class="c1"># Create the configuration folder and retrieve an example configuration</span>
 mkdir<span class="w"> </span>configuration
 <span class="nb">cd</span><span class="w"> </span>configuration
-curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>demos_config.toml<span class="w"> </span>https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>demos_config.toml<span class="w"> </span>https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_sfbay.toml
 
 <span class="c1"># Create the data folder for the output to be stored</span>
 <span class="nb">cd</span><span class="w"> </span>..
@@ -286,7 +288,7 @@ mkdir<span class="w"> </span>data
 <span class="c1"># Populate the data folder</span>
 
 <span class="c1"># Finally, retrieve the docker-compose.yml file</span>
-curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>docker-compose.yml<span class="w"> </span>https://raw.githubusercontent.com/nrel/DEMOS/main/docker-compose.yml
+curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>docker-compose.yml<span class="w"> </span>https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/docker-compose.yml
 </pre></div>
 </div>
 <p>Now you can run docker as follows:</p>
@@ -306,14 +308,14 @@ If you need to specify a different location for them, you can run:</p>
 </div>
 <blockquote>
 <div><p><strong>Note for MacOS/Windows:</strong><br />
-Increase Docker’s memory allocation to at least 16–20 GB via Docker Desktop:<br />
-<code class="docutils literal notranslate"><span class="pre">Preferences</span> <span class="pre">→</span> <span class="pre">Resources</span> <span class="pre">→</span> <span class="pre">Memory</span></code>.</p>
+Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and <code class="docutils literal notranslate"><span class="pre">Preferences</span> <span class="pre">→</span> <span class="pre">Resources</span> <span class="pre">→</span> <span class="pre">Memory</span> <span class="pre">→</span> <span class="pre">Increase</span> <span class="pre">it</span> <span class="pre">(at</span> <span class="pre">least</span> <span class="pre">16-20gb)</span></code>. The amount of memory required to run DEMOS will primarily depend on the size of the input data.</p>
 </div></blockquote>
 </section>
 </section>
 <hr class="docutils" />
-<section id="from-source-is-you-are-not-using-docker">
-<h3>From Source (is you are not using Docker)<a class="headerlink" href="#from-source-is-you-are-not-using-docker" title="Link to this heading">¶</a></h3>
+<section id="from-source-if-you-are-not-using-docker">
+<h3>From Source (if you are not using Docker)<a class="headerlink" href="#from-source-if-you-are-not-using-docker" title="Link to this heading">¶</a></h3>
+<p>If you prefer to create your own Python environment and run the Python code directly (for debugging or enhancing DEMOS capabilities), you can do so following these instructions:</p>
 <ol class="arabic">
 <li><p><strong>Clone the repository</strong>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NREL/DEMOS_NREL.git
@@ -355,52 +357,6 @@ At minimum, you must define the <code class="docutils literal notranslate"><span
 </pre></div>
 </div>
 <p>Other tables and module configurations can be added as needed. The default configuration exposes all options with default values.</p>
-<hr class="docutils" />
-<p>Examples of important configuration options are:</p>
-<section id="selection-of-modules-to-run">
-<h3>Selection of modules to run:<a class="headerlink" href="#selection-of-modules-to-run" title="Link to this heading">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">modules</span></code> parameter accepts a list of strings identifying the modules. By default all are included, but if you’d like to only run a selection of them you can change it. For instance to run only <code class="docutils literal notranslate"><span class="pre">aging</span></code> and <code class="docutils literal notranslate"><span class="pre">education</span></code>:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">modules</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s2">&quot;aging&quot;</span><span class="p">,</span>
-    <span class="s2">&quot;education&quot;</span><span class="p">,</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-</section>
-<section id="configuration-of-calibration-procedures">
-<h3>Configuration of calibration procedures:<a class="headerlink" href="#configuration-of-calibration-procedures" title="Link to this heading">¶</a></h3>
-<p>Certain modules support calibration of the simulation output to observed values. Specific calibration parameters can be set for each module that supports it. If no configuration is provided, calibration is not performed. Additionally, some modules (namely <code class="docutils literal notranslate"><span class="pre">employment</span></code> and <code class="docutils literal notranslate"><span class="pre">household_reorganization</span></code>) implement simultaneous calibration. While the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module implements both types of calibration, only one of the two can be used. An error will be raised if two types of calibration are defined.</p>
-<p>Calibration configuration is defined at <code class="docutils literal notranslate"><span class="pre">module-level-config.calibration_procedure</span></code> (<code class="docutils literal notranslate"><span class="pre">module-level-config</span></code> is defined differently for every module. The options are displayed <a class="reference internal" href="../api/configuration_module.html"><span class="std std-doc">here</span></a> and in each module’s documentation). We will use the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module as an example.</p>
-<p><strong>If you want to use simultaneous calibration for the <code class="docutils literal notranslate"><span class="pre">employment</span></code> module</strong></p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[employment_module_config.simultaneous_calibration_config]</span>
-<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
-<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
-</pre></div>
-</div>
-<p>Due to the complexity and nuances of simultaneous calibration, the required tables of observed values (<code class="docutils literal notranslate"><span class="pre">observed_entering_workforce</span></code> and <code class="docutils literal notranslate"><span class="pre">observed_exiting_workforce</span></code>) are hard-coded, and an error will be raised if they are not present.</p>
-<p><strong>If you instead want to use simple calibration</strong></p>
-<p>We need to define the following:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[employment_module_config.enter_model_calibration_procedure]</span>
-<span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
-<span class="n">observed_values_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_entering_workforce&quot;</span>
-<span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;relative&quot;</span>
-<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span>
-<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-
-<span class="k">[employment_module_config.exit_model_calibration_procedure]</span>
-<span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
-<span class="n">observed_values_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_exiting_workforce&quot;</span>
-<span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;relative&quot;</span>
-<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span>
-<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-</pre></div>
-</div>
-<p>This will allow DEMOS to execute calibration on each of the two modules in the employment module.</p>
-<p><strong>If you want to skip calibration, just delete these entrances from the configuration file.</strong></p>
-<!-- See the example config for more options, including output tables, calibration, and module selection. -->
-</section>
 </section>
 <section id="file-tree-structure-for-data-and-configuration">
 <span id="id1"></span><h2>3. File Tree Structure for Data and Configuration<a class="headerlink" href="#file-tree-structure-for-data-and-configuration" title="Link to this heading">¶</a></h2>
@@ -415,12 +371,11 @@ At minimum, you must define the <code class="docutils literal notranslate"><span
 │   ├── hsize_ct_06197001.csv               # Example CSV data file 
 |   └── calibrated_configs/                 # Here is were the parameters of the estimated models go
 |       └── ...
-├── demos/ # Source code 
+├── demos/ # Source code (if not using docker)
 |   ├── simulate.py                         # Main entry point for running DEMOS
 |   ├── models                              # Logic of individual modules
 |       └── ... 
 |   └── ... 
-├── docs/                                   # Documentation
 └── ...
 </pre></div>
 </div>
@@ -428,19 +383,16 @@ At minimum, you must define the <code class="docutils literal notranslate"><span
 <li><p>Place your <strong>TOML configuration file</strong> in the <code class="docutils literal notranslate"><span class="pre">configuration/</span></code> directory.</p></li>
 <li><p>Place all <strong>input data files</strong> (CSV, HDF5, etc.) in the <code class="docutils literal notranslate"><span class="pre">data/</span></code> directory.</p></li>
 <li><p>Make sure the paths in your <code class="docutils literal notranslate"><span class="pre">demos_config.toml</span></code> match the location of your data files.</p></li>
+<li><p>If you are using the provided Docker Compose workflow, the data volume will always be accesible as <code class="docutils literal notranslate"><span class="pre">./data</span></code>, therefore, you should use <code class="docutils literal notranslate"><span class="pre">./data</span></code> in your configuration file as the name of the folder where the data for the tables is found, even if the folder is named differently in your computer.</p></li>
 </ul>
 <blockquote>
 <div><p><strong>Tip:</strong><br />
-You can use different data files or directories, but make sure the paths in your configuration file are correct relative to the project root (<code class="docutils literal notranslate"><span class="pre">DEMOS_NREL/</span></code>).</p>
+You can use different data files or directories, but make sure the paths in your configuration file are correct relative to the project root (<code class="docutils literal notranslate"><span class="pre">DEMOS/</span></code>).</p>
 </div></blockquote>
-</section>
-<section id="running-demos">
-<h2>4. Running DEMOS<a class="headerlink" href="#running-demos" title="Link to this heading">¶</a></h2>
-<p>After setting up your data and configuration, use Docker as described above.</p>
 <p>The output of DEMOS will be stored in <code class="docutils literal notranslate"><span class="pre">data/output/demos_output_{year}.h5</span></code>.</p>
 </section>
 <section id="understanding-the-workflow">
-<h2>5. Understanding the Workflow<a class="headerlink" href="#understanding-the-workflow" title="Link to this heading">¶</a></h2>
+<h2>4. Understanding the Workflow<a class="headerlink" href="#understanding-the-workflow" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><strong>Tables</strong>: Each row in the <code class="docutils literal notranslate"><span class="pre">persons</span></code> and <code class="docutils literal notranslate"><span class="pre">households</span></code> tables represents an agent or entity.</p></li>
 <li><p><strong>Modules</strong>: Simulation logic is organized into modules, each operating on the tables for each simulated year.</p></li>
@@ -449,7 +401,7 @@ You can use different data files or directories, but make sure the paths in your
 </ul>
 </section>
 <section id="troubleshooting-common-errors">
-<h2>6. Troubleshooting Common Errors<a class="headerlink" href="#troubleshooting-common-errors" title="Link to this heading">¶</a></h2>
+<h2>5. Troubleshooting Common Errors<a class="headerlink" href="#troubleshooting-common-errors" title="Link to this heading">¶</a></h2>
 <ul>
 <li><p><strong>Missing Required Tables</strong>:<br />
 If either <code class="docutils literal notranslate"><span class="pre">persons</span></code> or <code class="docutils literal notranslate"><span class="pre">households</span></code> is missing from your config, DEMOS will raise an error:</p>
@@ -473,7 +425,7 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 </ul>
 </section>
 <section id="next-steps">
-<h2>7. Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
+<h2>6. Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p>Explore the <a class="reference internal" href="default_configuration.html"><span class="doc std std-doc">example configuration</span></a> for more options.</p></li>
 <li><p>Review the <a class="reference internal" href="configuration.html"><span class="doc std std-doc">configuration fields and structure</span></a> to understand all available settings.</p></li>
@@ -481,7 +433,7 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 </ul>
 </section>
 <section id="need-help">
-<h2>8. Need Help?<a class="headerlink" href="#need-help" title="Link to this heading">¶</a></h2>
+<h2>7. Need Help?<a class="headerlink" href="#need-help" title="Link to this heading">¶</a></h2>
 <ul class="simple">
 <li><p><a class="reference external" href="https://github.com/NREL/DEMOS_NREL">DEMOS GitHub Repository</a></p></li>
 <li><p><a class="reference external" href="https://github.com/UDST/orca">Orca Documentation</a></p></li>
@@ -552,20 +504,15 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 <li><a class="reference internal" href="#prepare-the-configuration-file-and-data-folder">Prepare the configuration file and data folder</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#from-source-is-you-are-not-using-docker">From Source (is you are not using Docker)</a></li>
+<li><a class="reference internal" href="#from-source-if-you-are-not-using-docker">From Source (if you are not using Docker)</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#preparing-your-configuration">2. Preparing Your Configuration</a><ul>
-<li><a class="reference internal" href="#selection-of-modules-to-run">Selection of modules to run:</a></li>
-<li><a class="reference internal" href="#configuration-of-calibration-procedures">Configuration of calibration procedures:</a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#preparing-your-configuration">2. Preparing Your Configuration</a></li>
 <li><a class="reference internal" href="#file-tree-structure-for-data-and-configuration">3. File Tree Structure for Data and Configuration</a></li>
-<li><a class="reference internal" href="#running-demos">4. Running DEMOS</a></li>
-<li><a class="reference internal" href="#understanding-the-workflow">5. Understanding the Workflow</a></li>
-<li><a class="reference internal" href="#troubleshooting-common-errors">6. Troubleshooting Common Errors</a></li>
-<li><a class="reference internal" href="#next-steps">7. Next Steps</a></li>
-<li><a class="reference internal" href="#need-help">8. Need Help?</a></li>
+<li><a class="reference internal" href="#understanding-the-workflow">4. Understanding the Workflow</a></li>
+<li><a class="reference internal" href="#troubleshooting-common-errors">5. Troubleshooting Common Errors</a></li>
+<li><a class="reference internal" href="#next-steps">6. Next Steps</a></li>
+<li><a class="reference internal" href="#need-help">7. Need Help?</a></li>
 </ul>
 </li>
 </ul>

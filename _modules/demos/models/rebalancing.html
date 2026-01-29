@@ -210,6 +210,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/advanced_configuration.html">Advanced Options for DEMOS</a></li>
 </ul>
 
 </div>
@@ -255,6 +256,7 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">logging_logic</span><span class="w"> </span><span class="kn">import</span> <span class="n">log_execution_time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">loguru</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
 
 <span class="n">STEP_NAME</span> <span class="o">=</span> <span class="s2">&quot;household_rebalancing&quot;</span>
 
@@ -338,6 +340,9 @@
                 <span class="n">to_remove_hh</span> <span class="o">+=</span> <span class="n">selected_hh</span>
             <span class="k">if</span> <span class="n">adjustment</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="n">to_duplicate_hh</span> <span class="o">+=</span> <span class="n">selected_hh</span>
+    
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of households to duplicate: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">to_duplicate_hh</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Number of households to remove: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">to_remove_hh</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Duplicate the households accordingly</span>
     <span class="c1">## We duplicate first to reduce the chances of a household_id collision</span>
