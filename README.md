@@ -16,9 +16,11 @@ A technical memorandum describing DEMOS is available [here](./DEMOS_Technical_Me
 ## Usage
 
 ### Docker Compose (recommended)
-The latest docker image for demos is stored in `ghcr.io/nrel/demos:latest`. The input data and configuration file are fed to the container through volumes. Alternatively, we provide a `docker-compose` workflow that can be used.
+The latest docker image for demos is stored in `ghcr.io/NatLabRockies/demos:latest`. The input data and configuration file are fed to the container through volumes ([more info about Docker volumes](https://docs.docker.com/engine/storage/volumes/)). We provide a `docker-compose` workflow that can be used to make the process of mounting volumes easier.
 
 #### Prepare the configuration file and data folder
+
+Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):
 
 ```bash
 # Create a directory where to run DEMOS from
@@ -28,7 +30,7 @@ cd demos
 # Create the configuration folder and retrieve an example configuration
 mkdir configuration
 cd configuration
-curl -L -o demos_config.toml https://raw.githubusercontent.com/nrel/DEMOS/main/configuration/demos_config_sfbay.toml
+curl -L -o demos_config.toml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_sfbay.toml
 
 # Create the data folder for the output to be stored
 cd ..
@@ -36,35 +38,28 @@ mkdir data
 # Populate the data folder
 
 # Finally, retrieve the docker-compose.yml file
-curl -L -o docker-compose.yml https://raw.githubusercontent.com/nrel/DEMOS/main/docker-compose.yml
+curl -L -o docker-compose.yml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/docker-compose.yml
 ```
 
-Now you can run docker as follows:
+Make sure you have [Docker](https://docs.docker.com/desktop/) and [Docker Compose](https://docs.docker.com/compose/install/) installed. Now you can run docker as follows:
+
 ```bash
 docker compose up
 ```
 #### IMPORTANT for MacOS and Windows users
-> Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`
+> Docker imposes a global limit on how much RAM containers can allocate. DEMOS easily surpases those limits, so in order to run DEMOS in Docker, users need to access the Docker Desktop GUI and `Preferences → Resources → Memory → Increase it (at least 16-20gb)`. The amount of memory required to run DEMOS will primarily depend on the size of the input data.
 
 Documentation for custom data requirements, configuration and overall functionality of demos can be found [in the Docs](https://nrel.github.io/DEMOS/).
 
 ## Other ways to run DEMOS
 
-If you need to change either the data or configuration path:
-```bash
-DEMOS_CONFIG_PATH=<path-to-config> DEMOS_DATA_DIR=<path-to-data-dir> docker compose up
-```
-
-Alternatively, if you prefer not to use docker compose, you can specify the ccreation of volumes to your data and configuration as follows:
-```bash
-docker run --volume <path-to-config>:/demos/config.toml:ro --volume <path-to-data-dir>:/demos/data --platform=linux/amd64 ghcr.io/nrel/demos:latest
-```
-
 ### Running from Source
+
+If you prefer to create your own Python environment and run the Python code directly (for debugging or enhancing DEMOS capabilities), you can do so following these instructions:
 
 1. Clone this repository
 	```
-	git clone https://github.com/NREL/DEMOS_NREL.git
+	git clone https://github.com/NatLabRockies/DEMOS.git
 	```
 
 1. Create a virtual environment.

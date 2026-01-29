@@ -10,6 +10,7 @@ from config import DEMOSConfig, HHRebalancingModuleConfig, SimultaneousCalibrati
 
 import time
 from logging_logic import log_execution_time
+from loguru import logger
 
 STEP_NAME = "household_rebalancing"
 
@@ -91,6 +92,9 @@ def household_rebalancing(households, persons, year, get_new_households, get_new
                 to_remove_hh += selected_hh
             if adjustment > 0:
                 to_duplicate_hh += selected_hh
+    
+    logger.debug(f"Number of households to duplicate: {len(to_duplicate_hh)}")
+    logger.debug(f"Number of households to remove: {len(to_remove_hh)}")
 
     # Duplicate the households accordingly
     ## We duplicate first to reduce the chances of a household_id collision
