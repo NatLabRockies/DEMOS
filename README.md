@@ -75,3 +75,9 @@ If you prefer to create your own Python environment and run the Python code dire
 	conda activate demos-env
 	pip install .
 	```
+
+## Contact
+If you have questions, suggestions, or are interested in collaborating, please feel free to reach out or open an issue.  
+Bingrong Sun: Bingrong.Sun@nlr.gov  
+Shivam Sharda: Shivam.Sharda@nlr.gov  
+Venu Garikapati: Venu.Garikapati@nlr.gov  
