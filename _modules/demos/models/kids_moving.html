@@ -396,6 +396,7 @@
         <span class="mi">14</span><span class="p">,</span>
     <span class="p">]</span>  <span class="c1"># This is more `dependent` because `child` is determined by age</span>
     <span class="n">target_share</span> <span class="o">=</span> <span class="n">module_config</span><span class="o">.</span><span class="n">calibration_target_share</span>
+    <span class="n">max_iter</span> <span class="o">=</span> <span class="n">module_config</span><span class="o">.</span><span class="n">max_iter</span>
 
     <span class="c1"># Get model data</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">mm</span><span class="o">.</span><span class="n">get_step</span><span class="p">(</span><span class="s2">&quot;kids_move&quot;</span><span class="p">)</span>
@@ -415,7 +416,10 @@
 
     <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Calibrating Kids moving model&quot;</span><span class="p">)</span>
     <span class="n">calibrate_iteration</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">while</span> <span class="nb">abs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">module_config</span><span class="o">.</span><span class="n">calibration_tolerance</span><span class="p">:</span>
+    <span class="k">while</span> <span class="p">(</span>
+        <span class="nb">abs</span><span class="p">(</span><span class="n">error</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">module_config</span><span class="o">.</span><span class="n">calibration_tolerance</span>
+        <span class="ow">and</span> <span class="n">calibrate_iteration</span> <span class="o">&lt;</span> <span class="n">max_iter</span>
+    <span class="p">):</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">calibrate_iteration</span><span class="si">}</span><span class="s2"> iteration error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">fitted_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">observed_share</span> <span class="o">/</span> <span class="n">target_share</span><span class="p">)</span>
 
