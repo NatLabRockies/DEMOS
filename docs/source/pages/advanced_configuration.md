@@ -46,7 +46,7 @@ momentum_weight = 0.3
 
 Due to the complexity and nuances of simultaneous calibration, the required tables of observed values (`observed_entering_workforce` and `observed_exiting_workforce`) are hard-coded, and an error will be raised if they are not loaded.
 
-**If you want to skip calibration, just delete or comment out these entrances from the configuration file like this:**
+**If you want to skip calibration, just delete or comment out these entries from the configuration file like this:**
 
 ```toml
 # [employment_module_config.simultaneous_calibration_config]
