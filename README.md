@@ -30,7 +30,7 @@ cd demos
 # Create the configuration folder and retrieve an example configuration
 mkdir configuration
 cd configuration
-curl -L -o demos_config.toml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_sfbay.toml
+curl -L -o demos_config.toml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_small_example.toml
 
 # Create the data folder for the output to be stored
 cd ..

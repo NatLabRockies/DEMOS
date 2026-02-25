@@ -146,7 +146,8 @@ def run_and_calibrate_model(persons):
         9,
         14,
     ]  # This is more `dependent` because `child` is determined by age
-    target_share = module_config.calibration_target_share
+    target_share = module_config.calibration_target_share 
+    max_iter = module_config.max_iter
 
     # Get model data
     model = mm.get_step("kids_move")
@@ -166,7 +167,7 @@ def run_and_calibrate_model(persons):
 
     print("Calibrating Kids moving model")
     calibrate_iteration = 0
-    while abs(error) > module_config.calibration_tolerance:
+    while abs(error) > module_config.calibration_tolerance and calibrate_iteration < max_iter:
         print(f"{calibrate_iteration} iteration error: {error}")
         model.fitted_parameters[0] += np.log(observed_share / target_share)
 

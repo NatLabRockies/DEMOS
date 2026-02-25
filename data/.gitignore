@@ -6,5 +6,7 @@
 !calibrated_configs/**
 !sf_bay_example/
 !sf_bay_example/**
+!small_example/
+!small_example/**
 **/.DS_Store
 **.h5
