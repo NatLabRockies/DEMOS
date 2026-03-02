@@ -270,28 +270,20 @@ Core features of DEMOS include the modeling of more than ten lifecycle events, b
 <section id="docker-compose-recommended">
 <h3>Docker Compose (recommended)<a class="headerlink" href="#docker-compose-recommended" title="Link to this heading">¶</a></h3>
 <p>The latest docker image for demos is stored in <code class="docutils literal notranslate"><span class="pre">ghcr.io/NatLabRockies/demos:latest</span></code>. The input data and configuration file are fed to the container through volumes (<a class="reference external" href="https://docs.docker.com/engine/storage/volumes/">more info about Docker volumes</a>). We provide a <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> workflow that can be used to make the process of mounting volumes easier.</p>
-<section id="prepare-the-configuration-file-and-data-folder">
-<h4>Prepare the configuration file and data folder<a class="headerlink" href="#prepare-the-configuration-file-and-data-folder" title="Link to this heading">¶</a></h4>
+<section id="clone-this-repository">
+<h4>Clone this repository<a class="headerlink" href="#clone-this-repository" title="Link to this heading">¶</a></h4>
+<p>By cloning this repository you download the configuration and data for an example run of DEMOS.</p>
 <p>Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create a directory where to run DEMOS from</span>
-mkdir<span class="w"> </span>demos
-<span class="nb">cd</span><span class="w"> </span>demos
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NatLabRockies/DEMOS.git
 
-<span class="c1"># Create the configuration folder and retrieve an example configuration</span>
-mkdir<span class="w"> </span>configuration
-<span class="nb">cd</span><span class="w"> </span>configuration
-curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>demos_config.toml<span class="w"> </span>https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_small_example.toml
+<span class="c1"># Move into the project folder</span>
+<span class="nb">cd</span><span class="w"> </span>DEMOS
 
-<span class="c1"># Create the data folder for the output to be stored</span>
-<span class="nb">cd</span><span class="w"> </span>..
-mkdir<span class="w"> </span>data
-<span class="c1"># Populate the data folder</span>
-
-<span class="c1"># Finally, retrieve the docker-compose.yml file</span>
-curl<span class="w"> </span>-L<span class="w"> </span>-o<span class="w"> </span>docker-compose.yml<span class="w"> </span>https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/docker-compose.yml
+<span class="c1"># This folder contains (among other files) a data and configuration folder</span>
+<span class="c1"># as well as a docker-compose.yml file</span>
 </pre></div>
 </div>
-<p>Now you can run docker as follows:</p>
+<p>Make sure you have <a class="reference external" href="https://docs.docker.com/desktop/">Docker</a> and <a class="reference external" href="https://docs.docker.com/compose/install/">Docker Compose</a> installed. Now you can run docker as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up
 </pre></div>
 </div>
@@ -501,7 +493,7 @@ DEMOS requires a lot of memory. If you see out-of-memory errors, increase Docker
 <li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#installation">1. Installation</a><ul>
 <li><a class="reference internal" href="#docker-compose-recommended">Docker Compose (recommended)</a><ul>
-<li><a class="reference internal" href="#prepare-the-configuration-file-and-data-folder">Prepare the configuration file and data folder</a></li>
+<li><a class="reference internal" href="#clone-this-repository">Clone this repository</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#from-source-if-you-are-not-using-docker">From Source (if you are not using Docker)</a></li>
