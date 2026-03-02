@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-nrel}/demos
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER:-natlabrockies}/demos
     tty: true
     platform: linux/amd64
     environment:
