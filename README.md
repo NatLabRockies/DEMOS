@@ -18,27 +18,18 @@ A technical memorandum describing DEMOS is available [here](./DEMOS_Technical_Me
 ### Docker Compose (recommended)
 The latest docker image for demos is stored in `ghcr.io/NatLabRockies/demos:latest`. The input data and configuration file are fed to the container through volumes ([more info about Docker volumes](https://docs.docker.com/engine/storage/volumes/)). We provide a `docker-compose` workflow that can be used to make the process of mounting volumes easier.
 
-#### Prepare the configuration file and data folder
+#### Clone this repository
+By cloning this repository you download the configuration and data for an example run of DEMOS.
 
 Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):
-
 ```bash
-# Create a directory where to run DEMOS from
-mkdir demos
-cd demos
+git clone https://github.com/NatLabRockies/DEMOS.git
 
-# Create the configuration folder and retrieve an example configuration
-mkdir configuration
-cd configuration
-curl -L -o demos_config.toml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/configuration/demos_config_small_example.toml
+# Move into the project folder
+cd DEMOS
 
-# Create the data folder for the output to be stored
-cd ..
-mkdir data
-# Populate the data folder
-
-# Finally, retrieve the docker-compose.yml file
-curl -L -o docker-compose.yml https://raw.githubusercontent.com/NatLabRockies/DEMOS/main/docker-compose.yml
+# This folder contains (among other files) a data and configuration folder
+# as well as a docker-compose.yml file
 ```
 
 Make sure you have [Docker](https://docs.docker.com/desktop/) and [Docker Compose](https://docs.docker.com/compose/install/) installed. Now you can run docker as follows:
