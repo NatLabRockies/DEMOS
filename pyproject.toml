@@ -7,7 +7,7 @@ name = "nrel.demos"
 version = "1.0.1"
 description = "DEMOS is a demographic simulation tool."
 readme = "README.md"
-authors = [{ name = "National Renewable Energy Laboratory" }, { name = "Lawrence Berkley National Laboratory" }]
+authors = [{ name = "National Laboratory of the Rockies" }, { name = "Lawrence Berkley National Laboratory" }]
 # license = {}
 classifiers = [
     "Programming Language :: Python :: 3.10"
@@ -52,8 +52,3 @@ docs = [
 dev = [
     "black"
 ]
-
-[project.scripts]
-# TODO: Check these
-demos = "demos.simulate:simulate"
-# plotting = 
