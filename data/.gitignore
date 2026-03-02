@@ -1,4 +1,5 @@
 *
+**.h5
 !.gitignore
 !calibrated_values/
 !calibrated_values/**
@@ -6,5 +7,7 @@
 !calibrated_configs/**
 !sf_bay_example/
 !sf_bay_example/**
+!small_example/
+!small_example/**
+!small_example/*.h5
 **/.DS_Store
-**.h5

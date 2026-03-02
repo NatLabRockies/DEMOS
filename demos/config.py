@@ -57,6 +57,7 @@ class KidsMovingModuleConfig(BaseModel):
     geoid_col: str
     calibration_target_share: float = 0.12
     calibration_tolerance: float = 0.001
+    max_iter: int = 100
 
 
 class AgingModuleConfig(BaseModel):

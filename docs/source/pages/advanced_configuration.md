@@ -46,6 +46,16 @@ momentum_weight = 0.3
 
 Due to the complexity and nuances of simultaneous calibration, the required tables of observed values (`observed_entering_workforce` and `observed_exiting_workforce`) are hard-coded, and an error will be raised if they are not loaded.
 
+**If you want to skip calibration, just delete or comment out these entries from the configuration file like this:**
+
+```toml
+# [employment_module_config.simultaneous_calibration_config]
+# tolerance = 100
+# max_iter = 2
+# learning_rate = 2
+# momentum_weight = 0.3
+```
+
 <!-- **If you instead want to use simple calibration**
 
 We need to define the following:
@@ -67,7 +77,6 @@ max_iter = 1000
 
 This will allow DEMOS to execute calibration on each of the two modules in the employment module.
 
-**If you want to skip calibration, just delete these entrances from the configuration file.**-->
 
 <!-- See the example config for more options, including output tables, calibration, and module selection. -->
 
