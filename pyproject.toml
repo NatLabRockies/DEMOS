@@ -32,7 +32,7 @@ requires-python = ">= 3.10"
 packages = ["demos"]
 
 [project.urls]
-Homepage = "https://github.com/NREL/DEMOS_NREL"
+Homepage = "https://github.com/NatLabRockies/DEMOS"
 
 [project.optional-dependencies]
 reporting = [
