@@ -26,10 +26,12 @@ This document summarizes instructions to install, configure and run DEMOS. Secti
 ## 1. Installation
 
 ### Docker Compose (recommended)
-The latest docker image for demos is stored in `ghcr.io/NatLabRockies/demos:latest`. The input data and configuration file are fed to the container through volumes ([more info about Docker volumes](https://docs.docker.com/engine/storage/volumes/)). We provide a `docker-compose` workflow that can be used to make the process of mounting volumes easier.
+The latest docker image for demos is stored in `ghcr.io/NatLabRockies/demos:latest`. The input data and configuration file are fed to the container through volumes ([more info about Docker volumes](https://docs.docker.com/engine/storage/volumes/)). We provide a `docker-compose` workflow that can be used to make the process of mounting volumes easier. Make sure you have [Docker](https://docs.docker.com/desktop/) and [Docker Compose](https://docs.docker.com/compose/install/) installed before you proceed.
+
+The following instructions will guide you through running DEMOS with example data representative of a small area in California. The data and configuration files required to run this example are located in `./data/` and `./configuration` folders. You can change where DEMOS will look for your data following the instructions [in the Docs](https://NatLabRockies.github.io/DEMOS/).
 
 #### Clone this repository
-By cloning this repository you download the configuration and data for an example run of DEMOS.
+By cloning this repository you download the configuration and data for an example run of DEMOS. You can also use the `Download ZIP` option available through the green `Code` button in the [GitHub repo](https://github.com/NatLabRockies/DEMOS) and decompress it to achieve the same results as the clone command.
 
 Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):
 ```bash
@@ -40,13 +42,11 @@ cd DEMOS
 
 # This folder contains (among other files) a data and configuration folder
 # as well as a docker-compose.yml file
-```
 
-Make sure you have [Docker](https://docs.docker.com/desktop/) and [Docker Compose](https://docs.docker.com/compose/install/) installed. Now you can run docker as follows:
-
-```bash
+# This command runs DEMOS on a docker container
 docker compose up
 ```
+
 
 > **Note:**  
 > Make sure the Docker Daemon is running. This changes from system to system but Docker Desktop should have a status flag indicating if the daemon is live, if Desktop is available

@@ -269,10 +269,11 @@ Core features of DEMOS include the modeling of more than ten lifecycle events, b
 <h2>1. Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
 <section id="docker-compose-recommended">
 <h3>Docker Compose (recommended)<a class="headerlink" href="#docker-compose-recommended" title="Link to this heading">¶</a></h3>
-<p>The latest docker image for demos is stored in <code class="docutils literal notranslate"><span class="pre">ghcr.io/NatLabRockies/demos:latest</span></code>. The input data and configuration file are fed to the container through volumes (<a class="reference external" href="https://docs.docker.com/engine/storage/volumes/">more info about Docker volumes</a>). We provide a <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> workflow that can be used to make the process of mounting volumes easier.</p>
+<p>The latest docker image for demos is stored in <code class="docutils literal notranslate"><span class="pre">ghcr.io/NatLabRockies/demos:latest</span></code>. The input data and configuration file are fed to the container through volumes (<a class="reference external" href="https://docs.docker.com/engine/storage/volumes/">more info about Docker volumes</a>). We provide a <code class="docutils literal notranslate"><span class="pre">docker-compose</span></code> workflow that can be used to make the process of mounting volumes easier. Make sure you have <a class="reference external" href="https://docs.docker.com/desktop/">Docker</a> and <a class="reference external" href="https://docs.docker.com/compose/install/">Docker Compose</a> installed before you proceed.</p>
+<p>The following instructions will guide you through running DEMOS with example data representative of a small area in California. The data and configuration files required to run this example are located in <code class="docutils literal notranslate"><span class="pre">./data/</span></code> and <code class="docutils literal notranslate"><span class="pre">./configuration</span></code> folders. You can change where DEMOS will look for your data following the instructions <a class="reference external" href="https://NatLabRockies.github.io/DEMOS/">in the Docs</a>.</p>
 <section id="clone-this-repository">
 <h4>Clone this repository<a class="headerlink" href="#clone-this-repository" title="Link to this heading">¶</a></h4>
-<p>By cloning this repository you download the configuration and data for an example run of DEMOS.</p>
+<p>By cloning this repository you download the configuration and data for an example run of DEMOS. You can also use the <code class="docutils literal notranslate"><span class="pre">Download</span> <span class="pre">ZIP</span></code> option available through the green <code class="docutils literal notranslate"><span class="pre">Code</span></code> button in the <a class="reference external" href="https://github.com/NatLabRockies/DEMOS">GitHub repo</a> and decompress it to achieve the same results as the clone command.</p>
 <p>Run the following command in the Terminal App (MacOS) or Command Prompt/PowerShell (Windows):</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/NatLabRockies/DEMOS.git
 
@@ -281,10 +282,9 @@ Core features of DEMOS include the modeling of more than ten lifecycle events, b
 
 <span class="c1"># This folder contains (among other files) a data and configuration folder</span>
 <span class="c1"># as well as a docker-compose.yml file</span>
-</pre></div>
-</div>
-<p>Make sure you have <a class="reference external" href="https://docs.docker.com/desktop/">Docker</a> and <a class="reference external" href="https://docs.docker.com/compose/install/">Docker Compose</a> installed. Now you can run docker as follows:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>up
+
+<span class="c1"># This command runs DEMOS on a docker container</span>
+docker<span class="w"> </span>compose<span class="w"> </span>up
 </pre></div>
 </div>
 <blockquote>
