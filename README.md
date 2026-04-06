@@ -73,4 +73,5 @@ Documentation for custom data requirements, configuration and overall functional
 If you have questions, suggestions, or are interested in collaborating, please feel free to reach out or open an issue.  
 Bingrong Sun: Bingrong.Sun@nlr.gov  
 Shivam Sharda: Shivam.Sharda@nlr.gov  
-Venu Garikapati: Venu.Garikapati@nlr.gov  
+Venu Garikapati: Venu.Garikapati@nlr.gov
+Yamil Essus: essusyamil@gmail.com
