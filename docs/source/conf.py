@@ -63,7 +63,7 @@ html_theme = "furo"
 html_static_path = ["_static"]
 
 # -- MyST settings -----------------------------------------------------------
-myst_enable_extensions = ["deflist", "html_admonition", "html_image", "colon_fence"]
+myst_enable_extensions = ["deflist", "html_admonition", "html_image", "colon_fence", "dollarmath"]
 
 # Sphinx multiversion config
 smv_branch_whitelist = r"^(main|dev|yep/.*)$"
