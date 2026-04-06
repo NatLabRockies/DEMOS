@@ -172,7 +172,6 @@ def intercept(persons):
     size = persons.to_frame(columns=["age"]).shape[0]
     return np.ones(size)
 
-
 # @orca.column('persons')
 # def dead(persons):
 #     size = persons.to_frame(columns=["age"]).shape[0]
@@ -476,6 +475,18 @@ def race3(persons):
 def race4(persons):
     p = persons.to_frame(columns=["race_asn"])
     return p["race_asn"]
+
+# Hawaiian
+@orca.column("persons")
+def race_hawaiian(persons):
+    p = persons.to_frame(columns=["race_id"])
+    return p.eq(7) * 1
+
+# Asian
+@orca.column("persons")
+def race_asian(persons):
+    p = persons.to_frame(columns=["race_id"])
+    return p.eq(6) * 1
 
 
 # Other

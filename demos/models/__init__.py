@@ -9,5 +9,6 @@ from .birth import *
 from .education import *
 from .rebalancing import *
 from .income_adjustment import *
+from .income import *
 from .export import *
 from .main import *

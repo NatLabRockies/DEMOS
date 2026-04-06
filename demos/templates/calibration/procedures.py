@@ -1,4 +1,4 @@
-from ..estimated_models.binary_logit import BinaryLogitStep
+from ..estimated_models.template import TemplateStep
 from pydantic import BaseModel, TypeAdapter, field_validator
 from typing import Literal
 import pandas as pd
@@ -33,7 +33,7 @@ class RMSECalibration(BaseModel):
         # otherwise assume it's already a str
         return v
 
-    def calibration_step(self, model: BinaryLogitStep, update_delta: float):
+    def calibration_step(self, model: TemplateStep, update_delta: float):
         model.fitted_parameters[0] += update_delta
 
     def compute_error(self, prediction: pd.Series, target: float):
@@ -47,7 +47,7 @@ class RMSECalibration(BaseModel):
             f"Tolerance type {self.tolerance_type} not implemented"
         )
 
-    def calibrate_and_run_model(self, model: BinaryLogitStep, data: pd.DataFrame):
+    def calibrate_and_run_model(self, model: TemplateStep, data: pd.DataFrame):
         table_column = "count" if self.tolerance_type == "absolute" else "share"
 
         # Sort for reproducibility
