@@ -207,6 +207,7 @@
 </li>
 <li class="toctree-l1 current has-children current-page"><a class="current reference internal" href="#">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html">Model Calibration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -259,9 +260,20 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html#module-demos.config">Individual Modules configuration</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="calibration.html">Model Calibration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html#how-calibration-works">How Calibration Works</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html#modules-that-support-calibration">Modules That Support Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html#preparing-observed-data-files">Preparing Observed Data Files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html#configuring-calibration-in-the-toml-file">Configuring Calibration in the TOML File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html#modules-with-simultaneous-calibration-employment-and-household-reorganization">Modules with Simultaneous Calibration: Employment and Household Reorganization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html#choosing-good-tolerance-values">Choosing Good Tolerance Values</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="datasources.html">Data Sources</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="datasources.html#demos.datasources.CSVTableSource"><code class="docutils literal notranslate"><span class="pre">CSVTableSource</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="datasources.html#demos.datasources.H5TableSource"><code class="docutils literal notranslate"><span class="pre">H5TableSource</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasources.html#choosing-between-csv-and-hdf5">Choosing Between CSV and HDF5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasources.html#csv-tables">CSV Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasources.html#hdf5-tables">HDF5 Tables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasources.html#api-reference">API Reference</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
@@ -322,5 +334,7 @@
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

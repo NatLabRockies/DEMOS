@@ -207,6 +207,7 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html">Model Calibration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -250,7 +251,7 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="advanced-options-for-demos">
+          <section class="tex2jax_ignore mathjax_ignore" id="advanced-options-for-demos">
 <h1>Advanced Options for DEMOS<a class="headerlink" href="#advanced-options-for-demos" title="Link to this heading">¶</a></h1>
 <section id="configuration-of-calibration-procedures">
 <h2>Configuration of calibration procedures<a class="headerlink" href="#configuration-of-calibration-procedures" title="Link to this heading">¶</a></h2>
@@ -331,6 +332,207 @@ This will allow DEMOS to execute calibration on each of the two modules in the e
 </pre></div>
 </div>
 </section>
+<hr class="docutils" />
+<section id="lazily-computed-columns">
+<h2>Lazily computed columns<a class="headerlink" href="#lazily-computed-columns" title="Link to this heading">¶</a></h2>
+<p>DEMOS uses <a class="reference external" href="https://udst.github.io/orca/">Orca</a> as its internal data pipeline framework. One of
+Orca’s most important features for working with DEMOS data is the concept of <strong>lazily computed
+columns</strong>, and understanding them will save you a lot of confusion when inspecting or extending
+the simulation.</p>
+<section id="what-is-a-lazily-computed-column">
+<h3>What is a lazily computed column?<a class="headerlink" href="#what-is-a-lazily-computed-column" title="Link to this heading">¶</a></h3>
+<p>In a normal table (a pandas DataFrame), every column holds actual stored values. A lazily computed
+column is different: instead of a pre-stored array of values, it is a <strong>Python function</strong>
+registered with Orca that <em>returns</em> a pandas Series on demand. Orca only calls that function when
+some part of the simulation actually asks for the column — hence “lazy” (computed only when needed,
+not upfront).</p>
+<p>This is useful because:</p>
+<ul class="simple">
+<li><p>Columns that depend on other columns (for example, a column that categorises people by age into
+bins) are always guaranteed to be up to date, since they are recalculated from the current data
+every time they are requested.</p></li>
+<li><p>It avoids storing redundant derived data, which keeps memory usage lower.</p></li>
+<li><p>Dependencies between columns are explicit and traceable in the code.</p></li>
+</ul>
+<p>In the DEMOS codebase these columns are registered using the <code class="docutils literal notranslate"><span class="pre">&#64;orca.column</span></code> decorator. For example,
+the <code class="docutils literal notranslate"><span class="pre">child</span></code> indicator column (persons table) is defined in <code class="docutils literal notranslate"><span class="pre">aging.py</span></code> as:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">child</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;persons.relate&quot;</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">14</span><span class="p">])</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Every time any module requests <code class="docutils literal notranslate"><span class="pre">persons[&quot;child&quot;]</span></code>, Orca calls this function and passes in
+the current <code class="docutils literal notranslate"><span class="pre">relate</span></code> column automatically (Orca matches function argument names to registered
+data).</p>
+<p>Other examples of lazily computed columns in DEMOS:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Column</p></th>
+<th class="head"><p>Table</p></th>
+<th class="head"><p>Defined in</p></th>
+<th class="head"><p>What it computes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">child</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persons</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">aging.py</span></code></p></td>
+<td><p>1 if <code class="docutils literal notranslate"><span class="pre">relate</span></code> ∈ {2, 3, 4, 14}, else 0</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">senior</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persons</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">aging.py</span></code></p></td>
+<td><p>1 if <code class="docutils literal notranslate"><span class="pre">age</span></code> ≥ configured senior age (default 65)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">age_group</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persons</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">aging.py</span></code></p></td>
+<td><p>Categorical age bin (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;20-29&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;30-39&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">is_head</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persons</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">household_reorg.py</span></code></p></td>
+<td><p>1 if <code class="docutils literal notranslate"><span class="pre">relate</span> <span class="pre">==</span> <span class="pre">0</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">is_not_married</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persons</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">household_reorg.py</span></code></p></td>
+<td><p>True if <code class="docutils literal notranslate"><span class="pre">age</span> <span class="pre">≥</span> <span class="pre">15</span></code> and <code class="docutils literal notranslate"><span class="pre">MAR</span> <span class="pre">!=</span> <span class="pre">1</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">cohabitate</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">persons</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">household_reorg.py</span></code></p></td>
+<td><p>True if person is a cohabiting partner or head of a cohabiting household</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">hh_size</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">households</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">household_reorg.py</span></code></p></td>
+<td><p>Categorical household size (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;one&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;two&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;four</span> <span class="pre">or</span> <span class="pre">more&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">hh_workers</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">households</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">employment.py</span></code></p></td>
+<td><p>Categorical worker count (<code class="docutils literal notranslate"><span class="pre">&quot;none&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;one&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;two</span> <span class="pre">or</span> <span class="pre">more&quot;</span></code>)</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">income</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">households</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">employment.py</span></code></p></td>
+<td><p>Total household income aggregated from person-level earnings</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="caching">
+<h3>Caching<a class="headerlink" href="#caching" title="Link to this heading">¶</a></h3>
+<p>Some lazily computed columns are marked with <code class="docutils literal notranslate"><span class="pre">cache=True</span></code>. When caching is enabled, the function
+is called once and the result is stored in memory. Subsequent requests for that column return
+the stored value without recomputing it, which improves performance for columns that are expensive
+to compute.</p>
+<p>You will also see a <code class="docutils literal notranslate"><span class="pre">cache_scope</span></code> parameter alongside <code class="docutils literal notranslate"><span class="pre">cache=True</span></code>. This controls <em>when</em> the
+cached value is discarded and recomputed:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">cache_scope=&quot;step&quot;</span></code> — The cached value is discarded after each simulation step finishes.
+The column will be recomputed fresh the next time a step requests it. This is appropriate for
+columns that should not change <em>within</em> a step but may change between steps.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cache_scope=&quot;forever&quot;</span></code> — The value is computed once and never cleared for the duration
+of the simulation run. Use this only for columns that genuinely cannot change (for example,
+a fixed income distribution table).</p></li>
+</ul>
+<p>For example, <code class="docutils literal notranslate"><span class="pre">is_not_married</span></code> and <code class="docutils literal notranslate"><span class="pre">cohabitate</span></code> in <code class="docutils literal notranslate"><span class="pre">household_reorg.py</span></code> both use
+<code class="docutils literal notranslate"><span class="pre">cache_scope=&quot;step&quot;</span></code> because they are read multiple times within a single household
+reorganisation step but must reflect an updated persons table at the start of the next step.</p>
+</section>
+<section id="input-columns-are-overwritten-by-computed-columns">
+<h3>Input columns are overwritten by computed columns<a class="headerlink" href="#input-columns-are-overwritten-by-computed-columns" title="Link to this heading">¶</a></h3>
+<blockquote>
+<div><p><strong>Important:</strong> If a column with the same name exists both in the input data (i.e., it is a
+column in your <code class="docutils literal notranslate"><span class="pre">persons.h5</span></code> or <code class="docutils literal notranslate"><span class="pre">households.h5</span></code> file) <strong>and</strong> as a registered Orca computed
+column, <strong>the computed column takes precedence and the input value is silently ignored</strong>.</p>
+</div></blockquote>
+<p>This is by design in Orca: registered column functions are always considered authoritative. In
+practice this means:</p>
+<ul class="simple">
+<li><p>If your input synthetic population includes a column called <code class="docutils literal notranslate"><span class="pre">hh_size</span></code> in the <code class="docutils literal notranslate"><span class="pre">households</span></code>
+table, it will be <strong>replaced</strong> by the value computed dynamically from the persons table.</p></li>
+<li><p>Similarly, <code class="docutils literal notranslate"><span class="pre">child</span></code>, <code class="docutils literal notranslate"><span class="pre">senior</span></code>, <code class="docutils literal notranslate"><span class="pre">age_group</span></code>, <code class="docutils literal notranslate"><span class="pre">is_head</span></code>, and every other column in the table
+above will override any same-named column in your input files.</p></li>
+</ul>
+<p>This is usually the correct behaviour (computed values are up to date), but it is worth being
+aware of when preparing input data or when debugging unexpected values.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="geoid-columns-and-geographic-assignment">
+<h2>GEOID columns and geographic assignment<a class="headerlink" href="#geoid-columns-and-geographic-assignment" title="Link to this heading">¶</a></h2>
+<p>Several modules in DEMOS create or reorganise households during the simulation (for example,
+when two people get married they may form a new household, or when a young adult moves out they
+start a new household). Whenever a new household is created, DEMOS needs to assign it a
+geographic unit — otherwise the new household would have no location and downstream
+processing steps that depend on geography would fail or produce incorrect results.</p>
+<p>DEMOS handles this through a configurable <strong>GEOID column</strong> setting in each relevant module.
+The GEOID column is the name of the column in the <code class="docutils literal notranslate"><span class="pre">households</span></code> table that stores the geographic
+identifier for each household (for example, a TAZ code, a Census tract GEOID, or a county ID).
+When a new household is created, DEMOS copies the GEOID value from the original household
+(the one the person is splitting from or merging with) into the new household row.</p>
+<section id="modules-that-use-geoid-col">
+<h3>Modules that use <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code><a class="headerlink" href="#modules-that-use-geoid-col" title="Link to this heading">¶</a></h3>
+<p><strong>Household Reorganization</strong> (<code class="docutils literal notranslate"><span class="pre">household_reorg_module_config.geoid_col</span></code>)</p>
+<p>The household reorganisation step creates new households for three events:</p>
+<ul class="simple">
+<li><p>two people who were not heads of household form a new household together (new marriage or
+cohabitation where neither person was a household head);</p></li>
+<li><p>a cohabitating partner leaves to form their own household after a break-up;</p></li>
+<li><p>divorce (one of the partners moves out and starts a new household).</p></li>
+</ul>
+<p>In all three cases the new household inherits the GEOID from the departing person’s original
+household. If <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code> is not set (left as <code class="docutils literal notranslate"><span class="pre">null</span></code>), no geographic assignment is performed
+for newly created households.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[hh_reorg_module_config]</span>
+<span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;taz_id&quot;</span><span class="w">   </span><span class="c1"># name of the column in the households table that holds the geographic ID</span>
+</pre></div>
+</div>
+<p><strong>Kids Moving</strong> (<code class="docutils literal notranslate"><span class="pre">kids_moving_module_config.geoid_col</span></code>)</p>
+<p>When a young adult moves out of the parental household, a new single-person household is created.
+The <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code> setting tells DEMOS which column to copy from the original household to the
+new one. The <code class="docutils literal notranslate"><span class="pre">lcm_county_id</span></code> column is always copied in addition to <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code>.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[kids_moving_module_config]</span>
+<span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;taz_id&quot;</span>
+<span class="n">calibration_target_share</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.12</span>
+<span class="n">calibration_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.01</span>
+<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
+</pre></div>
+</div>
+<p><strong>Household Rebalancing</strong> (<code class="docutils literal notranslate"><span class="pre">hh_rebalancing_module_config.geoid_col</span></code>)</p>
+<p>The rebalancing step duplicates or removes households to match external control totals. The
+<code class="docutils literal notranslate"><span class="pre">geoid_col</span></code> parameter here indicates which column in the <strong>households</strong> table denotes the
+geographic unit over which the control totals are stratified. The control totals table (set
+via <code class="docutils literal notranslate"><span class="pre">control_table</span></code>) must also contain a column with this exact name.</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[hh_rebalancing_module_config]</span>
+<span class="n">control_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hsize_ct&quot;</span>
+<span class="n">control_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hh_size&quot;</span>
+<span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="making-sure-your-geoid-column-is-consistent">
+<h3>Making sure your GEOID column is consistent<a class="headerlink" href="#making-sure-your-geoid-column-is-consistent" title="Link to this heading">¶</a></h3>
+<p>Because GEOID values are inherited (copied from original to new household), consistency of the
+GEOID column in your input data is critical:</p>
+<ol class="arabic simple">
+<li><p>The column name you set in <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code> must exist in the <code class="docutils literal notranslate"><span class="pre">households</span></code> table of your input
+file. If it does not, DEMOS will raise a <code class="docutils literal notranslate"><span class="pre">KeyError</span></code> when the first household-creation event
+occurs.</p></li>
+<li><p>The same column name must be used consistently across all module configurations. Mixing
+<code class="docutils literal notranslate"><span class="pre">&quot;taz_id&quot;</span></code> in one module and <code class="docutils literal notranslate"><span class="pre">&quot;TAZ&quot;</span></code> in another will cause some new households to be missing
+their geographic assignment.</p></li>
+<li><p>For the rebalancing module specifically, the control totals CSV must contain a column with
+the exact same name and values as the GEOID column in the households table. A mismatch will
+cause the rebalancing step to fail with an assertion error.</p></li>
+</ol>
+</section>
+</section>
 </section>
 
         </article>
@@ -383,6 +585,17 @@ This will allow DEMOS to execute calibration on each of the two modules in the e
 <li><a class="reference internal" href="#">Advanced Options for DEMOS</a><ul>
 <li><a class="reference internal" href="#configuration-of-calibration-procedures">Configuration of calibration procedures</a></li>
 <li><a class="reference internal" href="#selection-of-modules-to-run">Selection of modules to run</a></li>
+<li><a class="reference internal" href="#lazily-computed-columns">Lazily computed columns</a><ul>
+<li><a class="reference internal" href="#what-is-a-lazily-computed-column">What is a lazily computed column?</a></li>
+<li><a class="reference internal" href="#caching">Caching</a></li>
+<li><a class="reference internal" href="#input-columns-are-overwritten-by-computed-columns">Input columns are overwritten by computed columns</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#geoid-columns-and-geographic-assignment">GEOID columns and geographic assignment</a><ul>
+<li><a class="reference internal" href="#modules-that-use-geoid-col">Modules that use <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code></a></li>
+<li><a class="reference internal" href="#making-sure-your-geoid-column-is-consistent">Making sure your GEOID column is consistent</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
