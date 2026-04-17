@@ -133,43 +133,40 @@ def validate_persons_table(persons, households):
 @orca.step()
 def normalize_table_dtypes(persons, households):
     """
-    Ensure columns in the persons and households tables have consistent dtypes.
+    Ensure columns in the persons and households tables have consistent dtypes
+    before orca's checkpoint is written.
 
-    Without this step, orca's checkpoint saving triggers a PyTables
-    PerformanceWarning because several object-dtype columns contain mixed
-    Python types (e.g. integers mixed with strings, or NaN mixed into bool
-    columns when new household rows are created).  PyTables falls back to
-    pickling those columns, which is slower and larger on disk.
+    Without this step, PyTables raises a PerformanceWarning because object-dtype
+    columns can contain mixed Python types (e.g. strings + float NaN when new
+    household rows are created with only lcm_county_id set, or integer IDs stored
+    as object). PyTables then falls back to pickling those columns, which is
+    slower and produces larger output files.
 
-    Three categories are addressed:
-    - Integer-like values stored as object  →  cast to float (NaN-safe)
-    - Mixed string/integer columns          →  coerce to float via pd.to_numeric
-    - Bool columns that gained NaN          →  fill NaN with False, cast to bool
+    This step inspects every object-dtype column generically:
+    - All non-null values are strings  → fill NaN with ''
+    - All non-null values are numeric  → cast to float via pd.to_numeric
+    - All non-null values are boolean  → fill NaN with False, cast to bool
     """
+
+    def _normalize(df):
+        for col in df.select_dtypes(include="object").columns:
+            s = df[col]
+            if not s.isna().any():
+                continue  # no NaN, nothing to fix
+            non_null = s.dropna()
+            if len(non_null) == 0:
+                continue  # fully-empty column, skip
+            inferred = pd.api.types.infer_dtype(non_null)
+            if inferred == "string":
+                df[col] = s.fillna("")
+            elif inferred in ("integer", "mixed-integer", "floating"):
+                df[col] = pd.to_numeric(s, errors="coerce")
+            elif inferred == "boolean":
+                df[col] = s.where(s.notna(), other=False).astype(bool)
+
     p = persons.local
     h = households.local
-
-    # --- persons ---------------------------------------------------------
-    # Integer IDs stored as object (e.g. -1 sentinel mixed with zone ints)
-    for col in ["school_zone_id", "work_zone_id"]:
-        if col in p.columns:
-            p[col] = pd.to_numeric(p[col], errors="coerce")
-
-    # --- households ------------------------------------------------------
-    # Columns whose input data already mixes strings and ints
-    for col in ["recent_mover", "tenure"]:
-        if col in h.columns:
-            h[col] = pd.to_numeric(h[col], errors="coerce")
-
-    # Numeric columns stored as object
-    for col in ["hispanic_status_of_head", "serialno"]:
-        if col in h.columns:
-            h[col] = pd.to_numeric(h[col], errors="coerce")
-
-    # Bool columns that acquire NaN when new household rows are inserted
-    for col in ["hh_age_of_head", "hh_seniors", "hh_children"]:
-        if col in h.columns and h[col].dtype == object:
-            h[col] = h[col].fillna(False).astype(bool)
-
+    _normalize(p)
+    _normalize(h)
     persons.local = p
     households.local = h

@@ -287,7 +287,7 @@ def hh_head_race_id(persons_grouped_household):
 
 
 @orca.column(table_name="households")
-def hh_size_str(persons_grouped_household):
+def hh_size(persons_grouped_household):
     agg_df = persons_grouped_household.size()
     return agg_df.map({1: "one", 2: "two", 3: "three"}).fillna("four or more")
 
