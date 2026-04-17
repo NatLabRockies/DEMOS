@@ -359,6 +359,29 @@
         <span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">age_intervals</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">age_labels</span><span class="p">,</span> <span class="n">include_lowest</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="hh_age_head">
+<a class="viewcode-back" href="../../../api/aging_module.html#demos.models.aging.hh_age_head">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_head</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the age of the head of each household.</span>
+
+<span class="sd">    Identifies the head of household (where `relate` == 0) and returns their age for each household.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    persons : orca.Table</span>
+<span class="sd">        The persons table containing `age`, `relate`, and `household_id` columns.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    pandas.Series</span>
+<span class="sd">        Age of the head of household, indexed by household_id.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">heads</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">heads</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">households</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">]</span></div>
+
 </pre></div>
         </article>
       </div>

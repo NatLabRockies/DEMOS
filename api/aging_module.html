@@ -344,6 +344,24 @@ defined as having an age greater than or equal to the threshold specified in the
 </section>
 <section id="module-demos.models.aging">
 <span id="other-functions"></span><h2>Other Functions<a class="headerlink" href="#module-demos.models.aging" title="Link to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.aging.hh_age_head">
+<span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">hh_age_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#hh_age_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.hh_age_head" title="Link to this definition">¶</a></dt>
+<dd><p>Get the age of the head of each household.</p>
+<p>Identifies the head of household (where <cite>relate</cite> == 0) and returns their age for each household.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing <cite>age</cite>, <cite>relate</cite>, and <cite>household_id</cite> columns.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Age of the head of household, indexed by household_id.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>pandas.Series</p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 </section>
 
@@ -413,7 +431,10 @@ defined as having an age greater than or equal to the threshold specified in the
 <li><a class="reference internal" href="#demos.models.aging.age_group"><code class="docutils literal notranslate"><span class="pre">age_group()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-demos.models.aging">Other Functions</a></li>
+<li><a class="reference internal" href="#module-demos.models.aging">Other Functions</a><ul>
+<li><a class="reference internal" href="#demos.models.aging.hh_age_head"><code class="docutils literal notranslate"><span class="pre">hh_age_head()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

@@ -324,11 +324,11 @@
 
     <span class="c1"># Updating working status and income</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_exit_workforce</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_exit_workforce</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="c1"># persons.local.loc[reindexed_exit_workforce == 1, &quot;earning&quot;] = 0</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
-        <span class="n">persons</span><span class="p">[</span><span class="s2">&quot;new_earning&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">reindexed_remain_unemployed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
-    <span class="p">)</span>
+    <span class="c1"># persons.local.loc[reindexed_remain_unemployed == 0, &quot;earning&quot;] = (</span>
+    <span class="c1">#     persons[&quot;new_earning&quot;].loc[reindexed_remain_unemployed == 0].values</span>
+    <span class="c1"># )</span>
 
     <span class="n">log_execution_time</span><span class="p">(</span><span class="n">start_time</span><span class="p">,</span> <span class="n">orca</span><span class="o">.</span><span class="n">get_injectable</span><span class="p">(</span><span class="s2">&quot;year&quot;</span><span class="p">),</span> <span class="n">STEP_NAME</span><span class="p">)</span></div>
 
@@ -568,33 +568,30 @@
 
 
 
-<div class="viewcode-block" id="income">
-<a class="viewcode-back" href="../../../api/employment_module.html#demos.models.employment.income">[docs]</a>
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">income</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Aggregate household income from person-level earnings.</span>
+<span class="c1"># @orca.column(table_name=&quot;households&quot;)</span>
+<span class="c1"># def income(persons):</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     Aggregate household income from person-level earnings.</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    persons : orca.Table</span>
-<span class="sd">        The persons table.</span>
+<span class="c1">#     Parameters</span>
+<span class="c1">#     ----------</span>
+<span class="c1">#     persons : orca.Table</span>
+<span class="c1">#         The persons table.</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pandas.Series</span>
-<span class="sd">        Total income per household.</span>
+<span class="c1">#     Returns</span>
+<span class="c1">#     -------</span>
+<span class="c1">#     pandas.Series</span>
+<span class="c1">#         Total income per household.</span>
 
-<span class="sd">    Notes</span>
-<span class="sd">    -----</span>
-<span class="sd">    This is for `HOUSEHOLDS` table</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="p">(</span>
-        <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">([</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;earning&quot;</span><span class="p">])</span>
-        <span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span>
-        <span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s2">&quot;earning&quot;</span><span class="p">]</span>
-    <span class="p">)</span></div>
-
+<span class="c1">#     Notes</span>
+<span class="c1">#     -----</span>
+<span class="c1">#     This is for `HOUSEHOLDS` table</span>
+<span class="c1">#     &quot;&quot;&quot;</span>
+<span class="c1">#     return (</span>
+<span class="c1">#         persons.to_frame([&quot;household_id&quot;, &quot;earning&quot;])</span>
+<span class="c1">#         .groupby(&quot;household_id&quot;)</span>
+<span class="c1">#         .sum()[&quot;earning&quot;]</span>
+<span class="c1">#     )</span>
 
 
 <div class="viewcode-block" id="income_dist">
