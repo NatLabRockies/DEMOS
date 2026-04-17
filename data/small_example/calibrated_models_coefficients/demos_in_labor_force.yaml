@@ -13,7 +13,7 @@ saved_object:
     - 0.013
     - -0.205
     - -0.175
-  model_expression: stay_out ~ agebin6_labor + agebin3_labor + agebin4_labor + agebin5_labor + gender2 + edubin2 + edubin3 + race_blk + race_asn + race_other + 1
+  model_expression: stay_out ~ age_emp_20_40 + age_emp_41_50 + age_emp_51_70 + age_emp_70plus + sex_female + edu_hs_ged + edu_college_plus + race_black + race_asian_pi + race_other + 1
   name: enter_labor_force
   out_column: null
   out_filters:

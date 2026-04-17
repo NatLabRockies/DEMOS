@@ -368,3 +368,31 @@ def income_dist(persons):
     )
     income_dist = pd.concat([income_dist, mu, sigma], axis=1)
     return income_dist
+
+
+# -----------------------------------------------------------------------------------------
+# EMPLOYMENT MODEL AGE BIN COLUMNS (moved from variables.py)
+# -----------------------------------------------------------------------------------------
+
+@orca.column("persons")
+def age_emp_20_40(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(20, 40, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_emp_41_50(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(41, 50, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_emp_51_70(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(51, 70, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_emp_70plus(persons):
+    p = persons.to_frame(columns=["age"])
+    return p.gt(70) * 1

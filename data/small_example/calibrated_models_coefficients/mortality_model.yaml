@@ -15,8 +15,8 @@ saved_object:
     - -0.642
     - 0.779
     - 0.546
-    model_expression: dead ~ agebin1_new + agebin2_new + agebin3_new + agebin4_new + agebin5_new 
-        + gender2 + employbin2 + employbin3 + edubin2 + edubin3 + marital25 + marital34 + 1
+    model_expression: dead ~ age_mort_21_40 + age_mort_41_50 + age_mort_51_70 + age_mort_71_90 + age_mort_90plus
+        + sex_female + emp_idle_under60 + emp_idle_over60 + edu_hs_ged + edu_college_plus + mar_widowed_or_never + mar_div_or_sep + 1
     name: mortality
     out_column: null
     out_filters: null

@@ -13,8 +13,8 @@ saved_object:
   - 0.7375
   - 0.97831
   - 0.30529
-  model_expression: divorced ~ min_agebin2 + min_agebin3 + min_agebin4 + income_bin1
-    + income_bin2 + income_bin4 + income_bin5 + top_edu_bin2 + top_edu_bin3 + fam_work2
+  model_expression: divorced ~ hh_age_min_bin2 + hh_age_min_bin3 + hh_age_min_bin4 + hh_income_bin1
+    + hh_income_bin2 + hh_income_bin4 + hh_income_bin5 + hh_edu_top_bin2 + hh_edu_top_bin3 + hh_fam_work2
     + 1
   name: divorce
   out_column: null

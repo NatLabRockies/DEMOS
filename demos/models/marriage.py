@@ -51,7 +51,8 @@ def update_married_households_random(
     ## Selecting individuals for marriage and cohabitation
     female_newmarried = (
         persons.local.loc[(married_reindexed == 2) & female_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_weddings)
@@ -59,7 +60,8 @@ def update_married_households_random(
     )
     male_newmarried = (
         persons.local.loc[(married_reindexed == 2) & male_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_weddings)
@@ -67,7 +69,8 @@ def update_married_households_random(
     )
     female_newcohab = (
         persons.local.loc[(married_reindexed == 1) & female_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_newcohabs)
@@ -75,7 +78,8 @@ def update_married_households_random(
     )
     male_newcohab = (
         persons.local.loc[(married_reindexed == 1) & male_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_newcohabs)
@@ -95,7 +99,10 @@ def update_married_households_random(
     newmarried["rnd"] = np.random.random(len(newmarried))
 
     newmarried.sort_values(
-        by=["hh_group", "earning", "rnd"], ascending=[True, False, True], inplace=True
+        by=
+        # ["hh_group", "earning", "rnd"]
+        ["hh_group", "rnd"]
+        , ascending=[True, True], inplace=True
     )
     newmarried["new_relate"] = np.arange(len(newmarried)) % 2  # [0, 1, 0, 1, ...]
     newmarried["did_marry"] = True
@@ -112,7 +119,10 @@ def update_married_households_random(
     newcohab["rnd"] = np.random.random(len(newcohab))
 
     newcohab.sort_values(
-        by=["hh_group", "earning", "rnd"], ascending=[True, False, True], inplace=True
+        by=
+        # ["hh_group", "earning", "rnd"]
+        ["hh_group", "rnd"]
+        , ascending=[True, True], inplace=True
     )
     newcohab["new_relate"] = (np.arange(len(newcohab)) % 2) * 13  # [0, 13, 0, 13, ...]
     newcohab["did_marry"] = False

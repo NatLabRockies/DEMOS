@@ -14,3 +14,4 @@ DEMOS documentation
    api/modules
    pages/configuration
    pages/advanced_configuration.md
+   pages/variables.md

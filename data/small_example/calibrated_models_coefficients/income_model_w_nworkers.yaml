@@ -25,11 +25,11 @@ saved_object:
     - -0.15350612
     - -0.17286581
     - -0.27394566
-    model_expression: income ~ hh_age_head + true_hh_size + true_hh_workers + not_met_area + income_model_edu_bin1 + income_model_edu_bin2 +
-      income_model_edu_bin3 + job_industry_bin1 + job_industry_bin2 + job_industry_bin3 + 
+    model_expression: income ~ hh_head_age + true_hh_size + true_hh_workers + not_met_area + hh_head_edu_bin1 + hh_head_edu_bin2 +
+      hh_head_edu_bin3 + job_industry_bin1 + job_industry_bin2 + job_industry_bin3 + 
       job_occupation_bin1 + job_occupation_bin2 + job_occupation_bin3 + 
       state_quart_2 + state_quart_3 + state_quart_4 +
-      head_race_blk + head_race3 + head_race_asian + head_race_hawaiian + head_race5 + 1
+      hh_head_race_black + hh_head_race_native_am + hh_head_race_asian + hh_head_race_hawaiian + hh_head_race_acs_other + 1
     name: income_nworkers
     out_column: null
     out_filters: null

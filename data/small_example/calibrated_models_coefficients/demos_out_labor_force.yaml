@@ -11,7 +11,7 @@ saved_object:
     - 0.3530349
     - -0.5569076
     - -0.9928796
-  model_expression: leaving_workforce ~ agebin6_labor + agebin3_labor + agebin4_labor + agebin5_labor + gender2 + edubin2 + edubin3 + 1
+  model_expression: leaving_workforce ~ age_emp_20_40 + age_emp_41_50 + age_emp_51_70 + age_emp_70plus + sex_female + edu_hs_ged + edu_college_plus + 1
   name: exit_labor_force
   out_column: null
   out_filters:

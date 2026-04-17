@@ -1,20 +1,20 @@
 # Global config
 random_seed = 100
 base_year = 2010
-forecast_year = 2019
+forecast_year = 2012
 calibrated_models_dir = "../data/small_example/calibrated_models_coefficients/"
 inconsistent_persons_table_behavior = "fix"
 modules = [
-    # "aging",
-    # "fatality",
-    # "household_reorg",
-    # "kids_moving",
-    # "birth",
-    # "education",
-    # "employment",
-    "income"
-    # "income_adjustment"
-    # "household_rebalancing",
+    "aging",
+    "fatality",
+    "household_reorg",
+    "kids_moving",
+    "birth",
+    "education",
+    "employment",
+    "income",
+    # "income_adjustment",
+    "household_rebalancing"
 ]
 output_tables = [
     "persons",

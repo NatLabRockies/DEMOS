@@ -8,7 +8,7 @@ saved_object:
     - 0.847
     - 1.754
     - 1.417
-    model_expression: birth ~ hh_birth_agebin1 + hh_birth_agebin2 + fsize_bin23 + fsize_bingt3 + 1
+    model_expression: birth ~ hh_birth_age_lt27 + hh_birth_age_27_35 + hh_fsize_bin23 + hh_fsize_bingt3 + 1
     name: birth
     out_column: birth
     out_filters: null

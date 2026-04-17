@@ -69,18 +69,18 @@ def not_met_area(households):
 # Education variables
 # TODO: This numbers for education are not updated beyon 19 in the education model
 @orca.column("households")
-def income_model_edu_bin1(households, persons):
+def hh_head_edu_bin1(households, persons):
     # Get the persons row for the head of every household (head is when relate == 0)
     heads = persons.local[persons["relate"] == 0]
     return heads.set_index("household_id").loc[households.index, "edu"].isin([15, 16, 17]).astype(int)
 
 @orca.column("households")
-def income_model_edu_bin2(households, persons):
+def hh_head_edu_bin2(households, persons):
     heads = persons.local[persons["relate"] == 0]
     return (heads.set_index("household_id").loc[households.index, "edu"] == 18).astype(int)
 
 @orca.column("households")
-def income_model_edu_bin3(households, persons):
+def hh_head_edu_bin3(households, persons):
     heads = persons.local[persons["relate"] == 0]
     return (heads.set_index("household_id").loc[households.index, "edu"] >= 19).astype(int)
 
@@ -147,26 +147,26 @@ def state_quart_4(households):
     return (households["state_quartile"] == 4).astype(int)
 
 @orca.column("households")
-def head_race_blk(households, persons):
-    heads = persons.to_frame(["household_id", "race_blk"])[persons["relate"] == 0]
-    return (heads.set_index("household_id").loc[households.index, "race_blk"]).astype(int)
+def hh_head_race_black(households, persons):
+    heads = persons.to_frame(["household_id", "race_black"])[persons["relate"] == 0]
+    return (heads.set_index("household_id").loc[households.index, "race_black"]).astype(int)
 
 @orca.column("households")
-def head_race3(households, persons):
-    heads = persons.to_frame(["household_id", "race3"])[persons["relate"] == 0]
-    return (heads.set_index("household_id").loc[households.index, "race3"]).astype(int)
+def hh_head_race_native_am(households, persons):
+    heads = persons.to_frame(["household_id", "race_native_am"])[persons["relate"] == 0]
+    return (heads.set_index("household_id").loc[households.index, "race_native_am"]).astype(int)
 
 @orca.column("households")
-def head_race_asian(households, persons):
+def hh_head_race_asian(households, persons):
     heads = persons.to_frame(["household_id", "race_asian"])[persons["relate"] == 0]
     return (heads.set_index("household_id").loc[households.index, "race_asian"]).astype(int)
 
 @orca.column("households")
-def head_race_hawaiian(households, persons):
+def hh_head_race_hawaiian(households, persons):
     heads = persons.to_frame(["household_id", "race_hawaiian"])[persons["relate"] == 0]
     return (heads.set_index("household_id").loc[households.index, "race_hawaiian"]).astype(int)
 
 @orca.column("households")
-def head_race5(households, persons):
-    heads = persons.to_frame(["household_id", "race5"])[persons["relate"] == 0]
-    return (heads.set_index("household_id").loc[households.index, "race5"]).astype(int)
+def hh_head_race_acs_other(households, persons):
+    heads = persons.to_frame(["household_id", "race_acs_other"])[persons["relate"] == 0]
+    return (heads.set_index("household_id").loc[households.index, "race_acs_other"]).astype(int)

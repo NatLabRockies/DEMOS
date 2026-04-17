@@ -102,7 +102,7 @@ def age_group(data="persons.age"):
     ).astype(str)
 
 @orca.column("households")
-def hh_age_head(persons, households):
+def hh_head_age(persons, households):
     """
     Get the age of the head of each household.
 
