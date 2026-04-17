@@ -13,7 +13,8 @@ modules = [
     "birth",
     "education",
     "household_rebalancing",
-    "income_adjustment"
+    "income_adjustment",
+    "normalize_table_dtypes",
 ]
 output_tables = [
     "persons",

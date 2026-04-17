@@ -14,7 +14,8 @@ modules = [
     "employment",
     "income",
     # "income_adjustment",
-    "household_rebalancing"
+    "household_rebalancing",
+    "normalize_table_dtypes",
 ]
 output_tables = [
     "persons",

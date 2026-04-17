@@ -1,4 +1,5 @@
 import orca
+import pandas as pd
 from config import DEMOSConfig, get_config
 from loguru import logger
 
@@ -127,3 +128,48 @@ def validate_persons_table(persons, households):
             persons.local.loc[cohabitating_people_married_idx, "MAR"] = 0
 
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
+
+
+@orca.step()
+def normalize_table_dtypes(persons, households):
+    """
+    Ensure columns in the persons and households tables have consistent dtypes.
+
+    Without this step, orca's checkpoint saving triggers a PyTables
+    PerformanceWarning because several object-dtype columns contain mixed
+    Python types (e.g. integers mixed with strings, or NaN mixed into bool
+    columns when new household rows are created).  PyTables falls back to
+    pickling those columns, which is slower and larger on disk.
+
+    Three categories are addressed:
+    - Integer-like values stored as object  →  cast to float (NaN-safe)
+    - Mixed string/integer columns          →  coerce to float via pd.to_numeric
+    - Bool columns that gained NaN          →  fill NaN with False, cast to bool
+    """
+    p = persons.local
+    h = households.local
+
+    # --- persons ---------------------------------------------------------
+    # Integer IDs stored as object (e.g. -1 sentinel mixed with zone ints)
+    for col in ["school_zone_id", "work_zone_id"]:
+        if col in p.columns:
+            p[col] = pd.to_numeric(p[col], errors="coerce")
+
+    # --- households ------------------------------------------------------
+    # Columns whose input data already mixes strings and ints
+    for col in ["recent_mover", "tenure"]:
+        if col in h.columns:
+            h[col] = pd.to_numeric(h[col], errors="coerce")
+
+    # Numeric columns stored as object
+    for col in ["hispanic_status_of_head", "serialno"]:
+        if col in h.columns:
+            h[col] = pd.to_numeric(h[col], errors="coerce")
+
+    # Bool columns that acquire NaN when new household rows are inserted
+    for col in ["hh_age_of_head", "hh_seniors", "hh_children"]:
+        if col in h.columns and h[col].dtype == object:
+            h[col] = h[col].fillna(False).astype(bool)
+
+    persons.local = p
+    households.local = h

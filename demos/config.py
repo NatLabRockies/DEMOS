@@ -145,6 +145,7 @@ class DEMOSConfig(BaseModel):
                 "education_model",
                 "household_rebalancing",
                 "update_income",
+                "normalize_table_dtypes",
             ]
 
     @model_validator(mode="after")
