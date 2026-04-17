@@ -208,6 +208,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="configuration_module.html">DEMOS Configuration Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/calibration.html">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -415,19 +416,119 @@ a household with a cohabitating partner</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.household_reorg.hh_race_of_head">
-<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_race_of_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'households.hh_race_id_of_head'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_race_of_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_race_of_head" title="Link to this definition">¶</a></dt>
-<dd><p>Maps <cite>households.hh_race_id_of_head</cite>, which is a numeric value, into ‘white’, ‘black’, ‘asian’ or other</p>
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_head_race_str">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_head_race_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'households.hh_head_race_id'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_head_race_str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_head_race_str" title="Link to this definition">¶</a></dt>
+<dd><p>Maps <cite>households.hh_head_race_id</cite> (numeric race_id of head) to a string: ‘white’, ‘black’, ‘asian’, or ‘other’.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.household_reorg.hh_race_id_of_head">
-<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_race_id_of_head</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons_grouped_household</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_race_id_of_head"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_race_id_of_head" title="Link to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_head_race_id">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_head_race_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons_grouped_household</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_head_race_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_head_race_id" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="demos.models.household_reorg.hh_size">
 <span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons_grouped_household</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_size" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_n_children">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_n_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_n_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_n_children" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_income_bin1">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_income_bin1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_income_bin1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_income_bin1" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_income_bin2">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_income_bin2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_income_bin2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_income_bin2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_income_bin3">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_income_bin3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_income_bin3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_income_bin3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_income_bin4">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_income_bin4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_income_bin4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_income_bin4" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_income_bin5">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_income_bin5</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_income_bin5"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_income_bin5" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_edu_top">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_edu_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_edu_top"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_edu_top" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_edu_top_bin2">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_edu_top_bin2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_edu_top_bin2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_edu_top_bin2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_edu_top_bin3">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_edu_top_bin3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_edu_top_bin3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_edu_top_bin3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_fam_work">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_fam_work</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_fam_work"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_fam_work" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_fam_work2">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_fam_work2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_fam_work2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_fam_work2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_avg">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_avg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_avg"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_avg" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_avg_bin2">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_avg_bin2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_avg_bin2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_avg_bin2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_avg_bin3">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_avg_bin3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_avg_bin3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_avg_bin3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_avg_bin4">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_avg_bin4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_avg_bin4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_avg_bin4" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_min">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_min" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_min_bin2">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_min_bin2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_min_bin2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_min_bin2" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_min_bin3">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_min_bin3</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_min_bin3"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_min_bin3" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_age_min_bin4">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_age_min_bin4</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_age_min_bin4"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_age_min_bin4" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.household_reorg.hh_head_race_white">
+<span class="sig-prename descclassname"><span class="pre">demos.models.household_reorg.</span></span><span class="sig-name descname"><span class="pre">hh_head_race_white</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/household_reorg.html#hh_head_race_white"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.household_reorg.hh_head_race_white" title="Link to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
@@ -635,9 +736,29 @@ Uses a simple gradient-based optimization with optional momentum.</p>
 <li><a class="reference internal" href="#demos.models.household_reorg.age_head"><code class="docutils literal notranslate"><span class="pre">age_head()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.household_reorg.hispanic_head"><code class="docutils literal notranslate"><span class="pre">hispanic_head()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.household_reorg.gt2"><code class="docutils literal notranslate"><span class="pre">gt2()</span></code></a></li>
-<li><a class="reference internal" href="#demos.models.household_reorg.hh_race_of_head"><code class="docutils literal notranslate"><span class="pre">hh_race_of_head()</span></code></a></li>
-<li><a class="reference internal" href="#demos.models.household_reorg.hh_race_id_of_head"><code class="docutils literal notranslate"><span class="pre">hh_race_id_of_head()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_head_race_str"><code class="docutils literal notranslate"><span class="pre">hh_head_race_str()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_head_race_id"><code class="docutils literal notranslate"><span class="pre">hh_head_race_id()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.household_reorg.hh_size"><code class="docutils literal notranslate"><span class="pre">hh_size()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_n_children"><code class="docutils literal notranslate"><span class="pre">hh_n_children()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_income_bin1"><code class="docutils literal notranslate"><span class="pre">hh_income_bin1()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_income_bin2"><code class="docutils literal notranslate"><span class="pre">hh_income_bin2()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_income_bin3"><code class="docutils literal notranslate"><span class="pre">hh_income_bin3()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_income_bin4"><code class="docutils literal notranslate"><span class="pre">hh_income_bin4()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_income_bin5"><code class="docutils literal notranslate"><span class="pre">hh_income_bin5()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_edu_top"><code class="docutils literal notranslate"><span class="pre">hh_edu_top()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_edu_top_bin2"><code class="docutils literal notranslate"><span class="pre">hh_edu_top_bin2()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_edu_top_bin3"><code class="docutils literal notranslate"><span class="pre">hh_edu_top_bin3()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_fam_work"><code class="docutils literal notranslate"><span class="pre">hh_fam_work()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_fam_work2"><code class="docutils literal notranslate"><span class="pre">hh_fam_work2()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_avg"><code class="docutils literal notranslate"><span class="pre">hh_age_avg()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_avg_bin2"><code class="docutils literal notranslate"><span class="pre">hh_age_avg_bin2()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_avg_bin3"><code class="docutils literal notranslate"><span class="pre">hh_age_avg_bin3()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_avg_bin4"><code class="docutils literal notranslate"><span class="pre">hh_age_avg_bin4()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_min"><code class="docutils literal notranslate"><span class="pre">hh_age_min()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_min_bin2"><code class="docutils literal notranslate"><span class="pre">hh_age_min_bin2()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_min_bin3"><code class="docutils literal notranslate"><span class="pre">hh_age_min_bin3()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_age_min_bin4"><code class="docutils literal notranslate"><span class="pre">hh_age_min_bin4()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.household_reorg.hh_head_race_white"><code class="docutils literal notranslate"><span class="pre">hh_head_race_white()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.household_reorg.simultaneous_calibration"><code class="docutils literal notranslate"><span class="pre">simultaneous_calibration()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.household_reorg.run_models"><code class="docutils literal notranslate"><span class="pre">run_models()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.household_reorg.print_marital_count"><code class="docutils literal notranslate"><span class="pre">print_marital_count()</span></code></a></li>

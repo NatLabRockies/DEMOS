@@ -207,6 +207,7 @@
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/configuration_module.html">DEMOS Configuration Structure</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/calibration.html">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -436,6 +437,140 @@
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">calibrate_iteration</span><span class="si">}</span><span class="s2"> iteration error: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">kids_moving</span>
+
+
+<span class="c1"># -----------------------------------------------------------------------------------------</span>
+<span class="c1"># KIDS MOVE MODEL COLUMNS (moved from variables.py)</span>
+<span class="c1"># -----------------------------------------------------------------------------------------</span>
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">age_km_16_18</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">age_km_19_20</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">19</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">age_km_21_25</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">age_km_26_30</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">26</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">age_km_30plus</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
+
+
+<span class="c1"># emp_idle_under60 × age_km cross-products</span>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_under60_age_km_19_20</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_19_20&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_19_20&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_under60_age_km_21_25</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_21_25&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_21_25&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_under60_age_km_26_30</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_26_30&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_26_30&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_under60_age_km_30plus</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_30plus&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_under60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_30plus&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># emp_idle_over60 × age_km cross-products</span>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_over60_age_km_19_20</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_19_20&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_19_20&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_over60_age_km_21_25</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_21_25&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_21_25&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_over60_age_km_26_30</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_26_30&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_26_30&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">emp_idle_over60_age_km_30plus</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">,</span> <span class="s2">&quot;age_km_30plus&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;emp_idle_over60&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_30plus&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># edu_hs_ged × age_km cross-products</span>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_hs_ged_age_km_19_20</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_19_20&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_19_20&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_hs_ged_age_km_21_25</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_21_25&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_21_25&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_hs_ged_age_km_26_30</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_26_30&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_26_30&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_hs_ged_age_km_30plus</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_30plus&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_30plus&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_hs_ged&quot;</span><span class="p">]</span>
+
+
+<span class="c1"># edu_college_plus × age_km cross-products</span>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_college_plus_age_km_19_20</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_19_20&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_college_plus&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_19_20&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_college_plus&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_college_plus_age_km_21_25</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_21_25&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_college_plus&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_21_25&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_college_plus&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_college_plus_age_km_26_30</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_26_30&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_college_plus&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_26_30&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_college_plus&quot;</span><span class="p">]</span>
+
+
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">edu_college_plus_age_km_30plus</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age_km_30plus&quot;</span><span class="p">,</span> <span class="s2">&quot;edu_college_plus&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;age_km_30plus&quot;</span><span class="p">]</span> <span class="o">*</span> <span class="n">p</span><span class="p">[</span><span class="s2">&quot;edu_college_plus&quot;</span><span class="p">]</span>
 </pre></div>
         </article>
       </div>
