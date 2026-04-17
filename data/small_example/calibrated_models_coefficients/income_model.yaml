@@ -16,21 +16,25 @@ saved_object:
     - 0.6786951
     - 0.4040705
     - 0.3016074
+    - 0.027432
+    - 0.026867
+    - 0.1687073
     - -0.2822124
     - -0.1492966
     - -0.1573647
     - -0.1559694
     - -0.258431
-    model_expression: income ~ age + true_hh_size + not_met_area + income_model_edu_bin1 + income_model_edu_bin2 +
+    model_expression: income ~ hh_age_head + true_hh_size + not_met_area + income_model_edu_bin1 + income_model_edu_bin2 +
       income_model_edu_bin3 + job_industry_bin1 + job_industry_bin2 + job_industry_bin3 + 
-      job_occupation_bin1 + job_occupation_bin2 + job_occupation_bin3 + race_blk + race3 + race_asian +
-      race_hawaiian + race5 + 1
+      job_occupation_bin1 + job_occupation_bin2 + job_occupation_bin3 +
+      state_quart_2 + state_quart_3 + state_quart_4 +
+      race_blk + race3 + race_asian + race_hawaiian + race5 + 1
     name: income
     out_column: null
     out_filters: null
     out_tables: null
     out_transform: null
-    tables: persons
+    tables: households
     summary_table: null
     tags: []
     template: RegressionStep

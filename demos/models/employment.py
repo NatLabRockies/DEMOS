@@ -75,11 +75,11 @@ def employment(persons):
 
     # Updating working status and income
     persons.local.loc[reindexed_exit_workforce == 1, "worker"] = 0
-    persons.local.loc[reindexed_exit_workforce == 1, "earning"] = 0
+    # persons.local.loc[reindexed_exit_workforce == 1, "earning"] = 0
     persons.local.loc[reindexed_remain_unemployed == 0, "worker"] = 1
-    persons.local.loc[reindexed_remain_unemployed == 0, "earning"] = (
-        persons["new_earning"].loc[reindexed_remain_unemployed == 0].values
-    )
+    # persons.local.loc[reindexed_remain_unemployed == 0, "earning"] = (
+    #     persons["new_earning"].loc[reindexed_remain_unemployed == 0].values
+    # )
 
     log_execution_time(start_time, orca.get_injectable("year"), STEP_NAME)
 
@@ -300,30 +300,30 @@ def hh_workers(persons):
     )
 
 
-@orca.column(table_name="households")
-def income(persons):
-    """
-    Aggregate household income from person-level earnings.
+# @orca.column(table_name="households")
+# def income(persons):
+#     """
+#     Aggregate household income from person-level earnings.
 
-    Parameters
-    ----------
-    persons : orca.Table
-        The persons table.
+#     Parameters
+#     ----------
+#     persons : orca.Table
+#         The persons table.
 
-    Returns
-    -------
-    pandas.Series
-        Total income per household.
+#     Returns
+#     -------
+#     pandas.Series
+#         Total income per household.
 
-    Notes
-    -----
-    This is for `HOUSEHOLDS` table
-    """
-    return (
-        persons.to_frame(["household_id", "earning"])
-        .groupby("household_id")
-        .sum()["earning"]
-    )
+#     Notes
+#     -----
+#     This is for `HOUSEHOLDS` table
+#     """
+#     return (
+#         persons.to_frame(["household_id", "earning"])
+#         .groupby("household_id")
+#         .sum()["earning"]
+#     )
 
 
 @orca.table(cache=True, cache_scope="forever")

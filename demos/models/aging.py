@@ -100,3 +100,23 @@ def age_group(data="persons.age"):
     return pd.cut(
         data, bins=age_intervals, labels=age_labels, include_lowest=True
     ).astype(str)
+
+@orca.column("households")
+def hh_age_head(persons, households):
+    """
+    Get the age of the head of each household.
+
+    Identifies the head of household (where `relate` == 0) and returns their age for each household.
+
+    Parameters
+    ----------
+    persons : orca.Table
+        The persons table containing `age`, `relate`, and `household_id` columns.
+
+    Returns
+    -------
+    pandas.Series
+        Age of the head of household, indexed by household_id.
+    """
+    heads = persons.local[persons["relate"] == 0]
+    return heads.set_index("household_id").loc[households.index, "age"]
