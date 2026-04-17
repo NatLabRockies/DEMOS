@@ -28,7 +28,7 @@ saved_object:
       income_model_edu_bin3 + job_industry_bin1 + job_industry_bin2 + job_industry_bin3 + 
       job_occupation_bin1 + job_occupation_bin2 + job_occupation_bin3 +
       state_quart_2 + state_quart_3 + state_quart_4 +
-      race_blk + race3 + race_asian + race_hawaiian + race5 + 1
+      head_race_blk + head_race3 + head_race_asian + head_race_hawaiian + head_race5 + 1
     name: income
     out_column: null
     out_filters: null
