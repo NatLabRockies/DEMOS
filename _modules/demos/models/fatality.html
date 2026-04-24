@@ -450,6 +450,7 @@
 <span class="c1"># MORTALITY MODEL AGE BIN COLUMNS (moved from variables.py)</span>
 <span class="c1"># -----------------------------------------------------------------------------------------</span>
 
+
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">age_mort_21_40</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
     <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>

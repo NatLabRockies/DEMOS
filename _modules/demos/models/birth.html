@@ -397,6 +397,7 @@
 <span class="c1"># BIRTH MODEL COLUMNS (moved from variables.py)</span>
 <span class="c1"># -----------------------------------------------------------------------------------------</span>
 
+
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">hh_n_persons</span><span class="p">(</span><span class="n">households</span><span class="p">,</span> <span class="n">persons</span><span class="p">):</span>
     <span class="n">counts</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
