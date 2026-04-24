@@ -6,14 +6,15 @@ calibrated_models_dir = "../data/sf_bay_example/calibrated_models_coefficients/"
 inconsistent_persons_table_behavior = "fix"
 modules = [
     "aging",
-    "employment",
+    "fatality",
     "household_reorg",
     "kids_moving",
-    "fatality",
     "birth",
     "education",
-    "household_rebalancing",
+    "employment",
+    "income",
     "income_adjustment",
+    "household_rebalancing",
     "normalize_table_dtypes",
 ]
 output_tables = [
@@ -42,12 +43,6 @@ filepath = "../data/sf_bay_example/custom_mpo_06197001_model_data.h5"
 h5_key = "households"
 
 ## Other static data tables
-[[tables]]
-file_type = "csv"
-table_name = "relational_adjustment_mapping"
-filepath = "../data/sf_bay_example/relmap_06197001.csv"
-index_col = "index"
-
 [[tables]]
 file_type = "csv"
 table_name = "income_rates"

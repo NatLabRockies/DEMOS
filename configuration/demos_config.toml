@@ -1,7 +1,7 @@
 # Global config
 random_seed = 100
 base_year = 2010
-forecast_year = 2012
+forecast_year = 2019
 calibrated_models_dir = "../data/small_example/calibrated_models_coefficients/"
 inconsistent_persons_table_behavior = "fix"
 modules = [
@@ -13,7 +13,7 @@ modules = [
     "education",
     "employment",
     "income",
-    # "income_adjustment",
+    "income_adjustment",
     "household_rebalancing",
     "normalize_table_dtypes",
 ]
@@ -35,22 +35,16 @@ initialize_empty_tables = [
 [[tables]]
 file_type = "h5"
 table_name = "persons"
-filepath = "../data/small_example/small_example_tables.h5" # custom_mpo_06197001_model_data_small.h5,  minihh.h5, custom_mpo_06197001_model_data_small_stratHH.h5, custom_mpo_06197001_model_data_hh0.05.h5, countyNM.h5
+filepath = "../data/small_example/small_example_tables.h5"
 h5_key = "persons"
 
 [[tables]]
 file_type = "h5"
 table_name = "households"
-filepath = "../data/small_example/small_example_tables.h5" # custom_mpo_06197001_model_data_small.h5,  minihh.h5, custom_mpo_06197001_model_data_hh0.05.h5, custom_mpo_06197001_model_data_county1, countyNM.h5
+filepath = "../data/small_example/small_example_tables.h5"
 h5_key = "households"
 
 ## Other static data tables
-[[tables]]
-file_type = "csv"
-table_name = "relational_adjustment_mapping"
-filepath = "../data/small_example/relmap_06197001.csv"
-index_col = "index"
-
 [[tables]]
 file_type = "csv"
 table_name = "income_rates"

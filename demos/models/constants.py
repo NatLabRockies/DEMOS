@@ -1,3 +1,32 @@
+import orca
+import pandas as pd
+
+# Relational adjustment mapping (equivalent to relmap_06197001.csv)
+# Rows = old relate of person changing household head; Columns = old relate of new head
+# Values = new relate code to assign
+RELATIONAL_ADJUSTMENT_MAPPING = pd.DataFrame(
+    data=[
+        [ 5,  5,  5, 10,  7,  6,  7,  1, 10, 11, 12,  5, 15, 16, 17],  # index=2
+        [ 5,  5,  5, 10,  7,  6,  7,  1, 10, 11, 12,  5, 15, 16, 17],  # index=3
+        [ 5,  5,  5, 10,  7,  6,  7,  1, 10, 11, 12,  5, 15, 16, 17],  # index=4
+        [10, 10, 10,  5,  2, 10,  9, 10, 10, 11, 12, 10, 15, 16, 17],  # index=5
+        [10, 10, 10,  6,  1, 10, 10, 10, 10, 11, 12, 10, 15, 16, 17],  # index=6
+        [ 2,  2,  2, 10, 10,  5, 10, 10, 10, 11, 12,  2, 15, 16, 17],  # index=7
+        [10, 10, 10,  8, 10, 10,  1,  6, 10, 11, 12, 10, 15, 16, 17],  # index=8
+        [10, 10, 10,  9, 10, 10,  2,  5, 10, 11, 12, 10, 15, 16, 17],  # index=9
+        [10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 12, 10, 15, 16, 17],  # index=10
+        [11, 11, 11, 11, 11, 11, 11, 11, 10, 11, 12, 11, 15, 16, 17],  # index=11
+        [12, 12, 12, 12, 12, 12, 12, 12, 10, 11, 12, 12, 15, 16, 17],  # index=12
+        [ 5,  5,  5, 10,  7, 10, 10, 10, 10, 11, 12,  5, 15, 16, 17],  # index=14
+        [15, 15, 15, 15, 15, 15, 15, 15, 10, 11, 12, 15, 15, 16, 17],  # index=15
+        [16, 16, 16, 16, 16, 16, 16, 16, 10, 11, 12, 16, 15, 16, 17],  # index=16
+        [17, 17, 17, 17, 17, 17, 17, 17, 10, 11, 12, 17, 15, 16, 17],  # index=17
+    ],
+    index=pd.Index([2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 15, 16, 17], name="index"),
+    columns=["2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "14", "15", "16", "17"],
+)
+orca.add_table("relational_adjustment_mapping", RELATIONAL_ADJUSTMENT_MAPPING)
+
 # FIPS Code to Income Quartile
 STATE_QUARTILE_LABELS = {
     "01": 1,  # Alabama
@@ -53,3 +82,4 @@ STATE_QUARTILE_LABELS = {
     "56": 2,  # Wyoming
     "72": 3,  # Puerto Rico
 }
+
