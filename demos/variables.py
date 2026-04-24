@@ -214,6 +214,7 @@ def emp_idle_over60(persons):
 # EDUCATION VARIABLES
 # -----------------------------------------------------------------------------------------
 
+
 # High School or GED
 @orca.column("persons")
 def edu_hs_ged(persons):
@@ -231,6 +232,7 @@ def edu_college_plus(persons):
 # -----------------------------------------------------------------------------------------
 # RACE VARIABLES
 # -----------------------------------------------------------------------------------------
+
 
 @orca.column("persons")
 def race_white(persons):
@@ -295,6 +297,7 @@ def race_acs_other(persons):
 # MARITAL STATUS VARIABLES
 # -----------------------------------------------------------------------------------------
 
+
 @orca.column("persons")
 def mar_married(persons):
     p = persons.to_frame(columns=["MAR"])
@@ -319,14 +322,10 @@ def mar_div_or_sep(persons):
     return p.isin([3, 4]).astype(int)
 
 
-
-
-
-
-
 # -----------------------------------------------------------------------------------------
 # EDUCATION VARIABLES
 # -----------------------------------------------------------------------------------------
+
 
 # High School or GED
 @orca.column("persons")
@@ -359,7 +358,9 @@ def tract_id(households):
 
 @orca.column("households", cache=True)
 def hh_type():
-    hh = orca.get_table("households").to_frame(["hh_n_persons", "tenure", "age_of_head"])
+    hh = orca.get_table("households").to_frame(
+        ["hh_n_persons", "tenure", "age_of_head"]
+    )
     hh["gt55"] = (hh.age_of_head >= 55).astype("int")
     hh["gt2"] = (hh.hh_n_persons >= 2).astype("int")
     hh["hh_type"] = 0
@@ -581,14 +582,18 @@ def hh_rent(blocks, households):
 
 @orca.column("blocks", cache=True, cache_scope="step")
 def total_persons(blocks, households):
-    persons = households.to_frame(["hh_n_persons", "block_id"]).groupby("block_id").sum()
+    persons = (
+        households.to_frame(["hh_n_persons", "block_id"]).groupby("block_id").sum()
+    )
     blocks = blocks.local.join(persons).fillna(0)
     return blocks["hh_n_persons"]
 
 
 @orca.column("blocks", cache=True, cache_scope="step")
 def children(blocks, households):
-    children = households.to_frame(["hh_n_children", "block_id"]).groupby("block_id").sum()
+    children = (
+        households.to_frame(["hh_n_children", "block_id"]).groupby("block_id").sum()
+    )
     blocks = blocks.local.join(children).fillna(0)
     return blocks["hh_n_children"]
 
