@@ -374,6 +374,7 @@ def income_dist(persons):
 # EMPLOYMENT MODEL AGE BIN COLUMNS (moved from variables.py)
 # -----------------------------------------------------------------------------------------
 
+
 @orca.column("persons")
 def age_emp_20_40(persons):
     p = persons.to_frame(columns=["age"])["age"]

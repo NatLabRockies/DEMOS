@@ -199,6 +199,7 @@ def run_and_calibrate_mortality_model(persons):
 # MORTALITY MODEL AGE BIN COLUMNS (moved from variables.py)
 # -----------------------------------------------------------------------------------------
 
+
 @orca.column("persons")
 def age_mort_21_40(persons):
     p = persons.to_frame(columns=["age"])["age"]

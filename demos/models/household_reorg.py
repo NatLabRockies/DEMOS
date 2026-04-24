@@ -296,6 +296,7 @@ def hh_size(persons_grouped_household):
 # HOUSEHOLD AGGREGATE COLUMNS (moved from variables.py)
 # -----------------------------------------------------------------------------------------
 
+
 @orca.column("households")
 def hh_n_children(households, persons):
     hh = households.local.copy()

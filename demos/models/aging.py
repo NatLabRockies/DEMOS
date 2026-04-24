@@ -101,6 +101,7 @@ def age_group(data="persons.age"):
         data, bins=age_intervals, labels=age_labels, include_lowest=True
     ).astype(str)
 
+
 @orca.column("households")
 def hh_head_age(persons, households):
     """

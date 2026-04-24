@@ -97,7 +97,9 @@ def update_married_households_random(
 
     ## Modifying auxiliary dataframe to compute new relation and household_id
     ### Pairs are selected by age
-    female_newmarried["per_person_income"] = per_person_income.loc[female_newmarried.index]
+    female_newmarried["per_person_income"] = per_person_income.loc[
+        female_newmarried.index
+    ]
     male_newmarried["per_person_income"] = per_person_income.loc[male_newmarried.index]
     female_newmarried.sort_values("age", inplace=True)
     male_newmarried.sort_values("age", inplace=True)
@@ -111,7 +113,8 @@ def update_married_households_random(
 
     newmarried.sort_values(
         by=["hh_group", "per_person_income", "rnd"],
-        ascending=[True, False, True], inplace=True
+        ascending=[True, False, True],
+        inplace=True,
     )
     newmarried["new_relate"] = np.arange(len(newmarried)) % 2  # [0, 1, 0, 1, ...]
     newmarried["did_marry"] = True
@@ -131,7 +134,8 @@ def update_married_households_random(
 
     newcohab.sort_values(
         by=["hh_group", "per_person_income", "rnd"],
-        ascending=[True, False, True], inplace=True
+        ascending=[True, False, True],
+        inplace=True,
     )
     newcohab["new_relate"] = (np.arange(len(newcohab)) % 2) * 13  # [0, 13, 0, 13, ...]
     newcohab["did_marry"] = False

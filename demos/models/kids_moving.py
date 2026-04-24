@@ -192,6 +192,7 @@ def run_and_calibrate_model(persons):
 # KIDS MOVE MODEL COLUMNS (moved from variables.py)
 # -----------------------------------------------------------------------------------------
 
+
 @orca.column("persons")
 def age_km_16_18(persons):
     p = persons.to_frame(columns=["age"])["age"]

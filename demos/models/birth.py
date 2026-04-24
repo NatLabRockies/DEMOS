@@ -146,6 +146,7 @@ def run_and_calibrate_birth_model(persons, households):
 # BIRTH MODEL COLUMNS (moved from variables.py)
 # -----------------------------------------------------------------------------------------
 
+
 @orca.column("households")
 def hh_n_persons(households, persons):
     counts = persons.local.groupby("household_id").size()

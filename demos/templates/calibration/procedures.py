@@ -63,7 +63,9 @@ class RMSECalibration(BaseModel):
 
         total_iterations = 0
         while error > self.tolerance and total_iterations < self.max_iter:
-            logger.info(f"({self.tolerance_type}) Error from reference table {self.observed_values_table} at iteration {total_iterations}: {error}")
+            logger.info(
+                f"({self.tolerance_type}) Error from reference table {self.observed_values_table} at iteration {total_iterations}: {error}"
+            )
             target_for_update = (
                 target_value
                 if self.tolerance_type == "absolute"
@@ -74,7 +76,9 @@ class RMSECalibration(BaseModel):
 
             prediction = model.predict(data)
             error = self.compute_error(prediction, target_value)
-        logger.info(f"({self.tolerance_type}) Error from reference table {self.observed_values_table} at final iteration {total_iterations}: {error}")
+        logger.info(
+            f"({self.tolerance_type}) Error from reference table {self.observed_values_table} at final iteration {total_iterations}: {error}"
+        )
         return prediction
 
 
