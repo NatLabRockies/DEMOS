@@ -86,9 +86,9 @@ def hh_head_edu_bin3(households, persons):
 
 # Job industry variables
 # TODO: This column should be implemented more rigorously based on actual job industry data rather than random assignment
-@orca.column("households", cache=True, cache_scope="step")
-def job_industry(households):
-    return pd.Series(np.random.choice([1, 2, 3, 4]), index=households.index) 
+# @orca.column("households", cache=True, cache_scope="step")
+# def job_industry(households):
+#     return pd.Series(np.random.choice([1, 2, 3, 4]), index=households.index) 
 
 @orca.column("households")
 def job_industry_bin1(households): # First quartile
@@ -107,9 +107,9 @@ def job_industry_bin4(households):
     return (households["job_industry"] == 4).astype(int)
 
 # TODO: This column should be implemented more rigorously based on actual job industry data rather than random assignment
-@orca.column("households", cache=True, cache_scope="step")
-def job_occupation(households):
-    return pd.Series(np.random.choice([1, 2, 3, 4]), index=households.index) 
+# @orca.column("households", cache=True, cache_scope="step")
+# def job_occupation(households):
+#     return pd.Series(np.random.choice([1, 2, 3, 4]), index=households.index) 
 
 @orca.column("households")
 def job_occupation_bin1(households): # First quartile
