@@ -207,8 +207,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="api/configuration_module.html">DEMOS Configuration Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/calibration.html">Model Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -323,26 +321,9 @@
 <li class="toctree-l3"><a class="reference internal" href="api/configuration_module.html#module-demos.config">Individual Modules configuration</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="pages/calibration.html">Model Calibration</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/calibration.html#how-calibration-works">How Calibration Works</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/calibration.html#modules-that-support-calibration">Modules That Support Calibration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/calibration.html#preparing-observed-data-files">Preparing Observed Data Files</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/calibration.html#configuring-calibration-in-the-toml-file">Configuring Calibration in the TOML File</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/calibration.html#modules-with-simultaneous-calibration-employment-and-household-reorganization">Modules with Simultaneous Calibration: Employment and Household Reorganization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/calibration.html#choosing-good-tolerance-values">Choosing Good Tolerance Values</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pages/variables.html">Variables Reference</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/variables.html#naming-conventions">Naming Conventions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/variables.html#column-inventory">Column Inventory</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/variables.html#where-variables-are-defined">Where variables are defined</a></li>
-</ul>
-</li>
 <li class="toctree-l2"><a class="reference internal" href="pages/datasources.html">Data Sources</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/datasources.html#choosing-between-csv-and-hdf5">Choosing Between CSV and HDF5</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/datasources.html#csv-tables">CSV Tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/datasources.html#hdf5-tables">HDF5 Tables</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/datasources.html#api-reference">API Reference</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/datasources.html#demos.datasources.CSVTableSource"><code class="docutils literal notranslate"><span class="pre">CSVTableSource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="pages/datasources.html#demos.datasources.H5TableSource"><code class="docutils literal notranslate"><span class="pre">H5TableSource</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="pages/default_configuration.html">Default Configuration File</a></li>
@@ -351,17 +332,6 @@
 <li class="toctree-l1"><a class="reference internal" href="pages/advanced_configuration.html">Advanced Options for DEMOS</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="pages/advanced_configuration.html#configuration-of-calibration-procedures">Configuration of calibration procedures</a></li>
 <li class="toctree-l2"><a class="reference internal" href="pages/advanced_configuration.html#selection-of-modules-to-run">Selection of modules to run</a></li>
-<li class="toctree-l2"><a class="reference internal" href="pages/advanced_configuration.html#lazily-computed-columns">Lazily computed columns</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/advanced_configuration.html#what-is-a-lazily-computed-column">What is a lazily computed column?</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/advanced_configuration.html#caching">Caching</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/advanced_configuration.html#input-columns-are-overwritten-by-computed-columns">Input columns are overwritten by computed columns</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="pages/advanced_configuration.html#geoid-columns-and-geographic-assignment">GEOID columns and geographic assignment</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="pages/advanced_configuration.html#modules-that-use-geoid-col">Modules that use <code class="docutils literal notranslate"><span class="pre">geoid_col</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="pages/advanced_configuration.html#making-sure-your-geoid-column-is-consistent">Making sure your GEOID column is consistent</a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -387,7 +357,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Laboratory of the Rockies
+                Copyright &#169; 2025, National Renewable Energy Laboratory
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -411,7 +381,5 @@
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/scripts/furo.js?v=46bd48cc"></script>
-    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
-    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     </body>
 </html>

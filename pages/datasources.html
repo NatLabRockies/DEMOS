@@ -3,7 +3,7 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Default Configuration File" href="default_configuration.html"><link rel="prev" title="Variables Reference" href="variables.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Default Configuration File" href="default_configuration.html"><link rel="prev" title="DEMOS Configuration Structure" href="../api/configuration_module.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
         <title>Data Sources - demos documentation</title>
@@ -207,8 +207,6 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="calibration.html">Model Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Reference</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -254,134 +252,7 @@
         <article role="main" id="furo-main-content">
           <section id="data-sources">
 <h1>Data Sources<a class="headerlink" href="#data-sources" title="Link to this heading">¶</a></h1>
-<p>DEMOS reads all input data from flat files declared in the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section of your configuration
-file. Every entry in <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> describes one table that will be loaded into memory and made
-available to the simulation by name. DEMOS supports two file formats: <strong>CSV</strong> and <strong>HDF5 (H5)</strong>.</p>
-<p>This page explains when to use each format, what each parameter controls, and shows complete
-configuration examples for both.</p>
-<hr class="docutils" />
-<section id="choosing-between-csv-and-hdf5">
-<h2>Choosing Between CSV and HDF5<a class="headerlink" href="#choosing-between-csv-and-hdf5" title="Link to this heading">¶</a></h2>
-<p>The two formats serve different roles and you will often use both in the same project:</p>
-<ul class="simple">
-<li><p><strong>CSV files</strong> are plain-text tables, one row per line, columns separated by commas (or another
-delimiter you specify). They are easy to open in a spreadsheet application, easy to edit, and
-easy to produce from any tool. Use CSV for smaller or auxiliary tables such as calibration
-reference data, mapping tables, and control totals.</p></li>
-<li><p><strong>HDF5 files</strong> (<code class="docutils literal notranslate"><span class="pre">.h5</span></code>) are a binary format designed to store large numerical datasets
-efficiently. They can contain multiple tables (called <em>keys</em>) in a single file. Use H5 for
-the main synthetic population tables (<code class="docutils literal notranslate"><span class="pre">persons</span></code> and <code class="docutils literal notranslate"><span class="pre">households</span></code>) because they are
-typically large and the binary format reads much faster than CSV.</p></li>
-</ul>
-</section>
-<hr class="docutils" />
-<section id="csv-tables">
-<h2>CSV Tables<a class="headerlink" href="#csv-tables" title="Link to this heading">¶</a></h2>
-<p>A CSV entry in the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section looks like this:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
-<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;income_rates&quot;</span>
-<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/income_rates.csv&quot;</span>
-<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">file_type</span> <span class="pre">=</span> <span class="pre">&quot;csv&quot;</span></code> value identifies this entry as a CSV source.</p>
-<section id="required-parameters">
-<h3>Required parameters<a class="headerlink" href="#required-parameters" title="Link to this heading">¶</a></h3>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">file_type</span></code> — Must be <code class="docutils literal notranslate"><span class="pre">&quot;csv&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">table_name</span></code> — The name by which this table will be referred to everywhere in DEMOS
-(for example, in module configuration entries like <code class="docutils literal notranslate"><span class="pre">observed_values_table</span></code>).
-Choose a short, descriptive name with no spaces, using underscores: e.g.
-<code class="docutils literal notranslate"><span class="pre">&quot;observed_births_data&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;income_rates&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">filepath</span></code> — Path to the CSV file. This can be a relative path (evaluated relative to the
-configuration file location) or an absolute path.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">index_col</span></code> — The column in the CSV file to use as the row identifier (the <em>index</em>).
-This column will not appear as a regular data column; it becomes the label for each row.
-For calibration tables the index must be <code class="docutils literal notranslate"><span class="pre">&quot;year&quot;</span></code>.</p></li>
-</ul>
-</section>
-<section id="optional-parameters">
-<h3>Optional parameters<a class="headerlink" href="#optional-parameters" title="Link to this heading">¶</a></h3>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">delimiter</span></code> — The character used to separate columns. Defaults to <code class="docutils literal notranslate"><span class="pre">&quot;,&quot;</span></code> for standard CSV.
-Set to <code class="docutils literal notranslate"><span class="pre">&quot;\t&quot;</span></code> for tab-separated files or <code class="docutils literal notranslate"><span class="pre">&quot;;&quot;</span></code> for semicolon-separated files.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">custom_dtype_casting</span></code> — An inline mapping from column names to data types. This is useful
-when pandas would otherwise infer the wrong type, such as reading a GEOID code as an integer
-when it should be kept as a string. Example:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lcm_county_id&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rate&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span><span class="p">}</span>
-</pre></div>
-</div>
-<p>Supported type strings are any value accepted by <code class="docutils literal notranslate"><span class="pre">pandas.read_csv</span></code>’s <code class="docutils literal notranslate"><span class="pre">dtype</span></code> argument:
-<code class="docutils literal notranslate"><span class="pre">&quot;object&quot;</span></code> (string), <code class="docutils literal notranslate"><span class="pre">&quot;int&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;float&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;bool&quot;</span></code>.</p>
-</li>
-</ul>
-</section>
-<section id="full-example-with-all-parameters">
-<h3>Full example with all parameters<a class="headerlink" href="#full-example-with-all-parameters" title="Link to this heading">¶</a></h3>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
-<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;income_rates&quot;</span>
-<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/income_rates.csv&quot;</span>
-<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-<span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lcm_county_id&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rate&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span><span class="p">}</span>
-</pre></div>
-</div>
-</section>
-</section>
-<hr class="docutils" />
-<section id="hdf5-tables">
-<h2>HDF5 Tables<a class="headerlink" href="#hdf5-tables" title="Link to this heading">¶</a></h2>
-<p>An HDF5 entry in the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section looks like this:</p>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
-<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
-<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
-<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/population.h5&quot;</span>
-<span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
-</pre></div>
-</div>
-<p>The <code class="docutils literal notranslate"><span class="pre">file_type</span> <span class="pre">=</span> <span class="pre">&quot;h5&quot;</span></code> value identifies this entry as an HDF5 source.</p>
-<section id="id1">
-<h3>Required parameters<a class="headerlink" href="#id1" title="Link to this heading">¶</a></h3>
-<ul>
-<li><p><code class="docutils literal notranslate"><span class="pre">file_type</span></code> — Must be <code class="docutils literal notranslate"><span class="pre">&quot;h5&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">table_name</span></code> — The name by which this table will be referred to everywhere in DEMOS.
-For the main synthetic population this is almost always <code class="docutils literal notranslate"><span class="pre">&quot;persons&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;households&quot;</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">filepath</span></code> — Path to the HDF5 file.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">h5_key</span></code> — The key inside the HDF5 file that identifies the table to load. An HDF5 file
-can contain many tables under different keys, similar to sheets in a spreadsheet workbook.
-To inspect the keys in an HDF5 file you can open it in Python:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="n">store</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="s2">&quot;../data/my_region/population.h5&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">store</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>   <span class="c1"># e.g. [&#39;/persons&#39;, &#39;/households&#39;]</span>
-<span class="n">store</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-</pre></div>
-</div>
-</li>
-</ul>
-</section>
-<section id="id2">
-<h3>Full example with all parameters<a class="headerlink" href="#id2" title="Link to this heading">¶</a></h3>
-<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
-<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
-<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
-<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/population.h5&quot;</span>
-<span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
-
-<span class="k">[[tables]]</span>
-<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
-<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
-<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/population.h5&quot;</span>
-<span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
-</pre></div>
-</div>
-<p>Note that two tables can be loaded from the same HDF5 file by using two separate
-<code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> entries that share the same <code class="docutils literal notranslate"><span class="pre">filepath</span></code> but point to different <code class="docutils literal notranslate"><span class="pre">h5_key</span></code> values.</p>
-</section>
-</section>
-<hr class="docutils" />
-<section id="api-reference">
-<h2>API Reference<a class="headerlink" href="#api-reference" title="Link to this heading">¶</a></h2>
+<p>Documentation for configuration of data sources currently implemented</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="demos.datasources.CSVTableSource">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.datasources.</span></span><span class="sig-name descname"><span class="pre">CSVTableSource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/datasources.html#CSVTableSource"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.datasources.CSVTableSource" title="Link to this definition">¶</a></dt>
@@ -453,7 +324,6 @@ To inspect the keys in an HDF5 file you can open it in Python:</p>
 </dd></dl>
 
 </section>
-</section>
 
         </article>
       </div>
@@ -469,14 +339,14 @@ To inspect the keys in an HDF5 file you can open it in Python:</p>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="variables.html">
+          <a class="prev-page" href="../api/configuration_module.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Variables Reference</div>
+                <div class="title">DEMOS Configuration Structure</div>
                 
               </div>
             </a>
@@ -484,7 +354,7 @@ To inspect the keys in an HDF5 file you can open it in Python:</p>
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Laboratory of the Rockies
+                Copyright &#169; 2025, National Renewable Energy Laboratory
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -511,19 +381,6 @@ To inspect the keys in an HDF5 file you can open it in Python:</p>
           <div class="toc-tree">
             <ul>
 <li><a class="reference internal" href="#">Data Sources</a><ul>
-<li><a class="reference internal" href="#choosing-between-csv-and-hdf5">Choosing Between CSV and HDF5</a></li>
-<li><a class="reference internal" href="#csv-tables">CSV Tables</a><ul>
-<li><a class="reference internal" href="#required-parameters">Required parameters</a></li>
-<li><a class="reference internal" href="#optional-parameters">Optional parameters</a></li>
-<li><a class="reference internal" href="#full-example-with-all-parameters">Full example with all parameters</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#hdf5-tables">HDF5 Tables</a><ul>
-<li><a class="reference internal" href="#id1">Required parameters</a></li>
-<li><a class="reference internal" href="#id2">Full example with all parameters</a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#api-reference">API Reference</a><ul>
 <li><a class="reference internal" href="#demos.datasources.CSVTableSource"><code class="docutils literal notranslate"><span class="pre">CSVTableSource</span></code></a><ul>
 <li><a class="reference internal" href="#demos.datasources.CSVTableSource.file_type"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.file_type</span></code></a></li>
 <li><a class="reference internal" href="#demos.datasources.CSVTableSource.filepath"><code class="docutils literal notranslate"><span class="pre">CSVTableSource.filepath</span></code></a></li>
@@ -538,8 +395,6 @@ To inspect the keys in an HDF5 file you can open it in Python:</p>
 <li><a class="reference internal" href="#demos.datasources.H5TableSource.filepath"><code class="docutils literal notranslate"><span class="pre">H5TableSource.filepath</span></code></a></li>
 <li><a class="reference internal" href="#demos.datasources.H5TableSource.h5_key"><code class="docutils literal notranslate"><span class="pre">H5TableSource.h5_key</span></code></a></li>
 <li><a class="reference internal" href="#demos.datasources.H5TableSource.table_name"><code class="docutils literal notranslate"><span class="pre">H5TableSource.table_name</span></code></a></li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>

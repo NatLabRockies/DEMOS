@@ -206,8 +206,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/configuration_module.html">DEMOS Configuration Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pages/calibration.html">Model Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -444,41 +442,6 @@
     <span class="k">if</span> <span class="n">calibration_procedure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">calibration_procedure</span><span class="o">.</span><span class="n">calibrate_and_run_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">model_data</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_data</span><span class="p">)</span>
-
-
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-<span class="c1"># MORTALITY MODEL AGE BIN COLUMNS (moved from variables.py)</span>
-<span class="c1"># -----------------------------------------------------------------------------------------</span>
-
-
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">age_mort_21_40</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">21</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
-
-
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">age_mort_41_50</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">41</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
-
-
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">age_mort_51_70</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">51</span><span class="p">,</span> <span class="mi">70</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
-
-
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">age_mort_71_90</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">71</span><span class="p">,</span> <span class="mi">90</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
-
-
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;persons&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">age_mort_90plus</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
-    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span>
 </pre></div>
         </article>
       </div>
@@ -491,7 +454,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Laboratory of the Rockies
+                Copyright &#169; 2025, National Renewable Energy Laboratory
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -206,8 +206,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/configuration_module.html">DEMOS Configuration Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pages/calibration.html">Model Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -360,30 +358,6 @@
         <span class="n">data</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">age_intervals</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">age_labels</span><span class="p">,</span> <span class="n">include_lowest</span><span class="o">=</span><span class="kc">True</span>
     <span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span></div>
 
-
-
-<div class="viewcode-block" id="hh_head_age">
-<a class="viewcode-back" href="../../../api/aging_module.html#demos.models.aging.hh_head_age">[docs]</a>
-<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hh_head_age</span><span class="p">(</span><span class="n">persons</span><span class="p">,</span> <span class="n">households</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Get the age of the head of each household.</span>
-
-<span class="sd">    Identifies the head of household (where `relate` == 0) and returns their age for each household.</span>
-
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    persons : orca.Table</span>
-<span class="sd">        The persons table containing `age`, `relate`, and `household_id` columns.</span>
-
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    pandas.Series</span>
-<span class="sd">        Age of the head of household, indexed by household_id.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">heads</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="p">[</span><span class="n">persons</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">heads</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">households</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">]</span></div>
-
 </pre></div>
         </article>
       </div>
@@ -396,7 +370,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Laboratory of the Rockies
+                Copyright &#169; 2025, National Renewable Energy Laboratory
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

@@ -207,8 +207,6 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="configuration_module.html">DEMOS Configuration Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pages/calibration.html">Model Calibration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -345,24 +343,6 @@ defined as having an age greater than or equal to the threshold specified in the
 </section>
 <section id="module-demos.models.aging">
 <span id="other-functions"></span><h2>Other Functions<a class="headerlink" href="#module-demos.models.aging" title="Link to this heading">¶</a></h2>
-<dl class="py function">
-<dt class="sig sig-object py" id="demos.models.aging.hh_head_age">
-<span class="sig-prename descclassname"><span class="pre">demos.models.aging.</span></span><span class="sig-name descname"><span class="pre">hh_head_age</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/aging.html#hh_head_age"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.aging.hh_head_age" title="Link to this definition">¶</a></dt>
-<dd><p>Get the age of the head of each household.</p>
-<p>Identifies the head of household (where <cite>relate</cite> == 0) and returns their age for each household.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing <cite>age</cite>, <cite>relate</cite>, and <cite>household_id</cite> columns.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Age of the head of household, indexed by household_id.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.Series</p>
-</dd>
-</dl>
-</dd></dl>
-
 </section>
 </section>
 
@@ -395,7 +375,7 @@ defined as having an age greater than or equal to the threshold specified in the
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Laboratory of the Rockies
+                Copyright &#169; 2025, National Renewable Energy Laboratory
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -432,10 +412,7 @@ defined as having an age greater than or equal to the threshold specified in the
 <li><a class="reference internal" href="#demos.models.aging.age_group"><code class="docutils literal notranslate"><span class="pre">age_group()</span></code></a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-demos.models.aging">Other Functions</a><ul>
-<li><a class="reference internal" href="#demos.models.aging.hh_head_age"><code class="docutils literal notranslate"><span class="pre">hh_head_age()</span></code></a></li>
-</ul>
-</li>
+<li><a class="reference internal" href="#module-demos.models.aging">Other Functions</a></li>
 </ul>
 </li>
 </ul>
