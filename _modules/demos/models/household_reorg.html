@@ -206,6 +206,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../../../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../../api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pages/calibration.html">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -547,21 +549,21 @@
 
 
 
-<div class="viewcode-block" id="hh_race_of_head">
-<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_race_of_head">[docs]</a>
+<div class="viewcode-block" id="hh_head_race_str">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_head_race_str">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hh_race_of_head</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;households.hh_race_id_of_head&quot;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_head_race_str</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="s2">&quot;households.hh_head_race_id&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Maps `households.hh_race_id_of_head`, which is a numeric value, into &#39;white&#39;, &#39;black&#39;, &#39;asian&#39; or other</span>
+<span class="sd">    Maps `households.hh_head_race_id` (numeric race_id of head) to a string: &#39;white&#39;, &#39;black&#39;, &#39;asian&#39;, or &#39;other&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">data</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="mi">6</span><span class="p">:</span> <span class="s2">&quot;asian&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">:</span> <span class="s2">&quot;asian&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;other&quot;</span><span class="p">)</span></div>
 
 
 
-<div class="viewcode-block" id="hh_race_id_of_head">
-<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_race_id_of_head">[docs]</a>
+<div class="viewcode-block" id="hh_head_race_id">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_head_race_id">[docs]</a>
 <span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="n">table_name</span><span class="o">=</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">hh_race_id_of_head</span><span class="p">(</span><span class="n">persons_grouped_household</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_head_race_id</span><span class="p">(</span><span class="n">persons_grouped_household</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;&quot;&quot;&quot;</span>
     <span class="n">agg_df</span> <span class="o">=</span> <span class="n">persons_grouped_household</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span><span class="n">race_of_head</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;race_head&quot;</span><span class="p">,</span> <span class="s2">&quot;sum&quot;</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">agg_df</span><span class="p">[</span><span class="s2">&quot;race_of_head&quot;</span><span class="p">]</span></div>
@@ -574,6 +576,206 @@
 <span class="k">def</span><span class="w"> </span><span class="nf">hh_size</span><span class="p">(</span><span class="n">persons_grouped_household</span><span class="p">):</span>
     <span class="n">agg_df</span> <span class="o">=</span> <span class="n">persons_grouped_household</span><span class="o">.</span><span class="n">size</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">agg_df</span><span class="o">.</span><span class="n">map</span><span class="p">({</span><span class="mi">1</span><span class="p">:</span> <span class="s2">&quot;one&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">:</span> <span class="s2">&quot;two&quot;</span><span class="p">,</span> <span class="mi">3</span><span class="p">:</span> <span class="s2">&quot;three&quot;</span><span class="p">})</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s2">&quot;four or more&quot;</span><span class="p">)</span></div>
+
+
+
+<span class="c1"># -----------------------------------------------------------------------------------------</span>
+<span class="c1"># HOUSEHOLD AGGREGATE COLUMNS (moved from variables.py)</span>
+<span class="c1"># -----------------------------------------------------------------------------------------</span>
+
+
+<div class="viewcode-block" id="hh_n_children">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_n_children">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_n_children</span><span class="p">(</span><span class="n">households</span><span class="p">,</span> <span class="n">persons</span><span class="p">):</span>
+    <span class="n">hh</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">children</span> <span class="o">=</span> <span class="n">p</span><span class="p">[</span><span class="n">p</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="mi">17</span><span class="p">]</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">hh</span> <span class="o">=</span> <span class="n">hh</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">children</span><span class="p">[[</span><span class="s2">&quot;age&quot;</span><span class="p">]])</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">hh</span><span class="p">[</span><span class="s2">&quot;age&quot;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="hh_income_bin1">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_income_bin1">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_income_bin1</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;income&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">lt</span><span class="p">(</span><span class="mi">25_000</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_income_bin2">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_income_bin2">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_income_bin2</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;income&quot;</span><span class="p">])[</span><span class="s2">&quot;income&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">25_000</span><span class="p">,</span> <span class="mi">50_000</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_income_bin3">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_income_bin3">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_income_bin3</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;income&quot;</span><span class="p">])[</span><span class="s2">&quot;income&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">50_000</span><span class="p">,</span> <span class="mi">75_000</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_income_bin4">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_income_bin4">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_income_bin4</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;income&quot;</span><span class="p">])[</span><span class="s2">&quot;income&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">75_000</span><span class="p">,</span> <span class="mi">150_000</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_income_bin5">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_income_bin5">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_income_bin5</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;income&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">ge</span><span class="p">(</span><span class="mi">150_000</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<span class="c1"># Max education year of head or spouse (relate &lt; 2)</span>
+<div class="viewcode-block" id="hh_edu_top">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_edu_top">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_edu_top</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;edu&quot;</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">][[</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="s2">&quot;edu&quot;</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;edu&quot;</span><span class="p">:</span> <span class="s2">&quot;max&quot;</span><span class="p">})</span></div>
+
+
+
+<span class="c1"># High school or equivalent (head/spouse max edu)</span>
+<div class="viewcode-block" id="hh_edu_top_bin2">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_edu_top_bin2">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_edu_top_bin2</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_edu_top&quot;</span><span class="p">])[</span><span class="s2">&quot;hh_edu_top&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">17</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;both&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<span class="c1"># Some college or more (head/spouse max edu)</span>
+<div class="viewcode-block" id="hh_edu_top_bin3">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_edu_top_bin3">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_edu_top_bin3</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_edu_top&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_fam_work">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_fam_work">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_fam_work</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">,</span> <span class="s2">&quot;worker&quot;</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;worker&quot;</span><span class="p">:</span> <span class="s2">&quot;sum&quot;</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="hh_fam_work2">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_fam_work2">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_fam_work2</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_fam_work&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<span class="c1"># Average age of head and spouse</span>
+<div class="viewcode-block" id="hh_age_avg">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_avg">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_avg</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="s2">&quot;mean&quot;</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="hh_age_avg_bin2">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_avg_bin2">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_avg_bin2</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_age_avg&quot;</span><span class="p">])[</span><span class="s2">&quot;hh_age_avg&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_age_avg_bin3">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_avg_bin3">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_avg_bin3</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_age_avg&quot;</span><span class="p">])[</span><span class="s2">&quot;hh_age_avg&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_age_avg_bin4">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_avg_bin4">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_avg_bin4</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_age_avg&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<span class="c1"># Minimum age of head and spouse</span>
+<div class="viewcode-block" id="hh_age_min">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_min">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_min</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">,</span> <span class="s2">&quot;age&quot;</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">({</span><span class="s2">&quot;age&quot;</span><span class="p">:</span> <span class="s2">&quot;min&quot;</span><span class="p">})</span></div>
+
+
+
+<div class="viewcode-block" id="hh_age_min_bin2">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_min_bin2">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_min_bin2</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_age_min&quot;</span><span class="p">])[</span><span class="s2">&quot;hh_age_min&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">22</span><span class="p">,</span> <span class="mi">35</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_age_min_bin3">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_min_bin3">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_min_bin3</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_age_min&quot;</span><span class="p">])[</span><span class="s2">&quot;hh_age_min&quot;</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">between</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="mi">60</span><span class="p">,</span> <span class="n">inclusive</span><span class="o">=</span><span class="s2">&quot;right&quot;</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<div class="viewcode-block" id="hh_age_min_bin4">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_age_min_bin4">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_age_min_bin4</span><span class="p">(</span><span class="n">households</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;hh_age_min&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">gt</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span> <span class="o">*</span> <span class="mi">1</span></div>
+
+
+
+<span class="c1"># Race of household head (White, race_id == 1)</span>
+<div class="viewcode-block" id="hh_head_race_white">
+<a class="viewcode-back" href="../../../api/hh_reorg_module.html#demos.models.household_reorg.hh_head_race_white">[docs]</a>
+<span class="nd">@orca</span><span class="o">.</span><span class="n">column</span><span class="p">(</span><span class="s2">&quot;households&quot;</span><span class="p">)</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">hh_head_race_white</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">persons</span><span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">,</span> <span class="s2">&quot;race_white&quot;</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">])</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;household_id&quot;</span><span class="p">)[</span><span class="s2">&quot;race_white&quot;</span><span class="p">]</span></div>
 
 
 
@@ -1047,7 +1249,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Renewable Energy Laboratory
+                Copyright &#169; 2025, National Laboratory of the Rockies
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

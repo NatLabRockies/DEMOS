@@ -207,6 +207,8 @@
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
 <li class="toctree-l2"><a class="reference internal" href="configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/calibration.html">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../pages/variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/datasources.html">Data Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../pages/default_configuration.html">Default Configuration File</a></li>
 </ul>
@@ -348,25 +350,6 @@ parameterized by age and education group, using the cached <cite>income_dist</ci
 </dl>
 </dd></dl>
 
-<dl class="py function">
-<dt class="sig sig-object py" id="demos.models.employment.income">
-<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">income</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#income"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.income" title="Link to this definition">¶</a></dt>
-<dd><p>Aggregate household income from person-level earnings.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table.</p>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Total income per household.</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>pandas.Series</p>
-</dd>
-</dl>
-<p class="rubric">Notes</p>
-<p>This is for <cite>HOUSEHOLDS</cite> table</p>
-</dd></dl>
-
 </section>
 <section id="module-demos.models.employment">
 <span id="other-functions"></span><h2>Other Functions<a class="headerlink" href="#module-demos.models.employment" title="Link to this heading">¶</a></h2>
@@ -450,6 +433,26 @@ parameterized by age and education group, using the cached <cite>income_dist</ci
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.age_emp_20_40">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">age_emp_20_40</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#age_emp_20_40"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.age_emp_20_40" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.age_emp_41_50">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">age_emp_41_50</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#age_emp_41_50"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.age_emp_41_50" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.age_emp_51_70">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">age_emp_51_70</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#age_emp_51_70"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.age_emp_51_70" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="demos.models.employment.age_emp_70plus">
+<span class="sig-prename descclassname"><span class="pre">demos.models.employment.</span></span><span class="sig-name descname"><span class="pre">age_emp_70plus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/employment.html#age_emp_70plus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.employment.age_emp_70plus" title="Link to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 </section>
 
@@ -482,7 +485,7 @@ parameterized by age and education group, using the cached <cite>income_dist</ci
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Renewable Energy Laboratory
+                Copyright &#169; 2025, National Laboratory of the Rockies
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             
@@ -517,7 +520,6 @@ parameterized by age and education group, using the cached <cite>income_dist</ci
 <li><a class="reference internal" href="#demos.models.employment.new_earning"><code class="docutils literal notranslate"><span class="pre">new_earning()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.employment.income_dist"><code class="docutils literal notranslate"><span class="pre">income_dist()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.employment.hh_workers"><code class="docutils literal notranslate"><span class="pre">hh_workers()</span></code></a></li>
-<li><a class="reference internal" href="#demos.models.employment.income"><code class="docutils literal notranslate"><span class="pre">income()</span></code></a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#module-demos.models.employment">Other Functions</a><ul>
@@ -525,6 +527,10 @@ parameterized by age and education group, using the cached <cite>income_dist</ci
 <li><a class="reference internal" href="#demos.models.employment.run_and_calibrate_in_workforce_model"><code class="docutils literal notranslate"><span class="pre">run_and_calibrate_in_workforce_model()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.employment.run_and_calibrate_out_workforce_model"><code class="docutils literal notranslate"><span class="pre">run_and_calibrate_out_workforce_model()</span></code></a></li>
 <li><a class="reference internal" href="#demos.models.employment.run_simultaenous_calibration"><code class="docutils literal notranslate"><span class="pre">run_simultaenous_calibration()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.age_emp_20_40"><code class="docutils literal notranslate"><span class="pre">age_emp_20_40()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.age_emp_41_50"><code class="docutils literal notranslate"><span class="pre">age_emp_41_50()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.age_emp_51_70"><code class="docutils literal notranslate"><span class="pre">age_emp_51_70()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.employment.age_emp_70plus"><code class="docutils literal notranslate"><span class="pre">age_emp_70plus()</span></code></a></li>
 </ul>
 </li>
 </ul>

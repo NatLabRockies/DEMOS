@@ -207,6 +207,8 @@
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="calibration.html">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Reference</a></li>
 <li class="toctree-l2"><a class="reference internal" href="datasources.html">Data Sources</a></li>
 <li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Default Configuration File</a></li>
 </ul>
@@ -263,129 +265,125 @@
 <span class="linenos">  6</span><span class="n">inconsistent_persons_table_behavior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;fix&quot;</span>
 <span class="linenos">  7</span><span class="n">modules</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
 <span class="linenos">  8</span><span class="w">    </span><span class="s2">&quot;aging&quot;</span><span class="p">,</span>
-<span class="linenos">  9</span><span class="w">    </span><span class="s2">&quot;employment&quot;</span><span class="p">,</span>
+<span class="linenos">  9</span><span class="w">    </span><span class="s2">&quot;fatality&quot;</span><span class="p">,</span>
 <span class="linenos"> 10</span><span class="w">    </span><span class="s2">&quot;household_reorg&quot;</span><span class="p">,</span>
 <span class="linenos"> 11</span><span class="w">    </span><span class="s2">&quot;kids_moving&quot;</span><span class="p">,</span>
-<span class="linenos"> 12</span><span class="w">    </span><span class="s2">&quot;fatality&quot;</span><span class="p">,</span>
-<span class="linenos"> 13</span><span class="w">    </span><span class="s2">&quot;birth&quot;</span><span class="p">,</span>
-<span class="linenos"> 14</span><span class="w">    </span><span class="s2">&quot;education&quot;</span><span class="p">,</span>
-<span class="linenos"> 15</span><span class="w">    </span><span class="s2">&quot;household_rebalancing&quot;</span><span class="p">,</span>
-<span class="linenos"> 16</span><span class="w">    </span><span class="s2">&quot;income_adjustment&quot;</span>
-<span class="linenos"> 17</span><span class="p">]</span>
-<span class="linenos"> 18</span><span class="n">output_tables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="linenos"> 19</span><span class="w">    </span><span class="s2">&quot;persons&quot;</span><span class="p">,</span>
-<span class="linenos"> 20</span><span class="w">    </span><span class="s2">&quot;households&quot;</span><span class="p">,</span>
-<span class="linenos"> 21</span><span class="w">    </span><span class="s2">&quot;run_times&quot;</span>
-<span class="linenos"> 22</span><span class="p">]</span>
-<span class="linenos"> 23</span><span class="n">initialize_empty_tables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
-<span class="linenos"> 24</span><span class="w">    </span><span class="s2">&quot;graveyard&quot;</span><span class="p">,</span>
-<span class="linenos"> 25</span><span class="w">    </span><span class="s2">&quot;rebalanced_persons&quot;</span><span class="p">,</span>
-<span class="linenos"> 26</span><span class="w">    </span><span class="s2">&quot;rebalanced_households&quot;</span>
-<span class="linenos"> 27</span><span class="p">]</span>
-<span class="linenos"> 28</span>
-<span class="linenos"> 29</span><span class="c1"># Data sources</span>
-<span class="linenos"> 30</span><span class="c1">## Synthetic population data</span>
-<span class="linenos"> 31</span><span class="k">[[tables]]</span>
-<span class="linenos"> 32</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
-<span class="linenos"> 33</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
-<span class="linenos"> 34</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/custom_mpo_06197001_model_data.h5&quot;</span>
-<span class="linenos"> 35</span><span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
-<span class="linenos"> 36</span>
-<span class="linenos"> 37</span><span class="k">[[tables]]</span>
-<span class="linenos"> 38</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
-<span class="linenos"> 39</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
-<span class="linenos"> 40</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/custom_mpo_06197001_model_data.h5&quot;</span>
-<span class="linenos"> 41</span><span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
-<span class="linenos"> 42</span>
-<span class="linenos"> 43</span><span class="c1">## Other static data tables</span>
-<span class="linenos"> 44</span><span class="k">[[tables]]</span>
-<span class="linenos"> 45</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos"> 46</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;relational_adjustment_mapping&quot;</span>
-<span class="linenos"> 47</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/relmap_06197001.csv&quot;</span>
-<span class="linenos"> 48</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;index&quot;</span>
-<span class="linenos"> 49</span>
-<span class="linenos"> 50</span><span class="k">[[tables]]</span>
-<span class="linenos"> 51</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos"> 52</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;income_rates&quot;</span>
-<span class="linenos"> 53</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/income_rates_06197001.csv&quot;</span>
-<span class="linenos"> 54</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-<span class="linenos"> 55</span><span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lcm_county_id&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rate&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span><span class="p">}</span>
-<span class="linenos"> 56</span>
-<span class="linenos"> 57</span><span class="k">[[tables]]</span>
-<span class="linenos"> 58</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos"> 59</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hsize_ct&quot;</span>
-<span class="linenos"> 60</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/hsize_ct_06197001.csv&quot;</span>
-<span class="linenos"> 61</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-<span class="linenos"> 62</span><span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lcm_county_id&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;hh_size&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;total_number_of_households&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">}</span>
-<span class="linenos"> 63</span>
-<span class="linenos"> 64</span><span class="c1">## Simultaneous Calibration data</span>
-<span class="linenos"> 65</span><span class="c1">### For simultaneous calibration, tables need </span>
-<span class="linenos"> 66</span><span class="c1">### to be manually included here</span>
-<span class="linenos"> 67</span><span class="k">[[tables]]</span>
-<span class="linenos"> 68</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos"> 69</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_employment&quot;</span>
-<span class="linenos"> 70</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/employment_obs.csv&quot;</span>
-<span class="linenos"> 71</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-<span class="linenos"> 72</span>
-<span class="linenos"> 73</span><span class="k">[[tables]]</span>
-<span class="linenos"> 74</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos"> 75</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_marrital_data&quot;</span>
-<span class="linenos"> 76</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/marrital_status_over_time_obs.csv&quot;</span>
-<span class="linenos"> 77</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-<span class="linenos"> 78</span>
-<span class="linenos"> 79</span>
-<span class="linenos"> 80</span><span class="c1"># Modules configuration</span>
-<span class="linenos"> 81</span><span class="k">[employment_module_config.simultaneous_calibration_config]</span>
-<span class="linenos"> 82</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
-<span class="linenos"> 83</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
-<span class="linenos"> 84</span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
-<span class="linenos"> 85</span><span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
-<span class="linenos"> 86</span>
-<span class="linenos"> 87</span><span class="c1">## Mortality</span>
-<span class="linenos"> 88</span><span class="k">[mortality_module_config.calibration_procedure]</span>
-<span class="linenos"> 89</span><span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
-<span class="linenos"> 90</span><span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
-<span class="linenos"> 91</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-<span class="linenos"> 92</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-<span class="linenos"> 93</span><span class="k">[mortality_module_config.calibration_procedure.observed_values_table]</span>
-<span class="linenos"> 94</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos"> 95</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_fatalities_data&quot;</span>
-<span class="linenos"> 96</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/mortalities_over_time_obs.csv&quot;</span>
-<span class="linenos"> 97</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
-<span class="linenos"> 98</span>
-<span class="linenos"> 99</span><span class="c1">## Birth</span>
-<span class="linenos">100</span><span class="k">[birth_module_config.calibration_procedure]</span>
-<span class="linenos">101</span><span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
-<span class="linenos">102</span><span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
-<span class="linenos">103</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-<span class="linenos">104</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
-<span class="linenos">105</span><span class="k">[birth_module_config.calibration_procedure.observed_values_table]</span>
-<span class="linenos">106</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
-<span class="linenos">107</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_births_data&quot;</span>
-<span class="linenos">108</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/births_over_time_obs.csv&quot;</span>
-<span class="linenos">109</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos"> 12</span><span class="w">    </span><span class="s2">&quot;birth&quot;</span><span class="p">,</span>
+<span class="linenos"> 13</span><span class="w">    </span><span class="s2">&quot;education&quot;</span><span class="p">,</span>
+<span class="linenos"> 14</span><span class="w">    </span><span class="s2">&quot;employment&quot;</span><span class="p">,</span>
+<span class="linenos"> 15</span><span class="w">    </span><span class="s2">&quot;income&quot;</span><span class="p">,</span>
+<span class="linenos"> 16</span><span class="w">    </span><span class="s2">&quot;income_adjustment&quot;</span><span class="p">,</span>
+<span class="linenos"> 17</span><span class="w">    </span><span class="s2">&quot;household_rebalancing&quot;</span><span class="p">,</span>
+<span class="linenos"> 18</span><span class="w">    </span><span class="s2">&quot;normalize_table_dtypes&quot;</span><span class="p">,</span>
+<span class="linenos"> 19</span><span class="p">]</span>
+<span class="linenos"> 20</span><span class="n">output_tables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="linenos"> 21</span><span class="w">    </span><span class="s2">&quot;persons&quot;</span><span class="p">,</span>
+<span class="linenos"> 22</span><span class="w">    </span><span class="s2">&quot;households&quot;</span><span class="p">,</span>
+<span class="linenos"> 23</span><span class="w">    </span><span class="s2">&quot;run_times&quot;</span>
+<span class="linenos"> 24</span><span class="p">]</span>
+<span class="linenos"> 25</span><span class="n">initialize_empty_tables</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span>
+<span class="linenos"> 26</span><span class="w">    </span><span class="s2">&quot;graveyard&quot;</span><span class="p">,</span>
+<span class="linenos"> 27</span><span class="w">    </span><span class="s2">&quot;rebalanced_persons&quot;</span><span class="p">,</span>
+<span class="linenos"> 28</span><span class="w">    </span><span class="s2">&quot;rebalanced_households&quot;</span>
+<span class="linenos"> 29</span><span class="p">]</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="c1"># Data sources</span>
+<span class="linenos"> 32</span><span class="c1">## Synthetic population data</span>
+<span class="linenos"> 33</span><span class="k">[[tables]]</span>
+<span class="linenos"> 34</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
+<span class="linenos"> 35</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
+<span class="linenos"> 36</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/custom_mpo_06197001_model_data.h5&quot;</span>
+<span class="linenos"> 37</span><span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;persons&quot;</span>
+<span class="linenos"> 38</span>
+<span class="linenos"> 39</span><span class="k">[[tables]]</span>
+<span class="linenos"> 40</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;h5&quot;</span>
+<span class="linenos"> 41</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
+<span class="linenos"> 42</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/custom_mpo_06197001_model_data.h5&quot;</span>
+<span class="linenos"> 43</span><span class="n">h5_key</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;households&quot;</span>
+<span class="linenos"> 44</span>
+<span class="linenos"> 45</span><span class="c1">## Other static data tables</span>
+<span class="linenos"> 46</span><span class="k">[[tables]]</span>
+<span class="linenos"> 47</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="linenos"> 48</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;income_rates&quot;</span>
+<span class="linenos"> 49</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/income_rates_06197001.csv&quot;</span>
+<span class="linenos"> 50</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos"> 51</span><span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lcm_county_id&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;rate&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span><span class="p">}</span>
+<span class="linenos"> 52</span>
+<span class="linenos"> 53</span><span class="k">[[tables]]</span>
+<span class="linenos"> 54</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="linenos"> 55</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hsize_ct&quot;</span>
+<span class="linenos"> 56</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/hsize_ct_06197001.csv&quot;</span>
+<span class="linenos"> 57</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos"> 58</span><span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;lcm_county_id&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;hh_size&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;total_number_of_households&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">}</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="c1">## Simultaneous Calibration data</span>
+<span class="linenos"> 61</span><span class="c1">### For simultaneous calibration, tables need </span>
+<span class="linenos"> 62</span><span class="c1">### to be manually included here</span>
+<span class="linenos"> 63</span><span class="k">[[tables]]</span>
+<span class="linenos"> 64</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="linenos"> 65</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_employment&quot;</span>
+<span class="linenos"> 66</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/employment_obs.csv&quot;</span>
+<span class="linenos"> 67</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span><span class="k">[[tables]]</span>
+<span class="linenos"> 70</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="linenos"> 71</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_marrital_data&quot;</span>
+<span class="linenos"> 72</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/marrital_status_over_time_obs.csv&quot;</span>
+<span class="linenos"> 73</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>
+<span class="linenos"> 76</span><span class="c1"># Modules configuration</span>
+<span class="linenos"> 77</span><span class="k">[employment_module_config.simultaneous_calibration_config]</span>
+<span class="linenos"> 78</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
+<span class="linenos"> 79</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
+<span class="linenos"> 80</span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="linenos"> 81</span><span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
+<span class="linenos"> 82</span>
+<span class="linenos"> 83</span><span class="c1">## Mortality</span>
+<span class="linenos"> 84</span><span class="k">[mortality_module_config.calibration_procedure]</span>
+<span class="linenos"> 85</span><span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
+<span class="linenos"> 86</span><span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
+<span class="linenos"> 87</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
+<span class="linenos"> 88</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
+<span class="linenos"> 89</span><span class="k">[mortality_module_config.calibration_procedure.observed_values_table]</span>
+<span class="linenos"> 90</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="linenos"> 91</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_fatalities_data&quot;</span>
+<span class="linenos"> 92</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/mortalities_over_time_obs.csv&quot;</span>
+<span class="linenos"> 93</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos"> 94</span>
+<span class="linenos"> 95</span><span class="c1">## Birth</span>
+<span class="linenos"> 96</span><span class="k">[birth_module_config.calibration_procedure]</span>
+<span class="linenos"> 97</span><span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
+<span class="linenos"> 98</span><span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
+<span class="linenos"> 99</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
+<span class="linenos">100</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
+<span class="linenos">101</span><span class="k">[birth_module_config.calibration_procedure.observed_values_table]</span>
+<span class="linenos">102</span><span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="linenos">103</span><span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_births_data&quot;</span>
+<span class="linenos">104</span><span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/sf_bay_example/observed_calibration_values/births_over_time_obs.csv&quot;</span>
+<span class="linenos">105</span><span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="linenos">106</span>
+<span class="linenos">107</span><span class="c1">## HH Reorg</span>
+<span class="linenos">108</span><span class="k">[hh_reorg_module_config]</span>
+<span class="linenos">109</span><span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
 <span class="linenos">110</span>
-<span class="linenos">111</span><span class="c1">## HH Reorg</span>
-<span class="linenos">112</span><span class="k">[hh_reorg_module_config]</span>
-<span class="linenos">113</span><span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
-<span class="linenos">114</span>
-<span class="linenos">115</span><span class="k">[hh_reorg_module_config.simultaneous_calibration_config]</span>
-<span class="linenos">116</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5_000</span>
-<span class="linenos">117</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
-<span class="linenos">118</span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5</span>
-<span class="linenos">119</span><span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
-<span class="linenos">120</span>
-<span class="linenos">121</span><span class="c1">## HH Rebalancing</span>
-<span class="linenos">122</span><span class="k">[hh_rebalancing_module_config]</span>
-<span class="linenos">123</span><span class="n">control_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hsize_ct&quot;</span>
-<span class="linenos">124</span><span class="n">control_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hh_size&quot;</span>
+<span class="linenos">111</span><span class="k">[hh_reorg_module_config.simultaneous_calibration_config]</span>
+<span class="linenos">112</span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5_000</span>
+<span class="linenos">113</span><span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
+<span class="linenos">114</span><span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.5</span>
+<span class="linenos">115</span><span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
+<span class="linenos">116</span>
+<span class="linenos">117</span><span class="c1">## HH Rebalancing</span>
+<span class="linenos">118</span><span class="k">[hh_rebalancing_module_config]</span>
+<span class="linenos">119</span><span class="n">control_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hsize_ct&quot;</span>
+<span class="linenos">120</span><span class="n">control_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;hh_size&quot;</span>
+<span class="linenos">121</span><span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
+<span class="linenos">122</span>
+<span class="linenos">123</span><span class="c1"># Kids Moving</span>
+<span class="linenos">124</span><span class="k">[kids_moving_module_config]</span>
 <span class="linenos">125</span><span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
-<span class="linenos">126</span>
-<span class="linenos">127</span><span class="c1"># Kids Moving</span>
-<span class="linenos">128</span><span class="k">[kids_moving_module_config]</span>
-<span class="linenos">129</span><span class="n">geoid_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;lcm_county_id&quot;</span>
-<span class="linenos">130</span><span class="n">calibration_target_share</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.12</span>
-<span class="linenos">131</span><span class="n">calibration_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.001</span>
+<span class="linenos">126</span><span class="n">calibration_target_share</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.12</span>
+<span class="linenos">127</span><span class="n">calibration_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.001</span>
 </pre></div>
 </div>
 </div>
@@ -420,7 +418,7 @@
         <div class="bottom-of-page">
           <div class="left-details">
             <div class="copyright">
-                Copyright &#169; 2025, National Renewable Energy Laboratory
+                Copyright &#169; 2025, National Laboratory of the Rockies
             </div>
             Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
             

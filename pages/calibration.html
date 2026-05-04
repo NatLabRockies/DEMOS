@@ -1,0 +1,843 @@
+<!doctype html>
+<html class="no-js" lang="en" data-content_root="../">
+  <head><meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Variables Reference" href="variables.html"><link rel="prev" title="DEMOS Configuration Structure" href="../api/configuration_module.html">
+
+    <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
+        <title>Model Calibration - demos documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f2f2f2;
+  --color-code-foreground: #1e1e1e;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-with-moon" viewBox="0 0 24 24">
+    <title>Auto light/dark, in light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path style="opacity: 50%" d="M 5.411 14.504 C 5.471 14.504 5.532 14.504 5.591 14.504 C 3.639 16.319 4.383 19.569 6.931 20.352 C 7.693 20.586 8.512 20.551 9.25 20.252 C 8.023 23.207 4.056 23.725 2.11 21.184 C 0.166 18.642 1.702 14.949 4.874 14.536 C 5.051 14.512 5.231 14.5 5.411 14.5 L 5.411 14.504 Z"/>
+      <line x1="14.5" y1="3.25" x2="14.5" y2="1.25"/>
+      <line x1="14.5" y1="15.85" x2="14.5" y2="17.85"/>
+      <line x1="10.044" y1="5.094" x2="8.63" y2="3.68"/>
+      <line x1="19" y1="14.05" x2="20.414" y2="15.464"/>
+      <line x1="8.2" y1="9.55" x2="6.2" y2="9.55"/>
+      <line x1="20.8" y1="9.55" x2="22.8" y2="9.55"/>
+      <line x1="10.044" y1="14.006" x2="8.63" y2="15.42"/>
+      <line x1="19" y1="5.05" x2="20.414" y2="3.636"/>
+      <circle cx="14.5" cy="9.55" r="3.6"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon-with-sun" viewBox="0 0 24 24">
+    <title>Auto light/dark, in dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round"
+      class="icon-custom-derived-from-feather-sun-and-tabler-moon">
+      <path d="M 8.282 7.007 C 8.385 7.007 8.494 7.007 8.595 7.007 C 5.18 10.184 6.481 15.869 10.942 17.24 C 12.275 17.648 13.706 17.589 15 17.066 C 12.851 22.236 5.91 23.143 2.505 18.696 C -0.897 14.249 1.791 7.786 7.342 7.063 C 7.652 7.021 7.965 7 8.282 7 L 8.282 7.007 Z"/>
+      <line style="opacity: 50%" x1="18" y1="3.705" x2="18" y2="2.5"/>
+      <line style="opacity: 50%" x1="18" y1="11.295" x2="18" y2="12.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="4.816" x2="14.464" y2="3.964"/>
+      <line style="opacity: 50%" x1="20.711" y1="10.212" x2="21.563" y2="11.063"/>
+      <line style="opacity: 50%" x1="14.205" y1="7.5" x2="13.001" y2="7.5"/>
+      <line style="opacity: 50%" x1="21.795" y1="7.5" x2="23" y2="7.5"/>
+      <line style="opacity: 50%" x1="15.316" y1="10.184" x2="14.464" y2="11.036"/>
+      <line style="opacity: 50%" x1="20.711" y1="4.789" x2="21.563" y2="3.937"/>
+      <circle style="opacity: 50%" cx="18" cy="7.5" r="2.169"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-pencil" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-pencil-code">
+      <path d="M4 20h4l10.5 -10.5a2.828 2.828 0 1 0 -4 -4l-10.5 10.5v4" />
+      <path d="M13.5 6.5l4 4" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+  <symbol id="svg-eye" viewBox="0 0 24 24">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-eye-code">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0" />
+      <path
+        d="M11.11 17.958c-3.209 -.307 -5.91 -2.293 -8.11 -5.958c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6c-.21 .352 -.427 .688 -.647 1.008" />
+      <path d="M20 21l2 -2l-2 -2" />
+      <path d="M17 17l-2 2l2 2" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation" aria-label="Toggle site navigation sidebar">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc" aria-label="Toggle table of contents sidebar">
+<label class="overlay sidebar-overlay" for="__navigation"></label>
+<label class="overlay toc-overlay" for="__toc"></label>
+
+<a class="skip-to-content muted-link" href="#furo-main-content">Skip to content</a>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <span class="icon"><svg><use href="#svg-menu"></use></svg></span>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">demos  documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+          <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+          <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon" for="__toc">
+        <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  <span class="sidebar-brand-text">demos  documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder="Search" name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Get Started</a></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/modules.html">DEMOS Modules</a><input aria-label="Toggle navigation of DEMOS Modules" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
+<li class="toctree-l2"><a class="reference internal" href="../api/aging_module.html">Aging Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/employment_module.html">Employment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/hh_reorg_module.html">Household Reorganization Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/kids_move_module.html">Kids Moving Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/mortality_module.html">Fatality Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/birth_module.html">Birth Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/education_module.html">Education Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/rebalancing_module.html">Household Rebalancing Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/income_module.html">Income Adjustment Module</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../api/configuration_module.html">DEMOS Configuration Structure</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Model Calibration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="variables.html">Variables Reference</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datasources.html">Data Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="default_configuration.html">Default Configuration File</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="advanced_configuration.html">Advanced Options for DEMOS</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container">
+          <div class="view-this-page">
+  <a class="muted-link" href="../_sources/pages/calibration.md.txt" title="View this page">
+    <svg><use href="#svg-eye"></use></svg>
+    <span class="visually-hidden">View this page</span>
+  </a>
+</div>
+<div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle" aria-label="Toggle Light / Dark / Auto color theme">
+              <svg class="theme-icon-when-auto-light"><use href="#svg-sun-with-moon"></use></svg>
+              <svg class="theme-icon-when-auto-dark"><use href="#svg-moon-with-sun"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon" for="__toc">
+            <span class="icon"><svg><use href="#svg-toc"></use></svg></span>
+          </label>
+        </div>
+        <article role="main" id="furo-main-content">
+          <section class="tex2jax_ignore mathjax_ignore" id="model-calibration">
+<h1>Model Calibration<a class="headerlink" href="#model-calibration" title="Link to this heading">¶</a></h1>
+<p>DEMOS includes a calibration system that adjusts the internal parameters of its estimated models (logit, multinomial logit, and regression) so that the simulation output matches observed real-world data. Without calibration, models will produce output strictly derived from their original estimation (fitting) data, which may not match conditions in the target geography or time period. Calibration shifts model predictions closer to observed aggregate statistics — such as the total number of births, deaths, or employed persons in a given year — while preserving the underlying behavioral relationships captured during model estimation.</p>
+<p>This page explains:</p>
+<ol class="arabic simple">
+<li><p><a class="reference internal" href="#how-calibration-works">How Calibration Works</a></p></li>
+<li><p><a class="reference internal" href="#modules-that-support-calibration">Modules That Support Calibration</a></p></li>
+<li><p><a class="reference internal" href="#preparing-observed-data-files">Preparing Observed Data Files</a></p></li>
+<li><p><a class="reference internal" href="#configuring-calibration-in-the-toml-file">Configuring Calibration in the TOML File</a></p></li>
+<li><p><a class="reference internal" href="#modules-with-simultaneous-calibration-employment-and-household-reorganization">Modules with Simultaneous Calibration: Employment and Household Reorganization</a></p></li>
+</ol>
+<hr class="docutils" />
+<section id="how-calibration-works">
+<span id="id1"></span><h2>How Calibration Works<a class="headerlink" href="#how-calibration-works" title="Link to this heading">¶</a></h2>
+<p>DEMOS uses an iterative adjustment procedure based on the <strong>Root Mean Square Error (RMSE)</strong> between the model’s predictions and a target value drawn from an observed data table. At each iteration, a single parameter (the model’s <em>intercept</em>) is nudged so that the aggregate predicted count (or share) moves toward the observed value. This continues until either the error falls below a user-specified tolerance, or the maximum number of iterations is reached.</p>
+<section id="the-update-rule">
+<h3>The update rule<a class="headerlink" href="#the-update-rule" title="Link to this heading">¶</a></h3>
+<p>At each iteration, the intercept <span class="math notranslate nohighlight">\(\beta_0\)</span> is updated as:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\beta_0 \leftarrow \beta_0 + \ln\!\left(\frac{\text{target}}{\sum \hat{y}}\right)\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(\sum \hat{y}\)</span> is the sum of the current model predictions and <span class="math notranslate nohighlight">\(\text{target}\)</span> is the observed value for the simulation year. This log-ratio update is a standard technique for intercept adjustment in discrete-choice and regression models: shifting the intercept by this amount is equivalent to re-scaling the aggregate predicted probability so it matches the aggregate observed rate.</p>
+</section>
+<section id="absolute-vs-relative-tolerance">
+<span id="id2"></span><h3>Absolute vs relative tolerance<a class="headerlink" href="#absolute-vs-relative-tolerance" title="Link to this heading">¶</a></h3>
+<p>The calibration procedure supports two ways of measuring how close “close enough” is:</p>
+<ul class="simple">
+<li><p><strong>Absolute</strong> (<code class="docutils literal notranslate"><span class="pre">tolerance_type</span> <span class="pre">=</span> <span class="pre">&quot;absolute&quot;</span></code>): The error is computed as the RMSE between the <em>total predicted count</em> and the <em>observed count</em>. The tolerance value is therefore expressed in the same units as the counts (e.g., number of people). Use this when your observed data contains raw counts.</p></li>
+<li><p><strong>Relative</strong> (<code class="docutils literal notranslate"><span class="pre">tolerance_type</span> <span class="pre">=</span> <span class="pre">&quot;relative&quot;</span></code>): The error is computed as the RMSE between the <em>predicted share</em> (predicted count divided by the eligible population size) and the <em>observed share</em>. The tolerance value is a fraction (e.g., <code class="docutils literal notranslate"><span class="pre">0.01</span></code> means 1%). Use this when your observed data contains rates or proportions.</p></li>
+</ul>
+<hr class="docutils" />
+</section>
+</section>
+<section id="modules-that-support-calibration">
+<span id="id3"></span><h2>Modules That Support Calibration<a class="headerlink" href="#modules-that-support-calibration" title="Link to this heading">¶</a></h2>
+<p>The following modules support calibration via the standard <code class="docutils literal notranslate"><span class="pre">calibration_procedure</span></code> configuration block:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Config key</p></th>
+<th class="head"><p>Calibrated model</p></th>
+<th class="head"><p>What is calibrated</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Mortality</strong> (<code class="docutils literal notranslate"><span class="pre">fatality</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mortality_module_config</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">mortality</span></code></p></td>
+<td><p>Total deaths per year</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Birth</strong> (<code class="docutils literal notranslate"><span class="pre">birth</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">birth_module_config</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">birth</span></code></p></td>
+<td><p>Total births per year</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The following modules have a <strong>different calibration interface</strong> (see <a class="reference internal" href="#modules-with-simultaneous-calibration-employment-and-household-reorganization">below</a>):</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Module</p></th>
+<th class="head"><p>Config key</p></th>
+<th class="head"><p>Note</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Employment</strong> (<code class="docutils literal notranslate"><span class="pre">employment</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">employment_module_config</span></code></p></td>
+<td><p>Simultaneous calibration across two sub-models</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Household Reorganization</strong> (<code class="docutils literal notranslate"><span class="pre">household_reorg</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">hh_reorg_module_config</span></code></p></td>
+<td><p>Simultaneous calibration across three sub-models</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The <strong>Kids Moving</strong> module (<code class="docutils literal notranslate"><span class="pre">kids_moving</span></code>) also performs hardcoded calibration internally; its parameters are controlled directly under <code class="docutils literal notranslate"><span class="pre">kids_moving_module_config</span></code> (see the <a class="reference internal" href="../api/configuration_module.html"><span class="std std-doc">reference configuration</span></a>).</p>
+<hr class="docutils" />
+</section>
+<section id="preparing-observed-data-files">
+<span id="id4"></span><h2>Preparing Observed Data Files<a class="headerlink" href="#preparing-observed-data-files" title="Link to this heading">¶</a></h2>
+<p>Each module that uses the standard calibration procedure requires a CSV file containing observed aggregate statistics, one row per year. The file must have a column named <strong><code class="docutils literal notranslate"><span class="pre">year</span></code></strong> (used as the row index) and either a <strong><code class="docutils literal notranslate"><span class="pre">count</span></code></strong> or <strong><code class="docutils literal notranslate"><span class="pre">share</span></code></strong> column depending on your chosen <code class="docutils literal notranslate"><span class="pre">tolerance_type</span></code>.</p>
+<section id="file-format-for-absolute-calibration-tolerance-type-absolute">
+<h3>File format for absolute calibration (<code class="docutils literal notranslate"><span class="pre">tolerance_type</span> <span class="pre">=</span> <span class="pre">&quot;absolute&quot;</span></code>)<a class="headerlink" href="#file-format-for-absolute-calibration-tolerance-type-absolute" title="Link to this heading">¶</a></h3>
+<p>The file must contain a column named <code class="docutils literal notranslate"><span class="pre">count</span></code> with the observed total number of events (deaths, births, etc.) for each year.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">year</span><span class="p">,</span><span class="n">count</span>
+<span class="mi">2010</span><span class="p">,</span><span class="mi">1452</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mi">1489</span>
+<span class="mi">2012</span><span class="p">,</span><span class="mi">1503</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+</section>
+<section id="file-format-for-relative-calibration-tolerance-type-relative">
+<h3>File format for relative calibration (<code class="docutils literal notranslate"><span class="pre">tolerance_type</span> <span class="pre">=</span> <span class="pre">&quot;relative&quot;</span></code>)<a class="headerlink" href="#file-format-for-relative-calibration-tolerance-type-relative" title="Link to this heading">¶</a></h3>
+<p>The file must contain a column named <code class="docutils literal notranslate"><span class="pre">share</span></code> with the observed <em>rate</em> (a number between 0 and 1) for each year.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">year</span><span class="p">,</span><span class="n">share</span>
+<span class="mi">2010</span><span class="p">,</span><span class="mf">0.0092</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mf">0.0094</span>
+<span class="mi">2012</span><span class="p">,</span><span class="mf">0.0096</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<blockquote>
+<div><p><strong>Important:</strong> The index column must be named <code class="docutils literal notranslate"><span class="pre">year</span></code>. Make sure this column contains integer years matching the years in your simulation run (between <code class="docutils literal notranslate"><span class="pre">base_year</span></code> and <code class="docutils literal notranslate"><span class="pre">forecast_year</span></code>). If a year is missing from the file, the simulation will raise an error when it tries to look up the target value.</p>
+</div></blockquote>
+<p>The file can be stored anywhere accessible from the configuration file. A common convention is to place these files in a subdirectory of your data folder, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="o">/</span>
+  <span class="n">my_region</span><span class="o">/</span>
+    <span class="n">observed_calibration_values</span><span class="o">/</span>
+      <span class="n">mortalities_over_time</span><span class="o">.</span><span class="n">csv</span>
+      <span class="n">births_over_time</span><span class="o">.</span><span class="n">csv</span>
+</pre></div>
+</div>
+<hr class="docutils" />
+</section>
+</section>
+<section id="configuring-calibration-in-the-toml-file">
+<span id="id5"></span><h2>Configuring Calibration in the TOML File<a class="headerlink" href="#configuring-calibration-in-the-toml-file" title="Link to this heading">¶</a></h2>
+<p>Calibration is configured inside the relevant module’s configuration block in your <code class="docutils literal notranslate"><span class="pre">demos_config.toml</span></code> file. Each calibratable module has a <code class="docutils literal notranslate"><span class="pre">calibration_procedure</span></code> sub-block.</p>
+<section id="full-example-mortality-module-with-absolute-calibration">
+<h3>Full example: mortality module with absolute calibration<a class="headerlink" href="#full-example-mortality-module-with-absolute-calibration" title="Link to this heading">¶</a></h3>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[mortality_module_config.calibration_procedure]</span>
+<span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
+<span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
+<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">30</span>
+<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span>
+
+<span class="k">[mortality_module_config.calibration_procedure.observed_values_table]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_fatalities_data&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/mortalities_over_time.csv&quot;</span>
+<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="full-example-birth-module-with-absolute-calibration">
+<h3>Full example: birth module with absolute calibration<a class="headerlink" href="#full-example-birth-module-with-absolute-calibration" title="Link to this heading">¶</a></h3>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[birth_module_config.calibration_procedure]</span>
+<span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
+<span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
+<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">60</span>
+<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1000</span>
+
+<span class="k">[birth_module_config.calibration_procedure.observed_values_table]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_births_data&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/births_over_time.csv&quot;</span>
+<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="parameter-reference">
+<h3>Parameter reference<a class="headerlink" href="#parameter-reference" title="Link to this heading">¶</a></h3>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">procedure_type</span></code></p></td>
+<td><p>string</p></td>
+<td><p>Yes</p></td>
+<td><p>Must be <code class="docutils literal notranslate"><span class="pre">&quot;rmse_error&quot;</span></code>. This is the only available calibration procedure.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tolerance_type</span></code></p></td>
+<td><p>string</p></td>
+<td><p>No</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;absolute&quot;</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">&quot;relative&quot;</span></code>. Controls how the error is measured. See <a class="reference internal" href="#absolute-vs-relative-tolerance">above</a>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tolerance</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Yes</p></td>
+<td><p>The error threshold below which calibration stops. Units depend on <code class="docutils literal notranslate"><span class="pre">tolerance_type</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_iter</span></code></p></td>
+<td><p>int</p></td>
+<td><p>No</p></td>
+<td><p>Maximum number of calibration iterations (default: 20). Calibration stops here even if the tolerance has not been reached.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">observed_values_table</span></code></p></td>
+<td><p>table block</p></td>
+<td><p>Yes</p></td>
+<td><p>Defines the CSV file with observed values. Follows the same format as any <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> entry.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="the-observed-values-table-sub-block">
+<h3>The <code class="docutils literal notranslate"><span class="pre">observed_values_table</span></code> sub-block<a class="headerlink" href="#the-observed-values-table-sub-block" title="Link to this heading">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">observed_values_table</span></code> block defines the file containing observed data. It uses the same fields as a regular data source entry:</p>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">file_type</span></code></p></td>
+<td><p>Must be <code class="docutils literal notranslate"><span class="pre">&quot;csv&quot;</span></code> for observed calibration data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">table_name</span></code></p></td>
+<td><p>An internal name for this table in DEMOS memory. Must be unique across all tables. Pick a descriptive name like <code class="docutils literal notranslate"><span class="pre">&quot;observed_fatalities_data&quot;</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">filepath</span></code></p></td>
+<td><p>Path to the CSV file, relative to your configuration file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">index_col</span></code></p></td>
+<td><p>Must be <code class="docutils literal notranslate"><span class="pre">&quot;year&quot;</span></code>.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="disabling-calibration">
+<h3>Disabling calibration<a class="headerlink" href="#disabling-calibration" title="Link to this heading">¶</a></h3>
+<p>To disable calibration for a module, simply remove or comment out the entire <code class="docutils literal notranslate"><span class="pre">calibration_procedure</span></code> block for that module:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># [mortality_module_config.calibration_procedure]</span>
+<span class="c1"># procedure_type = &quot;rmse_error&quot;</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>If the block is absent, DEMOS will run the model using the original estimated parameters with no adjustment.</p>
+<hr class="docutils" />
+</section>
+</section>
+<section id="modules-with-simultaneous-calibration-employment-and-household-reorganization">
+<span id="id6"></span><h2>Modules with Simultaneous Calibration: Employment and Household Reorganization<a class="headerlink" href="#modules-with-simultaneous-calibration-employment-and-household-reorganization" title="Link to this heading">¶</a></h2>
+<p>Two modules — <strong>Employment</strong> and <strong>Household Reorganization</strong> — use a more complex calibration strategy called <em>simultaneous calibration</em>. Instead of calibrating a single model against a single target, these modules adjust multiple models at the same time so that their <em>joint output</em> matches aggregate observed counts.</p>
+<p>This approach is necessary because the outcome of interest (e.g., total number of employed persons, total number of married persons) depends on the combined output of several sub-models that each influence the same population. Calibrating them independently would cause the adjustments to conflict with each other.</p>
+<section id="the-simultaneous-calibration-algorithm">
+<h3>The simultaneous calibration algorithm<a class="headerlink" href="#the-simultaneous-calibration-algorithm" title="Link to this heading">¶</a></h3>
+<p>Simultaneous calibration uses a <strong>momentum-based gradient descent</strong> approach. At each iteration:</p>
+<ol class="arabic simple">
+<li><p>All sub-models are run on their respective data to produce predictions.</p></li>
+<li><p>The combined predicted aggregate is compared to the observed aggregate.</p></li>
+<li><p>An update step <span class="math notranslate nohighlight">\(g\)</span> is computed using a momentum term to smooth out oscillations:</p></li>
+</ol>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[g_t = \alpha_t \left( \mu \cdot g_{t-1} + (1-\mu) \cdot \delta_t \right)\]</div>
+</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\alpha_t\)</span> is a <em>decaying learning rate</em> that starts at <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> and decreases toward zero as the iteration count approaches <code class="docutils literal notranslate"><span class="pre">max_iter</span></code></p></li>
+<li><p><span class="math notranslate nohighlight">\(\mu\)</span> is the <code class="docutils literal notranslate"><span class="pre">momentum_weight</span></code> (a value between 0 and 1 that controls how much the previous gradient update is retained)</p></li>
+<li><p><span class="math notranslate nohighlight">\(\delta_t = \ln(\text{target} / \hat{y}_t)\)</span> is the log-ratio between the target and current prediction</p></li>
+</ul>
+<ol class="arabic simple" start="4">
+<li><p>The intercepts of each sub-model are adjusted by <span class="math notranslate nohighlight">\(g_t\)</span>.</p></li>
+<li><p>Steps 1–4 repeat until the absolute error falls below <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> is reached.</p></li>
+</ol>
+<p>The decaying learning rate helps the algorithm converge: large adjustments happen early, and corrections become finer as the prediction approaches the target.</p>
+</section>
+<hr class="docutils" />
+<section id="employment-module">
+<h3>Employment module<a class="headerlink" href="#employment-module" title="Link to this heading">¶</a></h3>
+<p>The Employment module calibrates two sub-models simultaneously:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">enter_labor_force</span></code></strong>: A logit model predicting which unemployed persons (age ≥ 18) transition into employment.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">exit_labor_force</span></code></strong>: A logit model predicting which employed persons (age ≥ 18) exit the workforce.</p></li>
+</ul>
+<p>The calibration target is the <strong>total number of workers</strong> (employed persons) predicted after running both models, compared against an observed count loaded from the <code class="docutils literal notranslate"><span class="pre">observed_employment</span></code> table.</p>
+<blockquote>
+<div><p><strong>Important:</strong> The table name <code class="docutils literal notranslate"><span class="pre">observed_employment</span></code> is hard-coded. You must load this table via the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section of your configuration with exactly that name.</p>
+</div></blockquote>
+<section id="required-observed-data-table">
+<h4>Required observed data table<a class="headerlink" href="#required-observed-data-table" title="Link to this heading">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">observed_employment</span></code> table must be a CSV with a <code class="docutils literal notranslate"><span class="pre">year</span></code> index and a <code class="docutils literal notranslate"><span class="pre">count</span></code> column containing the total observed employed persons per year:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">year</span><span class="p">,</span><span class="n">count</span>
+<span class="mi">2010</span><span class="p">,</span><span class="mi">18423</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mi">18751</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Add it to your configuration under <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_employment&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/employment_obs.csv&quot;</span>
+<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="calibration-configuration-block">
+<h4>Calibration configuration block<a class="headerlink" href="#calibration-configuration-block" title="Link to this heading">¶</a></h4>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[employment_module_config.simultaneous_calibration_config]</span>
+<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
+<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20</span>
+<span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">2.0</span>
+<span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
+</pre></div>
+</div>
+</section>
+<section id="id7">
+<h4>Parameter reference<a class="headerlink" href="#id7" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tolerance</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Yes</p></td>
+<td><p>—</p></td>
+<td><p>Absolute error threshold (in number of workers) below which calibration stops.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_iter</span></code></p></td>
+<td><p>int</p></td>
+<td><p>No</p></td>
+<td><p>20</p></td>
+<td><p>Maximum number of calibration iterations.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code></p></td>
+<td><p>float</p></td>
+<td><p>No</p></td>
+<td><p>2.5</p></td>
+<td><p>Controls the step size at the first iteration. Decays linearly toward zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">momentum_weight</span></code></p></td>
+<td><p>float</p></td>
+<td><p>No</p></td>
+<td><p>0.3</p></td>
+<td><p>Weight applied to the previous gradient update. Values closer to 1 introduce more smoothing.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="disabling-employment-calibration">
+<h4>Disabling employment calibration<a class="headerlink" href="#disabling-employment-calibration" title="Link to this heading">¶</a></h4>
+<p>To disable simultaneous calibration for employment, comment out or remove the block:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># [employment_module_config.simultaneous_calibration_config]</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>When the block is absent, DEMOS checks whether individual model calibration procedures are defined under <code class="docutils literal notranslate"><span class="pre">employment_module_config.enter_model_calibration_procedure</span></code> and <code class="docutils literal notranslate"><span class="pre">employment_module_config.exit_model_calibration_procedure</span></code>. If neither is present, no calibration is performed. Note that simultaneous calibration and per-model calibration are mutually exclusive: defining both will raise a validation error.</p>
+</section>
+</section>
+<hr class="docutils" />
+<section id="household-reorganization-module">
+<h3>Household Reorganization module<a class="headerlink" href="#household-reorganization-module" title="Link to this heading">¶</a></h3>
+<p>The Household Reorganization module calibrates three sub-models simultaneously:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">marriage</span></code></strong>: A multinomial logit model predicting transitions for unmarried, non-cohabitating persons — options are: stay single, start cohabitating, or get married.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cohabitation</span></code></strong>: A multinomial logit model predicting transitions for cohabitating persons — options are: stay cohabitating, break up, or get married.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">divorce</span></code></strong>: A binary logit model predicting which married households undergo a divorce.</p></li>
+</ul>
+<p>The combined output of these three models determines the predicted number of married and divorced persons after the step. Calibration targets both of these counts simultaneously, weighting each proportionally to its magnitude in the observed data.</p>
+<blockquote>
+<div><p><strong>Important:</strong> The table name <code class="docutils literal notranslate"><span class="pre">observed_marrital_data</span></code> is hard-coded. You must load this table via the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section with exactly that name.</p>
+</div></blockquote>
+<section id="id8">
+<h4>Required observed data table<a class="headerlink" href="#id8" title="Link to this heading">¶</a></h4>
+<p>The <code class="docutils literal notranslate"><span class="pre">observed_marrital_data</span></code> table must be a CSV with a <code class="docutils literal notranslate"><span class="pre">year</span></code> index and columns <code class="docutils literal notranslate"><span class="pre">MAR</span></code> and <code class="docutils literal notranslate"><span class="pre">count</span></code>, containing observed counts for each marital status category per year. The values used during calibration are <code class="docutils literal notranslate"><span class="pre">MAR</span> <span class="pre">==</span> <span class="pre">1</span></code> (married) and <code class="docutils literal notranslate"><span class="pre">MAR</span> <span class="pre">==</span> <span class="pre">3</span></code> (divorced/separated):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">year</span><span class="p">,</span><span class="n">MAR</span><span class="p">,</span><span class="n">count</span>
+<span class="mi">2010</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">14200</span>
+<span class="mi">2010</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2300</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">14350</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">2280</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>Add it to your configuration under <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code>:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_marrital_data&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/marrital_status_over_time_obs.csv&quot;</span>
+<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="id9">
+<h4>Calibration configuration block<a class="headerlink" href="#id9" title="Link to this heading">¶</a></h4>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[hh_reorg_module_config.simultaneous_calibration_config]</span>
+<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5000</span>
+<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span>
+<span class="n">learning_rate</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.5</span>
+<span class="n">momentum_weight</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.3</span>
+</pre></div>
+</div>
+</section>
+<section id="id10">
+<h4>Parameter reference<a class="headerlink" href="#id10" title="Link to this heading">¶</a></h4>
+<div class="table-wrapper colwidths-auto docutils container">
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Parameter</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Required</p></th>
+<th class="head"><p>Default</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">tolerance</span></code></p></td>
+<td><p>float</p></td>
+<td><p>Yes</p></td>
+<td><p>—</p></td>
+<td><p>Combined RMSE threshold (in number of persons) below which calibration stops. The error combines the residuals for the married and divorced counts.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">max_iter</span></code></p></td>
+<td><p>int</p></td>
+<td><p>No</p></td>
+<td><p>20</p></td>
+<td><p>Maximum number of calibration iterations.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">learning_rate</span></code></p></td>
+<td><p>float</p></td>
+<td><p>No</p></td>
+<td><p>2.5</p></td>
+<td><p>Controls the initial step size. Decays linearly toward zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">momentum_weight</span></code></p></td>
+<td><p>float</p></td>
+<td><p>No</p></td>
+<td><p>0.3</p></td>
+<td><p>Weight applied to the previous gradient update.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="how-intercept-updates-are-applied">
+<h4>How intercept updates are applied<a class="headerlink" href="#how-intercept-updates-are-applied" title="Link to this heading">¶</a></h4>
+<p>Each of the three sub-models is adjusted through a different parameter:</p>
+<ul class="simple">
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">divorce</span></code></strong>: The model’s primary intercept (<code class="docutils literal notranslate"><span class="pre">fitted_parameters[0]</span></code>) is shifted by the divorce gradient.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">marriage</span></code></strong>: The <code class="docutils literal notranslate"><span class="pre">married</span></code> outcome coefficient in the model’s coefficient table is shifted by the marriage gradient.</p></li>
+<li><p><strong><code class="docutils literal notranslate"><span class="pre">cohabitation</span></code></strong>: The <code class="docutils literal notranslate"><span class="pre">marriage</span></code> outcome coefficient in the model’s coefficient table is shifted by the cohabitation gradient (cohabitation → marriage transitions are steered to match the marriage target).</p></li>
+</ul>
+<p>The marriage and cohabitation gradients are weighted by the <em>proportion of the married count</em> relative to the total observed marital transitions. The divorce gradient is weighted by the <em>proportion of the divorced count</em>. This ensures that the calibration effort is distributed in proportion to the size of each phenomenon.</p>
+</section>
+<section id="disabling-household-reorganization-calibration">
+<h4>Disabling household reorganization calibration<a class="headerlink" href="#disabling-household-reorganization-calibration" title="Link to this heading">¶</a></h4>
+<p>To disable calibration for household reorganization, comment out or remove the block:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># [hh_reorg_module_config.simultaneous_calibration_config]</span>
+<span class="c1"># ...</span>
+</pre></div>
+</div>
+<p>When absent, models run with their original estimated parameters.</p>
+</section>
+</section>
+</section>
+<hr class="docutils" />
+<section id="choosing-good-tolerance-values">
+<h2>Choosing Good Tolerance Values<a class="headerlink" href="#choosing-good-tolerance-values" title="Link to this heading">¶</a></h2>
+<p>Choosing a tolerance that is too tight (very small) can cause calibration to run for the full <code class="docutils literal notranslate"><span class="pre">max_iter</span></code> without converging, adding unnecessary compute time. Choosing one that is too loose means the model output may deviate substantially from observed data.</p>
+<p>A practical starting point:</p>
+<ul class="simple">
+<li><p>For <strong>absolute</strong> tolerances, set the tolerance to approximately 1–5% of the observed count for the most common year. For example, if you observe ~1,500 deaths per year, a tolerance of <code class="docutils literal notranslate"><span class="pre">30</span></code> (≈2%) is reasonable.</p></li>
+<li><p>For <strong>relative</strong> tolerances, values between <code class="docutils literal notranslate"><span class="pre">0.005</span></code> and <code class="docutils literal notranslate"><span class="pre">0.02</span></code> (0.5%–2%) work well for most demographic rates.</p></li>
+<li><p>For <strong>simultaneous calibration</strong>, the tolerance represents the absolute difference in person counts. Values of 100–5,000 are typical depending on the size of the synthetic population.</p></li>
+</ul>
+<p>If calibration is not converging even after increasing <code class="docutils literal notranslate"><span class="pre">max_iter</span></code>, consider increasing the <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> slightly. If the algorithm oscillates (error fluctuates without declining), try increasing <code class="docutils literal notranslate"><span class="pre">momentum_weight</span></code> toward 0.5–0.7 or decreasing <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>.</p>
+</section>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="variables.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Variables Reference</div>
+              </div>
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="../api/configuration_module.html">
+              <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">DEMOS Configuration Structure</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2025, National Laboratory of the Rockies
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer">
+      
+      
+      <div class="toc-sticky toc-scroll">
+        <div class="toc-title-container">
+          <span class="toc-title">
+            On this page
+          </span>
+        </div>
+        <div class="toc-tree-container">
+          <div class="toc-tree">
+            <ul>
+<li><a class="reference internal" href="#">Model Calibration</a><ul>
+<li><a class="reference internal" href="#how-calibration-works">How Calibration Works</a><ul>
+<li><a class="reference internal" href="#the-update-rule">The update rule</a></li>
+<li><a class="reference internal" href="#absolute-vs-relative-tolerance">Absolute vs relative tolerance</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modules-that-support-calibration">Modules That Support Calibration</a></li>
+<li><a class="reference internal" href="#preparing-observed-data-files">Preparing Observed Data Files</a><ul>
+<li><a class="reference internal" href="#file-format-for-absolute-calibration-tolerance-type-absolute">File format for absolute calibration (<code class="docutils literal notranslate"><span class="pre">tolerance_type</span> <span class="pre">=</span> <span class="pre">&quot;absolute&quot;</span></code>)</a></li>
+<li><a class="reference internal" href="#file-format-for-relative-calibration-tolerance-type-relative">File format for relative calibration (<code class="docutils literal notranslate"><span class="pre">tolerance_type</span> <span class="pre">=</span> <span class="pre">&quot;relative&quot;</span></code>)</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#configuring-calibration-in-the-toml-file">Configuring Calibration in the TOML File</a><ul>
+<li><a class="reference internal" href="#full-example-mortality-module-with-absolute-calibration">Full example: mortality module with absolute calibration</a></li>
+<li><a class="reference internal" href="#full-example-birth-module-with-absolute-calibration">Full example: birth module with absolute calibration</a></li>
+<li><a class="reference internal" href="#parameter-reference">Parameter reference</a></li>
+<li><a class="reference internal" href="#the-observed-values-table-sub-block">The <code class="docutils literal notranslate"><span class="pre">observed_values_table</span></code> sub-block</a></li>
+<li><a class="reference internal" href="#disabling-calibration">Disabling calibration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#modules-with-simultaneous-calibration-employment-and-household-reorganization">Modules with Simultaneous Calibration: Employment and Household Reorganization</a><ul>
+<li><a class="reference internal" href="#the-simultaneous-calibration-algorithm">The simultaneous calibration algorithm</a></li>
+<li><a class="reference internal" href="#employment-module">Employment module</a><ul>
+<li><a class="reference internal" href="#required-observed-data-table">Required observed data table</a></li>
+<li><a class="reference internal" href="#calibration-configuration-block">Calibration configuration block</a></li>
+<li><a class="reference internal" href="#id7">Parameter reference</a></li>
+<li><a class="reference internal" href="#disabling-employment-calibration">Disabling employment calibration</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#household-reorganization-module">Household Reorganization module</a><ul>
+<li><a class="reference internal" href="#id8">Required observed data table</a></li>
+<li><a class="reference internal" href="#id9">Calibration configuration block</a></li>
+<li><a class="reference internal" href="#id10">Parameter reference</a></li>
+<li><a class="reference internal" href="#how-intercept-updates-are-applied">How intercept updates are applied</a></li>
+<li><a class="reference internal" href="#disabling-household-reorganization-calibration">Disabling household reorganization calibration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#choosing-good-tolerance-values">Choosing Good Tolerance Values</a></li>
+</ul>
+</li>
+</ul>
+
+          </div>
+        </div>
+      </div>
+      
+      
+    </aside>
+  </div>
+</div><script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/scripts/furo.js?v=46bd48cc"></script>
+    <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </body>
+</html>
