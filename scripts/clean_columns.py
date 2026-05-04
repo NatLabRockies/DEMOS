@@ -39,9 +39,11 @@ if __name__ == "__main__":
 
     # Add random values between 1 and 4 to the "job_industry" column and "job_occupation" column
     households_df["job_industry"] = pd.Series(
-        np.random.choice([1, 2, 3, 4], size=len(households_df)), index=households_df.index
+        np.random.choice([1, 2, 3, 4], size=len(households_df)),
+        index=households_df.index,
     )
     households_df["job_occupation"] = pd.Series(
-        np.random.choice([1, 2, 3, 4], size=len(households_df)), index=households_df.index
+        np.random.choice([1, 2, 3, 4], size=len(households_df)),
+        index=households_df.index,
     )
     households_df.to_hdf(args.output, key="households", mode="a")
