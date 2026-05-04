@@ -41,8 +41,14 @@ RELATIONAL_ADJUSTMENT_MAPPING = pd.DataFrame(
         "17",
     ],
 )
-orca.add_table("relational_adjustment_mapping", RELATIONAL_ADJUSTMENT_MAPPING)
 
+
+def _register_relational_adjustment_mapping():
+    if "relational_adjustment_mapping" not in orca.list_tables():
+        orca.add_table("relational_adjustment_mapping", RELATIONAL_ADJUSTMENT_MAPPING)
+
+
+_register_relational_adjustment_mapping()
 # FIPS Code to Income Quartile
 STATE_QUARTILE_LABELS = {
     "01": 1,  # Alabama
