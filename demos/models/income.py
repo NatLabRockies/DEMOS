@@ -1,7 +1,7 @@
 import orca
 import numpy as np
 import pandas as pd
-from demos.config import DEMOSConfig, get_config
+from config import DEMOSConfig, get_config
 from templates.utils.models import columns_in_formula
 from templates import estimated_models, modelmanager as mm
 import time
@@ -144,11 +144,6 @@ def true_hh_workers(persons):
     return persons.worker.groupby(persons.household_id).sum()
 
 
-# @orca.column("households")
-# def not_met_area(households):
-#     return pd.Series(np.ones(households.local.shape[0]), index=households.local.index)
-
-
 # Education variables
 # TODO: This numbers for education are not updated beyon 19 in the education model
 @orca.column("households")
@@ -179,13 +174,6 @@ def hh_head_edu_bin3(households, persons):
     )
 
 
-# Job industry variables
-# TODO: This column should be implemented more rigorously based on actual job industry data rather than random assignment
-# @orca.column("households", cache=True, cache_scope="step")
-# def job_industry(households):
-#     return pd.Series(np.random.choice([1, 2, 3, 4]), index=households.index)
-
-
 @orca.column("households")
 def job_industry_bin1(households):  # First quartile
     return (households["job_industry"] == 1).astype(int)
@@ -204,12 +192,6 @@ def job_industry_bin3(households):
 @orca.column("households")
 def job_industry_bin4(households):
     return (households["job_industry"] == 4).astype(int)
-
-
-# TODO: This column should be implemented more rigorously based on actual job industry data rather than random assignment
-# @orca.column("households", cache=True, cache_scope="step")
-# def job_occupation(households):
-#     return pd.Series(np.random.choice([1, 2, 3, 4]), index=households.index)
 
 
 @orca.column("households")

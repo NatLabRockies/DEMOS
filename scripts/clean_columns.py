@@ -11,6 +11,7 @@ if __name__ == "__main__":
 
     # Read H5 file and filter a list of hardn0coded columns
     persons_df = pd.read_hdf(args.input, key="persons")
+    households_df = pd.read_hdf(args.input, key="households")
     persons_required_columns = [
         "age",
         "sex",
@@ -30,7 +31,6 @@ if __name__ == "__main__":
     persons_df.to_hdf(args.output, key="persons", mode="w")
 
     # Do the same for the "households" table
-    households_df = pd.read_hdf(args.input, key="households")
     households_required_columns = [
         "income",
         "lcm_county_id",
@@ -44,6 +44,10 @@ if __name__ == "__main__":
     )
     households_df["job_occupation"] = pd.Series(
         np.random.choice([1, 2, 3, 4], size=len(households_df)),
+        index=households_df.index,
+    )
+    households_df["not_met_area"] = pd.Series(
+        np.ones(len(households_df)),
         index=households_df.index,
     )
     households_df.to_hdf(args.output, key="households", mode="a")
