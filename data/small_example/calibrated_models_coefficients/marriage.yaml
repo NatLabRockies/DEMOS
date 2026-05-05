@@ -26,15 +26,15 @@ saved_object:
     - -0.603113
   spec_names:
   - intercept
-  - agebin2
-  - agebin3
-  - agebin4
-  - gender2
-  - employbin2
-  - employbin3
-  - edubin2
-  - edubin3
-  - race_blk
+  - age_23_35
+  - age_36_60
+  - age_60plus
+  - sex_female
+  - emp_idle_under60
+  - emp_idle_over60
+  - edu_hs_ged
+  - edu_college_plus
+  - race_black
   name: marriage
   tables: persons
   out_tables: persons

@@ -126,11 +126,16 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     ].values
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
 
+    not_met_area_assignment = households.local.loc[
+        old_household_id, "not_met_area"
+    ].values
+
     new_households = get_new_households(kids_moving_index.sum())
     persons.local.loc[kids_moving_index, "household_id"] = new_households
     persons.local.loc[kids_moving_index, "relate"] = 0
     households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
+    households.local.loc[new_households, "not_met_area"] = not_met_area_assignment
 
 
 def run_and_calibrate_model(persons):
@@ -186,3 +191,138 @@ def run_and_calibrate_model(persons):
     print(f"{calibrate_iteration} iteration error: {error}")
 
     return kids_moving
+
+
+# -----------------------------------------------------------------------------------------
+# KIDS MOVE MODEL COLUMNS (moved from variables.py)
+# -----------------------------------------------------------------------------------------
+
+
+@orca.column("persons")
+def age_km_16_18(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(16, 18, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_km_19_20(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(19, 20, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_km_21_25(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(21, 25, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_km_26_30(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(26, 30, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_km_30plus(persons):
+    p = persons.to_frame(columns=["age"])
+    return p.gt(30) * 1
+
+
+# emp_idle_under60 × age_km cross-products
+@orca.column("persons")
+def emp_idle_under60_age_km_19_20(persons):
+    p = persons.to_frame(columns=["emp_idle_under60", "age_km_19_20"])
+    return p["emp_idle_under60"] * p["age_km_19_20"]
+
+
+@orca.column("persons")
+def emp_idle_under60_age_km_21_25(persons):
+    p = persons.to_frame(columns=["emp_idle_under60", "age_km_21_25"])
+    return p["emp_idle_under60"] * p["age_km_21_25"]
+
+
+@orca.column("persons")
+def emp_idle_under60_age_km_26_30(persons):
+    p = persons.to_frame(columns=["emp_idle_under60", "age_km_26_30"])
+    return p["emp_idle_under60"] * p["age_km_26_30"]
+
+
+@orca.column("persons")
+def emp_idle_under60_age_km_30plus(persons):
+    p = persons.to_frame(columns=["emp_idle_under60", "age_km_30plus"])
+    return p["emp_idle_under60"] * p["age_km_30plus"]
+
+
+# emp_idle_over60 × age_km cross-products
+@orca.column("persons")
+def emp_idle_over60_age_km_19_20(persons):
+    p = persons.to_frame(columns=["emp_idle_over60", "age_km_19_20"])
+    return p["emp_idle_over60"] * p["age_km_19_20"]
+
+
+@orca.column("persons")
+def emp_idle_over60_age_km_21_25(persons):
+    p = persons.to_frame(columns=["emp_idle_over60", "age_km_21_25"])
+    return p["emp_idle_over60"] * p["age_km_21_25"]
+
+
+@orca.column("persons")
+def emp_idle_over60_age_km_26_30(persons):
+    p = persons.to_frame(columns=["emp_idle_over60", "age_km_26_30"])
+    return p["emp_idle_over60"] * p["age_km_26_30"]
+
+
+@orca.column("persons")
+def emp_idle_over60_age_km_30plus(persons):
+    p = persons.to_frame(columns=["emp_idle_over60", "age_km_30plus"])
+    return p["emp_idle_over60"] * p["age_km_30plus"]
+
+
+# edu_hs_ged × age_km cross-products
+@orca.column("persons")
+def edu_hs_ged_age_km_19_20(persons):
+    p = persons.to_frame(columns=["age_km_19_20", "edu_hs_ged"])
+    return p["age_km_19_20"] * p["edu_hs_ged"]
+
+
+@orca.column("persons")
+def edu_hs_ged_age_km_21_25(persons):
+    p = persons.to_frame(columns=["age_km_21_25", "edu_hs_ged"])
+    return p["age_km_21_25"] * p["edu_hs_ged"]
+
+
+@orca.column("persons")
+def edu_hs_ged_age_km_26_30(persons):
+    p = persons.to_frame(columns=["age_km_26_30", "edu_hs_ged"])
+    return p["age_km_26_30"] * p["edu_hs_ged"]
+
+
+@orca.column("persons")
+def edu_hs_ged_age_km_30plus(persons):
+    p = persons.to_frame(columns=["age_km_30plus", "edu_hs_ged"])
+    return p["age_km_30plus"] * p["edu_hs_ged"]
+
+
+# edu_college_plus × age_km cross-products
+@orca.column("persons")
+def edu_college_plus_age_km_19_20(persons):
+    p = persons.to_frame(columns=["age_km_19_20", "edu_college_plus"])
+    return p["age_km_19_20"] * p["edu_college_plus"]
+
+
+@orca.column("persons")
+def edu_college_plus_age_km_21_25(persons):
+    p = persons.to_frame(columns=["age_km_21_25", "edu_college_plus"])
+    return p["age_km_21_25"] * p["edu_college_plus"]
+
+
+@orca.column("persons")
+def edu_college_plus_age_km_26_30(persons):
+    p = persons.to_frame(columns=["age_km_26_30", "edu_college_plus"])
+    return p["age_km_26_30"] * p["edu_college_plus"]
+
+
+@orca.column("persons")
+def edu_college_plus_age_km_30plus(persons):
+    p = persons.to_frame(columns=["age_km_30plus", "edu_college_plus"])
+    return p["age_km_30plus"] * p["edu_college_plus"]

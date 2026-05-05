@@ -1,4 +1,5 @@
 import orca
+import pandas as pd
 from config import DEMOSConfig, get_config
 from loguru import logger
 
@@ -127,3 +128,45 @@ def validate_persons_table(persons, households):
             persons.local.loc[cohabitating_people_married_idx, "MAR"] = 0
 
     households.local = households.local.reindex(sorted(persons.household_id.unique()))
+
+
+@orca.step()
+def normalize_table_dtypes(persons, households):
+    """
+    Ensure columns in the persons and households tables have consistent dtypes
+    before orca's checkpoint is written.
+
+    Without this step, PyTables raises a PerformanceWarning because object-dtype
+    columns can contain mixed Python types (e.g. strings + float NaN when new
+    household rows are created with only lcm_county_id set, or integer IDs stored
+    as object). PyTables then falls back to pickling those columns, which is
+    slower and produces larger output files.
+
+    This step inspects every object-dtype column generically:
+    - All non-null values are strings  → fill NaN with ''
+    - All non-null values are numeric  → cast to float via pd.to_numeric
+    - All non-null values are boolean  → fill NaN with False, cast to bool
+    """
+
+    def _normalize(df):
+        for col in df.select_dtypes(include="object").columns:
+            s = df[col]
+            if not s.isna().any():
+                continue  # no NaN, nothing to fix
+            non_null = s.dropna()
+            if len(non_null) == 0:
+                continue  # fully-empty column, skip
+            inferred = pd.api.types.infer_dtype(non_null)
+            if inferred == "string":
+                df[col] = s.fillna("")
+            elif inferred in ("integer", "mixed-integer", "floating"):
+                df[col] = pd.to_numeric(s, errors="coerce")
+            elif inferred == "boolean":
+                df[col] = s.where(s.notna(), other=False).astype(bool)
+
+    p = persons.local
+    h = households.local
+    _normalize(p)
+    _normalize(h)
+    persons.local = p
+    households.local = h

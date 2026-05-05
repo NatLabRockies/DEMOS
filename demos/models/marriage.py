@@ -48,10 +48,20 @@ def update_married_households_random(
     if n_weddings == 0 and n_newcohabs == 0:
         return
 
+    # Compute per-person income: household income divided by number of persons in household
+    hh_sizes = persons.local.groupby("household_id").size()
+    person_hh_id = persons.local["household_id"]
+    per_person_income = pd.Series(
+        households.local["income"].reindex(person_hh_id.values).values
+        / hh_sizes.reindex(person_hh_id.values).values,
+        index=persons.local.index,
+    )
+
     ## Selecting individuals for marriage and cohabitation
     female_newmarried = (
         persons.local.loc[(married_reindexed == 2) & female_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_weddings)
@@ -59,7 +69,8 @@ def update_married_households_random(
     )
     male_newmarried = (
         persons.local.loc[(married_reindexed == 2) & male_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_weddings)
@@ -67,7 +78,8 @@ def update_married_households_random(
     )
     female_newcohab = (
         persons.local.loc[(married_reindexed == 1) & female_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_newcohabs)
@@ -75,7 +87,8 @@ def update_married_households_random(
     )
     male_newcohab = (
         persons.local.loc[(married_reindexed == 1) & male_index][
-            ["age", "household_id", "earning", "relate"]
+            # ["age", "household_id", "earning", "relate"]
+            ["age", "household_id", "relate"]
         ]
         .sort_index(axis=0)
         .sample(n_newcohabs)
@@ -84,6 +97,10 @@ def update_married_households_random(
 
     ## Modifying auxiliary dataframe to compute new relation and household_id
     ### Pairs are selected by age
+    female_newmarried["per_person_income"] = per_person_income.loc[
+        female_newmarried.index
+    ]
+    male_newmarried["per_person_income"] = per_person_income.loc[male_newmarried.index]
     female_newmarried.sort_values("age", inplace=True)
     male_newmarried.sort_values("age", inplace=True)
     newmarried = pd.concat([male_newmarried, female_newmarried], axis=0)
@@ -95,11 +112,15 @@ def update_married_households_random(
     newmarried["rnd"] = np.random.random(len(newmarried))
 
     newmarried.sort_values(
-        by=["hh_group", "earning", "rnd"], ascending=[True, False, True], inplace=True
+        by=["hh_group", "per_person_income", "rnd"],
+        ascending=[True, False, True],
+        inplace=True,
     )
     newmarried["new_relate"] = np.arange(len(newmarried)) % 2  # [0, 1, 0, 1, ...]
     newmarried["did_marry"] = True
 
+    female_newcohab["per_person_income"] = per_person_income.loc[female_newcohab.index]
+    male_newcohab["per_person_income"] = per_person_income.loc[male_newcohab.index]
     female_newcohab.sort_values("age", inplace=True)
     male_newcohab.sort_values("age", inplace=True)
     newcohab = pd.concat([male_newcohab, female_newcohab], axis=0)
@@ -112,7 +133,9 @@ def update_married_households_random(
     newcohab["rnd"] = np.random.random(len(newcohab))
 
     newcohab.sort_values(
-        by=["hh_group", "earning", "rnd"], ascending=[True, False, True], inplace=True
+        by=["hh_group", "per_person_income", "rnd"],
+        ascending=[True, False, True],
+        inplace=True,
     )
     newcohab["new_relate"] = (np.arange(len(newcohab)) % 2) * 13  # [0, 13, 0, 13, ...]
     newcohab["did_marry"] = False
@@ -205,6 +228,10 @@ def update_married_households_random(
         all_df.loc[first_index & neither_head_index, "household_id"], "lcm_county_id"
     ].values
     households.local.loc[new_hh_ids, "lcm_county_id"] = county_assignment
+    not_met_area_assignment = households.local.loc[
+        all_df.loc[first_index & neither_head_index, "household_id"], "not_met_area"
+    ].values
+    households.local.loc[new_hh_ids, "not_met_area"] = not_met_area_assignment
     ## Decide who is household head in the households where the head left
     head_left_index = (all_df.relate == 0) & (all_df.household_id != all_df.new_hh_id)
     head_left_households = all_df[head_left_index]["household_id"].unique()
@@ -283,6 +310,10 @@ def update_divorce(persons, households, divorce_list, get_new_households):
         households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
+    not_met_area_assignment = households.local.loc[
+        old_household_id, "not_met_area"
+    ].values
+    households.local.loc[new_households, "not_met_area"] = not_met_area_assignment
 
     ## Updates for people staying
     persons.local.loc[person_staying_index, "relate"] = 0

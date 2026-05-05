@@ -15,8 +15,8 @@ autodoc_mock_imports = ["pydantic", "templates"]
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = "demos"
-copyright = "2025, National Renewable Energy Laboratory"
-author = "National Renewable Energy Laboratory"
+copyright = "2025, National Laboratory of the Rockies"
+author = "National Laboratory of the Rockies"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -63,7 +63,13 @@ html_theme = "furo"
 html_static_path = ["_static"]
 
 # -- MyST settings -----------------------------------------------------------
-myst_enable_extensions = ["deflist", "html_admonition", "html_image", "colon_fence"]
+myst_enable_extensions = [
+    "deflist",
+    "html_admonition",
+    "html_image",
+    "colon_fence",
+    "dollarmath",
+]
 
 # Sphinx multiversion config
 smv_branch_whitelist = r"^(main|dev|yep/.*)$"

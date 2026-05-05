@@ -30,12 +30,12 @@ saved_object:
   - -0.888188
   - -1.517554
   - -1.374318
-  model_expression: kid_moves ~ agebin5_mo + agebin2_mo + agebin3_mo + agebin4_mo
-    + gender2 + employbin2 + employbin3 + edubin2 + edubin3 + race_wht + race_asn
-    + employ2_agebin5_mo + employ2_agebin2_mo + employ2_agebin3_mo + employ2_agebin4_mo
-    + employ3_agebin5_mo + employ3_agebin2_mo + employ3_agebin3_mo + employ3_agebin4_mo
-    + edu2_agebin5_mo + edu2_agebin2_mo + edu2_agebin3_mo + edu2_agebin4_mo + edu3_agebin5_mo
-    + edu3_agebin2_mo + edu3_agebin3_mo + edu3_agebin4_mo + 1
+  model_expression: kid_moves ~ age_km_30plus + age_km_19_20 + age_km_21_25 + age_km_26_30
+    + sex_female + emp_idle_under60 + emp_idle_over60 + edu_hs_ged + edu_college_plus + race_white + race_asian_pi
+    + emp_idle_under60_age_km_30plus + emp_idle_under60_age_km_19_20 + emp_idle_under60_age_km_21_25 + emp_idle_under60_age_km_26_30
+    + emp_idle_over60_age_km_30plus + emp_idle_over60_age_km_19_20 + emp_idle_over60_age_km_21_25 + emp_idle_over60_age_km_26_30
+    + edu_hs_ged_age_km_30plus + edu_hs_ged_age_km_19_20 + edu_hs_ged_age_km_21_25 + edu_hs_ged_age_km_26_30
+    + edu_college_plus_age_km_30plus + edu_college_plus_age_km_19_20 + edu_college_plus_age_km_21_25 + edu_college_plus_age_km_26_30 + 1
   name: kids_move
   out_column: kid_moves
   out_filters: relate in [2, 3, 4, 7, 9, 14]

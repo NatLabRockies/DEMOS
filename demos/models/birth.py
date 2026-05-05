@@ -102,7 +102,7 @@ def birth(persons, households, get_new_person_id):
         .reset_index()
         .merge(
             households.to_frame(
-                ["hh_race_of_head", "hh_race_id_of_head", "household_id"]
+                ["hh_head_race_str", "hh_head_race_id", "household_id"]
             ).reset_index(),
             on="household_id",
         )
@@ -110,7 +110,7 @@ def birth(persons, households, get_new_person_id):
     one_race_hh_filter = (hh_races.loc[babies.household_id]["num_races"] == 1).values
     babies["race_id"] = 9
     babies.loc[one_race_hh_filter, "race_id"] = hh_races.loc[
-        babies.loc[one_race_hh_filter, "household_id"], "hh_race_id_of_head"
+        babies.loc[one_race_hh_filter, "household_id"], "hh_head_race_id"
     ].values
     babies["race"] = babies["race_id"].map({1: "white", 2: "black"})
     babies["race"].fillna("other", inplace=True)
@@ -140,3 +140,68 @@ def run_and_calibrate_birth_model(persons, households):
             birth_model, birth_model_data
         )
     return birth_model.predict(birth_model_data)
+
+
+# -----------------------------------------------------------------------------------------
+# BIRTH MODEL COLUMNS (moved from variables.py)
+# -----------------------------------------------------------------------------------------
+
+
+@orca.column("households")
+def hh_n_persons(households, persons):
+    counts = persons.local.groupby("household_id").size()
+    return households.local.join(counts.rename("hh_n_persons"))["hh_n_persons"]
+
+
+@orca.column("households")
+def hh_fsize_bin23(households):
+    df = households.to_frame(columns=["hh_n_persons"])
+    return df["hh_n_persons"].isin([2, 3]) * 1
+
+
+@orca.column("households")
+def hh_fsize_bingt3(households):
+    df = households.to_frame(columns=["hh_n_persons"])
+    return df.gt(3) * 1
+
+
+@orca.column("households")
+def hh_birth_age_lt27(persons, households):
+    df = persons.to_frame(columns=["household_id", "relate", "sex", "age"])
+    df.loc[:, "is_head"] = np.where(df["relate"] == 0, 1, 0)
+    df.loc[:, "is_female"] = np.where(df["sex"] == 2, 1, 0)
+    df.loc[:, "is_head_or_spouse"] = np.where(df["relate"].isin([0, 1, 13]), 1, 0)
+    df.loc[:, "age_head"] = df["age"] * df["is_head"]
+    df.loc[:, "age_female"] = df["age"] * df["is_female"] * df["is_head_or_spouse"]
+    df.loc[:, "is_spouse"] = np.where(df["relate"].isin([1, 13]), 1, 0)
+    df.loc[:, "head_spouse"] = df["is_head"] + df["is_spouse"]
+    df = df.groupby("household_id").agg(
+        age_head=("age_head", "sum"),
+        age_female=("age_female", "sum"),
+        head_spouse=("head_spouse", "sum"),
+    )
+    df.loc[:, "age_final"] = np.where(
+        df["head_spouse"] >= 2, df["age_female"], df["age_head"]
+    )
+    return (df["age_final"] <= 27).astype(int)
+
+
+@orca.column("households")
+def hh_birth_age_27_35(persons, households):
+    df = persons.to_frame(columns=["household_id", "relate", "sex", "age"])
+    df.loc[:, "is_head"] = np.where(df["relate"] == 0, 1, 0)
+    df.loc[:, "is_female"] = np.where(df["sex"] == 2, 1, 0)
+    df.loc[:, "is_head_or_spouse"] = np.where(df["relate"].isin([0, 1, 13]), 1, 0)
+    df.loc[:, "age_head"] = df["age"] * df["is_head"]
+    df.loc[:, "age_female"] = df["age"] * df["is_female"] * df["is_head_or_spouse"]
+    df.loc[:, "is_spouse"] = np.where(df["relate"].isin([1, 13]), 1, 0)
+    df.loc[:, "head_spouse"] = df["is_head"] + df["is_spouse"]
+    df = df.groupby("household_id").agg(
+        age_head=("age_head", "sum"),
+        age_female=("age_female", "sum"),
+        head_spouse=("head_spouse", "sum"),
+    )
+    df.loc[:, "age_final"] = np.where(
+        df["head_spouse"] >= 2, df["age_female"], df["age_head"]
+    )
+    return (df["age_final"].between(27, 35, inclusive="right")).astype(int)

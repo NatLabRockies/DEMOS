@@ -1,0 +1,42 @@
+modelmanager_version: 0.2.dev9
+
+saved_object:
+    filters: null
+    fitted_parameters:
+    - 9.24495115
+    - 0.00417772
+    - 0.05948244
+    - 0.32053385
+    - -0.08125172
+    - 0.41666961
+    - 0.7286613
+    - 0.84074453
+    - 0.47524105
+    - 0.39585793
+    - 0.19305833
+    - 0.49488234
+    - 0.23930184
+    - 0.18253791
+    - 0.02907993
+    - 0.01390249
+    - 0.1580996
+    - -0.26774506
+    - -0.07188592
+    - -0.15350612
+    - -0.17286581
+    - -0.27394566
+    model_expression: income ~ hh_head_age + true_hh_size + true_hh_workers + not_met_area + hh_head_edu_bin1 + hh_head_edu_bin2 +
+      hh_head_edu_bin3 + job_industry_bin1 + job_industry_bin2 + job_industry_bin3 + 
+      job_occupation_bin1 + job_occupation_bin2 + job_occupation_bin3 + 
+      state_quart_2 + state_quart_3 + state_quart_4 +
+      hh_head_race_black + hh_head_race_native_am + hh_head_race_asian + hh_head_race_hawaiian + hh_head_race_acs_other + 1
+    name: income_nworkers
+    out_column: null
+    out_filters: null
+    out_tables: null
+    out_transform: null
+    tables: households
+    summary_table: null
+    tags: []
+    template: RegressionStep
+    template_version: 0.2.dev9

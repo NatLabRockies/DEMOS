@@ -1,6 +1,6 @@
 # Demographic Microsimulator (DEMOS)
 
-[![Docs](https://github.com/NREL/DEMOS/actions/workflows/docs.yml/badge.svg)](https://nrel.github.io/DEMOS/)
+[![Docs](https://github.com/NatLabRockies/DEMOS/actions/workflows/docs.yml/badge.svg)](https://natlabrockies.github.io/DEMOS/)
 
 ## Overview
 The Demographic Microsimulator (DEMOS) is an agent-based simulation framework used to model the evolution of population demographic characteristics and lifecycle events, such as education attainment, marital status, and other key transitions. DEMOS modules are designed to capture the interdependencies between short-term and long-term lifecycle events, which are often influential in downstream transportation and land-use modeling.
@@ -73,4 +73,5 @@ Documentation for custom data requirements, configuration and overall functional
 If you have questions, suggestions, or are interested in collaborating, please feel free to reach out or open an issue.  
 Bingrong Sun: Bingrong.Sun@nlr.gov  
 Shivam Sharda: Shivam.Sharda@nlr.gov  
-Venu Garikapati: Venu.Garikapati@nlr.gov  
+Venu Garikapati: Venu.Garikapati@nlr.gov
+Yamil Essus: essusyamil@gmail.com

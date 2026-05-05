@@ -173,499 +173,165 @@ def intercept(persons):
     return np.ones(size)
 
 
-# @orca.column('persons')
-# def dead(persons):
-#     size = persons.to_frame(columns=["age"]).shape[0]
-#     return np.zeros(size) - 99
-
-# @orca.column('persons')
-# def stop(persons):
-#     size = persons.to_frame(columns=["age"]).shape[0]
-#     return np.zeros(size) - 99
-
-# @orca.column('persons')
-# def kids_move(persons):
-#     size = persons.to_frame(columns=["age"]).shape[0]
-#     return np.zeros(size) - 99
-
-
 @orca.column("persons")
-def agebin1_labor(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(20, 30, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin2_labor(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(31, 40, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin3_labor(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(41, 50, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin4_labor(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(51, 70, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin5_labor(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return (p > 70) * 1
-
-
-@orca.column("persons")
-def agebin6_labor(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(20, 40, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin1(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(16, 22, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin2(persons):
+def age_23_35(persons):
     p = persons.to_frame(columns=["age"])["age"]
     return p.between(23, 35, inclusive="both") * 1
 
 
 @orca.column("persons")
-def agebin3(persons):
+def age_36_60(persons):
     p = persons.to_frame(columns=["age"])["age"]
     return p.between(36, 60, inclusive="both") * 1
 
 
 @orca.column("persons")
-def agebin4(persons):
+def age_60plus(persons):
     p = persons.to_frame(columns=["age"])
     return p.gt(60) * 1
 
 
-################### added for updated
-
-
-@orca.column("persons")
-def agebin1_new(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(21, 40, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin2_new(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(41, 50, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin3_new(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(51, 70, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin4_new(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(71, 90, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin5_new(persons):
-    p = persons.to_frame(columns=["age"])
-    return p.gt(90) * 1
-
-
-####################
-
-
-@orca.column("persons")
-def agebin1_mo(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(16, 18, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin2_mo(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(19, 20, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin3_mo(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(21, 25, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin4_mo(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.between(26, 30, inclusive="both") * 1
-
-
-@orca.column("persons")
-def agebin5_mo(persons):
-    p = persons.to_frame(columns=["age"])["age"]
-    return p.gt(30) * 1
-
-
-# Male
-@orca.column("persons")
-def gender1(persons):
-    p = persons.to_frame(columns=["sex"])
-    return p.eq(1).astype(int)
-
-
 # Female
 @orca.column("persons")
-def gender2(persons):
+def sex_female(persons):
     p = persons.to_frame(columns=["sex"])
     return p.eq(2).astype(int)
 
 
 @orca.column("persons")
-def employbin1(persons):
-    p = persons.to_frame(columns=["worker"])
-    return p.eq(1) * 1
-
-
-@orca.column("persons")
-def employbin2(persons):
+def emp_idle_under60(persons):
     p = persons.to_frame(columns=["worker", "age"])
     return (p["worker"].eq(0) & p["age"].lt(60)).astype(int)
 
 
 @orca.column("persons")
-def employbin3(persons):
+def emp_idle_over60(persons):
     p = persons.to_frame(columns=["worker", "age"])
     return (p["worker"].eq(0) & p["age"].ge(60)).astype(int)
 
 
-@orca.column("persons")
-def employ2_agebin2_mo(persons):
-    p = persons.to_frame(columns=["employbin2", "agebin2_mo"])
-    return p["employbin2"] * p["agebin2_mo"]
-
-
-@orca.column("persons")
-def employ2_agebin3_mo(persons):
-    p = persons.to_frame(columns=["employbin2", "agebin3_mo"])
-    return p["employbin2"] * p["agebin3_mo"]
-
-
-@orca.column("persons")
-def employ2_agebin4_mo(persons):
-    p = persons.to_frame(columns=["employbin2", "agebin4_mo"])
-    return p["employbin2"] * p["agebin4_mo"]
-
-
-@orca.column("persons")
-def employ2_agebin5_mo(persons):
-    p = persons.to_frame(columns=["employbin2", "agebin5_mo"])
-    return p["employbin2"] * p["agebin5_mo"]
-
-
-###
-
-
-@orca.column("persons")
-def employ3_agebin2_mo(persons):
-    p = persons.to_frame(columns=["employbin3", "agebin2_mo"])
-    return p["employbin3"] * p["agebin2_mo"]
-
-
-@orca.column("persons")
-def employ3_agebin3_mo(persons):
-    p = persons.to_frame(columns=["employbin3", "agebin3_mo"])
-    return p["employbin3"] * p["agebin3_mo"]
-
-
-@orca.column("persons")
-def employ3_agebin4_mo(persons):
-    p = persons.to_frame(columns=["employbin3", "agebin4_mo"])
-    return p["employbin3"] * p["agebin4_mo"]
-
-
-@orca.column("persons")
-def employ3_agebin5_mo(persons):
-    p = persons.to_frame(columns=["employbin3", "agebin5_mo"])
-    return p["employbin3"] * p["agebin5_mo"]
-
-
-# Less than high school
-@orca.column("persons")
-def edubin1(persons):
-    p = persons.to_frame(columns=["edu"])
-    return p.lt(16) * 1
+# -----------------------------------------------------------------------------------------
+# EDUCATION VARIABLES
+# -----------------------------------------------------------------------------------------
 
 
 # High School or GED
 @orca.column("persons")
-def edubin2(persons):
+def edu_hs_ged(persons):
     p = persons.to_frame(columns=["edu"])["edu"]
     return p.between(16, 17, inclusive="both") * 1
 
 
 # Some college or more
 @orca.column("persons")
-def edubin3(persons):
+def edu_college_plus(persons):
     p = persons.to_frame(columns=["edu"])
     return p.gt(17) * 1
 
 
+# -----------------------------------------------------------------------------------------
+# RACE VARIABLES
+# -----------------------------------------------------------------------------------------
+
+
 @orca.column("persons")
-def race_wht(persons):
+def race_white(persons):
     p = persons.to_frame(columns=["race_id"])
     return p.eq(1) * 1
 
 
 @orca.column("persons")
-def race_blk(persons):
+def race_black(persons):
     p = persons.to_frame(columns=["race_id"])
     return p.eq(2) * 1
 
 
 @orca.column("persons")
-def race_asn(persons):
+def race_asian_pi(persons):
     p = persons.to_frame(columns=["race_id"])["race_id"]
     return p.between(6, 7) * 1
+
+
+native_american_list = [3, 4, 5]
+
+
+# Native American (ACS race codes 3, 4, 5)
+@orca.column("persons")
+def race_native_am(persons):
+    p = persons.to_frame(columns=["race_id"])
+    return p.isin(native_american_list) * 1
+
+
+# Hawaiian (ACS race code 7)
+@orca.column("persons")
+def race_hawaiian(persons):
+    p = persons.to_frame(columns=["race_id"])
+    return p.eq(7) * 1
+
+
+# Asian (ACS race code 6)
+@orca.column("persons")
+def race_asian(persons):
+    p = persons.to_frame(columns=["race_id"])
+    return p.eq(6) * 1
 
 
 list_of_other_races = [3, 4, 5, 8, 9]
 
 
-# Other Races
+# Broad "other" category used in employment models
 @orca.column("persons")
 def race_other(persons):
     p = persons.to_frame(columns=["race_id"])
     return p.isin(list_of_other_races) * 1
 
 
-# White
+# ACS "some other race" (code 8) — used as building block for household head race
 @orca.column("persons")
-def race1(persons):
-    p = persons.to_frame(columns=["race_wht"])
-    return p["race_wht"]
-
-
-# Black
-@orca.column("persons")
-def race2(persons):
-    p = persons.to_frame(columns=["race_blk"])
-    return p["race_blk"]
-
-
-native_american_list = [3, 4, 5]
-
-
-# Native American
-@orca.column("persons")
-def race3(persons):
-    p = persons.to_frame(columns=["race_id"])
-    return p.isin(native_american_list) * 1
-
-
-# Asian or Pacific Islander
-@orca.column("persons")
-def race4(persons):
-    p = persons.to_frame(columns=["race_asn"])
-    return p["race_asn"]
-
-
-# Other
-@orca.column("persons")
-def race5(persons):
+def race_acs_other(persons):
     p = persons.to_frame(columns=["race_id"])
     return p.eq(8) * 1
 
 
-# Multiracial
-@orca.column("persons")
-def race6(persons):
-    p = persons.to_frame(columns=["race_id"])
-    return p.eq(9) * 1
+# -----------------------------------------------------------------------------------------
+# MARITAL STATUS VARIABLES
+# -----------------------------------------------------------------------------------------
 
 
 @orca.column("persons")
-def age2_edu2(persons):
-    p = persons.to_frame(columns=["agebin2", "edubin2"])
-    p["age2_edu2"] = p["agebin2"] * p["edubin2"]
-    return p["age2_edu2"]
-
-
-@orca.column("persons")
-def age3_edu2(persons):
-    p = persons.to_frame(columns=["agebin3", "edubin2"])
-    p["age3_edu2"] = p["agebin3"] * p["edubin2"]
-    return p["age3_edu2"]
-
-
-@orca.column("persons")
-def age4_edu2(persons):
-    p = persons.to_frame(columns=["agebin4", "edubin2"])
-    p["age4_edu2"] = p["agebin4"] * p["edubin2"]
-    return p["age4_edu2"]
-
-
-@orca.column("persons")
-def age2_edu3(persons):
-    p = persons.to_frame(columns=["agebin2", "edubin3"])
-    p["age2_edu3"] = p["agebin2"] * p["edubin3"]
-    return p["age2_edu3"]
-
-
-@orca.column("persons")
-def age3_edu3(persons):
-    p = persons.to_frame(columns=["agebin3", "edubin3"])
-    p["age3_edu3"] = p["agebin3"] * p["edubin3"]
-    return p["age3_edu3"]
-
-
-@orca.column("persons")
-def age4_edu3(persons):
-    p = persons.to_frame(columns=["agebin4", "edubin3"])
-    p["age4_edu3"] = p["agebin4"] * p["edubin3"]
-    return p["age4_edu3"]
-
-
-@orca.column("persons")
-def edu2_agebin2_mo(persons):
-    p = persons.to_frame(columns=["agebin2_mo", "edubin2"])
-    p["edu2_agebin2_mo"] = p["agebin2_mo"] * p["edubin2"]
-    return p["edu2_agebin2_mo"]
-
-
-@orca.column("persons")
-def edu2_agebin3_mo(persons):
-    p = persons.to_frame(columns=["agebin3_mo", "edubin2"])
-    p["edu2_agebin3_mo"] = p["agebin3_mo"] * p["edubin2"]
-    return p["edu2_agebin3_mo"]
-
-
-@orca.column("persons")
-def edu2_agebin4_mo(persons):
-    p = persons.to_frame(columns=["agebin4_mo", "edubin2"])
-    p["edu2_agebin4_mo"] = p["agebin4_mo"] * p["edubin2"]
-    return p["edu2_agebin4_mo"]
-
-
-@orca.column("persons")
-def edu2_agebin5_mo(persons):
-    p = persons.to_frame(columns=["agebin5_mo", "edubin2"])
-    p["edu2_agebin5_mo"] = p["agebin5_mo"] * p["edubin2"]
-    return p["edu2_agebin5_mo"]
-
-
-@orca.column("persons")
-def edu3_agebin2_mo(persons):
-    p = persons.to_frame(columns=["agebin2_mo", "edubin3"])
-    p["edu3_agebin2_mo"] = p["agebin2_mo"] * p["edubin3"]
-    return p["edu3_agebin2_mo"]
-
-
-@orca.column("persons")
-def edu3_agebin3_mo(persons):
-    p = persons.to_frame(columns=["agebin3_mo", "edubin3"])
-    p["edu3_agebin3_mo"] = p["agebin3_mo"] * p["edubin3"]
-    return p["edu3_agebin3_mo"]
-
-
-@orca.column("persons")
-def edu3_agebin4_mo(persons):
-    p = persons.to_frame(columns=["agebin4_mo", "edubin3"])
-    p["edu3_agebin4_mo"] = p["agebin4_mo"] * p["edubin3"]
-    return p["edu3_agebin4_mo"]
-
-
-@orca.column("persons")
-def edu3_agebin5_mo(persons):
-    p = persons.to_frame(columns=["agebin5_mo", "edubin3"])
-    p["edu3_agebin5_mo"] = p["agebin5_mo"] * p["edubin3"]
-    return p["edu3_agebin5_mo"]
-
-
-@orca.column("persons")
-def marital1(persons):
+def mar_married(persons):
     p = persons.to_frame(columns=["MAR"])
     return p.eq(1).astype(int)
 
 
 @orca.column("persons")
-def marital2(persons):
+def mar_widowed(persons):
     p = persons.to_frame(columns=["MAR"])
     return p.eq(2).astype(int)
 
 
 @orca.column("persons")
-def marital3(persons):
-    p = persons.to_frame(columns=["MAR"])
-    # print(persons.local.columns)
-    return p.eq(3).astype(int)
-
-
-@orca.column("persons")
-def marital4(persons):
-    p = persons.to_frame(columns=["MAR"])
-    return p.gt(3).astype(int)
-
-
-@orca.column("persons")
-def married_before(persons):
-    p = persons.to_frame(columns=["MAR"])
-    return p["MAR"].between(2, 4) * 1
-
-
-@orca.column("persons")
-def marital25(persons):
+def mar_widowed_or_never(persons):
     p = persons.to_frame(columns=["MAR"])
     return p.isin([2, 5]).astype(int)
 
 
 @orca.column("persons")
-def marital34(persons):
+def mar_div_or_sep(persons):
     p = persons.to_frame(columns=["MAR"])
     return p.isin([3, 4]).astype(int)
 
 
-######## NOTE: Not needed for now
-# # PERSON VARIABLES
-# # -----------------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------------------
+# EDUCATION VARIABLES
+# -----------------------------------------------------------------------------------------
 
 
-# @orca.column("persons", cache=True)
-# def mandatory_work_zone_id(persons):
-#     return persons.work_zone_id.where(persons.age > 17, "-1").astype(str)
-
-
-# @orca.column("persons", cache=True)
-# def mandatory_school_zone_id(persons):
-#     return persons.school_zone_id.where(persons.age > 17, "-1").astype(str)
-
-
-# @orca.column("persons", cache=True)
-# def mandatory_work_dummy(persons):
-#     has_work = persons.mandatory_work_zone_id != "-1"
-#     return has_work.astype(int)
-
-
-# @orca.column("persons", cache=True)
-# def mandatory_school_dummy(persons):
-#     has_school = persons.mandatory_school_zone_id != "-1"
-#     return has_school.astype(int)
-
-
-# @orca.column("persons", cache=True)
-# def mandatory_activity_dummy(persons):
-#     school_or_work = (persons.mandatory_school_dummy.astype(bool)) | (
-#         persons.mandatory_work_dummy.astype(bool)
-#     )
-#     return school_or_work.astype(int)
+# High School or GED
+@orca.column("persons")
+def edu_hs_ged(persons):
+    p = persons.to_frame(columns=["edu"])["edu"]
+    return p.between(16, 17, inclusive="both") * 1
 
 
 # -----------------------------------------------------------------------------------------
@@ -676,19 +342,6 @@ def marital34(persons):
 @orca.column("households", cache=True, cache_scope="step")
 def intercept(households):
     return np.ones(households.local.shape[0])
-
-
-# @orca.column('households')
-# def birth(households):
-#     return np.zeros(households.local.shape[0]) - 99
-
-# @orca.column('households')
-# def divorced(households):
-#     return np.zeros(households.local.shape[0]) - 99
-
-# @orca.column('households')
-# def birth(households):
-#     return np.zeros(households.local.shape[0]) - 99
 
 
 @orca.column("households", cache=True, cache_scope="step")
@@ -705,9 +358,11 @@ def tract_id(households):
 
 @orca.column("households", cache=True)
 def hh_type():
-    hh = orca.get_table("households").to_frame(["persons", "tenure", "age_of_head"])
+    hh = orca.get_table("households").to_frame(
+        ["hh_n_persons", "tenure", "age_of_head"]
+    )
     hh["gt55"] = (hh.age_of_head >= 55).astype("int")
-    hh["gt2"] = (hh.persons >= 2).astype("int")
+    hh["gt2"] = (hh.hh_n_persons >= 2).astype("int")
     hh["hh_type"] = 0
     hh.loc[(hh.tenure == 1) & (hh.gt2 == 0) & (hh.gt55 == 0), "hh_type"] = 1
     hh.loc[(hh.tenure == 1) & (hh.gt2 == 0) & (hh.gt55 == 1), "hh_type"] = 2
@@ -720,84 +375,6 @@ def hh_type():
     for col in ["gt55", "gt2"]:
         del hh[col]
     return hh.hh_type
-
-
-@orca.column("households")
-def persons(households, persons):
-    hh = households.local.copy()
-    persons = pd.DataFrame(persons.local.groupby("household_id").size())
-    persons.columns = ["total_persons"]
-    hh = hh.join(persons)
-    return hh["total_persons"]
-
-
-@orca.column("households")
-def children(households, persons):
-    hh = households.local.copy()
-    persons = persons.local.copy()
-    children = persons[persons["age"] <= 17].groupby("household_id").count()
-    hh = hh.join(children[["age"]]).fillna(0)
-    return hh["age"]
-
-
-@orca.column("households")
-def adult_count(households, persons):
-    hh = households.local.copy()
-    p = persons.local.copy()
-    p = p[p["age"] >= 18].groupby("household_id").count()
-    return hh.join(p)["age"].fillna(0)
-
-
-@orca.column("households")
-def adult_count2(households, persons):
-    hh = households.local.copy()
-    p = persons.local.copy()
-    p = p[p["age"] >= 18].groupby("household_id").count() == 2
-    return hh.join(p)["age"].fillna(False) * 1
-
-
-@orca.column("households")
-def adult_count_gt2(households, persons):
-    hh = households.local.copy()
-    p = persons.local.copy()
-    p = p[p["age"] >= 18].groupby("household_id").count() > 2
-    return hh.join(p)["age"].fillna(False) * 1
-
-
-@orca.column("households")
-def persons_65plus(households, persons):
-    hh = households.local.copy()
-    persons = persons.local.copy()
-    persons = persons[persons["age"] >= 65].groupby("household_id").count()
-    hh = hh.join(persons[["age"]]).fillna(0)
-    return hh["age"]
-
-
-@orca.column("households")
-def persons_black(households, persons):
-    hh = households.local.copy()
-    persons = persons.local.copy()
-    persons = persons[persons["race"] == "black"].groupby("household_id").count()
-    hh = hh.join(persons[["race"]]).fillna(0)
-    return hh["race"]
-
-
-@orca.column("households")
-def persons_hispanic(households, persons):
-    hh = households.local.copy()
-    persons = persons.local.copy()
-    persons = persons[persons["hispanic"] == 1].groupby("household_id").count()
-    hh = hh.join(persons[["hispanic"]]).fillna(0)
-    return hh["hispanic"]
-
-
-@orca.column("households")
-def persons_asian(households, persons):
-    hh = households.local.copy()
-    persons = persons.local.copy()
-    persons = persons[persons["race"] == "asian"].groupby("household_id").count()
-    hh = hh.join(persons[["race"]]).fillna(0)
-    return hh["race"]
 
 
 @orca.column("households")
@@ -814,387 +391,6 @@ def income_segment(households):
     )
     s = s.add(1)
     return s
-
-
-@orca.column("households")
-def income_bin1(households):
-    df = households.to_frame(columns=["income"])
-    return df.lt(25_000) * 1
-
-
-@orca.column("households")
-def income_bin2(households):
-    df = households.to_frame(columns=["income"])["income"]
-    return df.between(25_000, 50_000, inclusive="left") * 1
-
-
-@orca.column("households")
-def income_bin3(households):
-    df = households.to_frame(columns=["income"])["income"]
-    return df.between(50000, 75000, inclusive="left") * 1
-
-
-@orca.column("households")
-def income_bin4(households):
-    df = households.to_frame(columns=["income"])["income"]
-    return df.between(75000, 150000, inclusive="left") * 1
-
-
-@orca.column("households")
-def income_bin5(households):
-    df = households.to_frame(columns=["income"])
-    return df.ge(150000) * 1
-
-
-# max edu year
-@orca.column("households")
-def top_edu(persons):
-    df = persons.to_frame(columns=["household_id", "edu", "relate"])
-    df = df[df["relate"] < 2][["household_id", "edu"]]
-    return df.groupby("household_id").agg({"edu": "max"})
-
-
-# less than high school
-@orca.column("households")
-def top_edu_bin1(households):
-    df = households.to_frame(columns=["top_edu"])
-    return df.lt(16) * 1
-
-
-# high school or equivalent
-@orca.column("households")
-def top_edu_bin2(households):
-    df = households.to_frame(columns=["top_edu"])["top_edu"]
-    return df.between(16, 17, inclusive="both") * 1
-
-
-# Some college, college, or more than college
-@orca.column("households")
-def top_edu_bin3(households):
-    df = households.to_frame(columns=["top_edu"])
-    return df.gt(17) * 1
-
-
-@orca.column("households")
-def have_spouse(persons):
-    df = persons.to_frame(columns=["household_id", "relate"])
-    filtered_houses = df[df["relate"] == 1]["household_id"]
-    return (df["relate"] == 1).groupby(df["household_id"]).sum()
-
-
-@orca.column("households")
-def hh_birth_agebin1(persons, households):
-    df = persons.to_frame(columns=["household_id", "relate", "sex", "age"])
-    # households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-    # df = df.merge(households_df, on="household_id")
-    df.loc[:, "is_head"] = np.where(df["relate"] == 0, 1, 0)
-    df.loc[:, "is_female"] = np.where(df["sex"] == 2, 1, 0)
-    df.loc[:, "female_head"] = df["is_head"] * df["is_female"]
-    df.loc[:, "is_head_or_spouse"] = np.where(df["relate"].isin([0, 1, 13]), 1, 0)
-    df.loc[:, "age_head"] = df["age"] * df["is_head"]
-    df.loc[:, "age_female"] = df["age"] * df["is_female"] * df["is_head_or_spouse"]
-    df.loc[:, "is_spouse"] = np.where(df["relate"].isin([1, 13]), 1, 0)
-    df.loc[:, "head_spouse"] = df["is_head"] + df["is_spouse"]
-    df = df.groupby("household_id").agg(
-        # size = ("person", "sum"),
-        age_head=("age_head", "sum"),
-        age_female=("age_female", "sum"),
-        head_spouse=("head_spouse", "sum"),
-    )
-    df.loc[:, "age_final"] = np.where(
-        df["head_spouse"] >= 2, df["age_female"], df["age_head"]
-    )
-    # print("NEW DF", df.shape[0])
-    return (df["age_final"] <= 27).astype(int)
-
-
-@orca.column("households")
-def hh_birth_agebin2(persons, households):
-    df = persons.to_frame(columns=["household_id", "relate", "sex", "age"])
-    # households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-    # df = df.merge(households_df, on="household_id")
-    df.loc[:, "is_head"] = np.where(df["relate"] == 0, 1, 0)
-    df.loc[:, "is_female"] = np.where(df["sex"] == 2, 1, 0)
-    df.loc[:, "female_head"] = df["is_head"] * df["is_female"]
-    df.loc[:, "is_head_or_spouse"] = np.where(df["relate"].isin([0, 1, 13]), 1, 0)
-    df.loc[:, "age_head"] = df["age"] * df["is_head"]
-    df.loc[:, "age_female"] = df["age"] * df["is_female"] * df["is_head_or_spouse"]
-    df.loc[:, "is_spouse"] = np.where(df["relate"].isin([1, 13]), 1, 0)
-    df.loc[:, "head_spouse"] = df["is_head"] + df["is_spouse"]
-    df = df.groupby("household_id").agg(
-        # size = ("person", "sum"),
-        age_head=("age_head", "sum"),
-        age_female=("age_female", "sum"),
-        head_spouse=("head_spouse", "sum"),
-    )
-    df.loc[:, "age_final"] = np.where(
-        df["head_spouse"] >= 2, df["age_female"], df["age_head"]
-    )
-    # print(df.shape[0])
-    return (df["age_final"].between(27, 35, inclusive="right")).astype(int)
-
-
-# @orca.column('households')
-# def use_agebin3(persons, households):
-#     df = persons.to_frame(columns=['household_id', 'relate'])
-#     households_df = households.to_frame(columns=["have_spouse"]).reset_index()
-#     df.merge(households_df, on="household_id")
-#     subset = df[df["relate"].isin([0, 1])]
-
-#     subset["is_head"] = np.where(df["relate"]==0, 1, 0)
-#     subset["is_female"] = np.where(df["sex"]==2, 1, 0)
-#     subset["female_head"] = df["is_head"] * df["is_female"]
-#     subset["person"] = 1
-#     subset["age_head"] = subset["age"] * subset["is_head"]
-#     subset["age_female"] = subset["age"] * subset["is_female"]
-#     subset = subset.groupby("household_id").agg(
-#         size = ("person", "sum"),
-#         age_head = ("age_head", "sum"),
-#         age_female = ("age_female", "sum")
-#     ).reset_index()
-#     subset["age_final"] = np.where(subset["size"]==2, subset["age_female"], subset["age_head"])
-
-# return np.where(subset["age_final"]>35, 1, 0)
-
-
-@orca.column("households")
-def fam_work(persons):
-    df = persons.to_frame(columns=["relate", "worker", "household_id"])
-    df = df[df["relate"] < 2]
-    return df.groupby("household_id").agg({"worker": "sum"})
-
-
-@orca.column("households")
-def fam_work0(households):
-    df = households.to_frame(columns=["fam_work"])
-    return df.eq(0) * 1
-
-
-@orca.column("households")
-def fam_work1(households):
-    df = households.to_frame(columns=["fam_work"])
-    return df.eq(1) * 1
-
-
-@orca.column("households")
-def fam_work2(households):
-    df = households.to_frame(columns=["fam_work"])
-    return df.eq(2) * 1
-
-
-@orca.column("households")
-def fsize_bin1(households):
-    df = households.to_frame(columns=["persons"])
-    return df.eq(1) * 1
-
-
-@orca.column("households")
-def fsize_bin2(households):
-    df = households.to_frame(columns=["persons"])
-    return df.eq(2) * 1
-
-
-@orca.column("households")
-def fsize_bin3(households):
-    df = households.to_frame(columns=["persons"])
-    return df.eq(3) * 1
-
-
-@orca.column("households")
-def fsize_bin35(households):
-    df = households.to_frame(columns=["persons"])
-    return df["persons"].between(4, 5) * 1
-
-
-@orca.column("households")
-def fsize_bin5(households):
-    df = households.to_frame(columns=["persons"])
-    return df.gt(5) * 1
-
-
-@orca.column("households")
-def fsize_bin23(households):
-    df = households.to_frame(columns=["persons"])
-    return df["persons"].isin([2, 3]) * 1
-
-
-@orca.column("households")
-def fsize_bingt3(households):
-    df = households.to_frame(columns=["persons"])
-    return df.gt(3) * 1
-
-
-@orca.column("households")
-def avg_age(persons):
-    df = persons.to_frame(columns=["relate", "age", "household_id"])
-    df = df[df["relate"] < 2]
-    return df.groupby("household_id").agg({"age": "mean"})
-
-
-@orca.column("households")
-def avg_agebin1(households):
-    df = households.to_frame(columns=["avg_age"])["avg_age"]
-    return df.between(16, 22, inclusive="both") * 1
-
-
-@orca.column("households")
-def avg_agebin2(households):
-    df = households.to_frame(columns=["avg_age"])["avg_age"]
-    return df.between(22, 35, inclusive="right") * 1
-
-
-@orca.column("households")
-def avg_agebin3(households):
-    df = households.to_frame(columns=["avg_age"])["avg_age"]
-    return df.between(35, 60, inclusive="right") * 1
-
-
-@orca.column("households")
-def avg_agebin4(households):
-    df = households.to_frame(columns=["avg_age"])
-    return df.gt(60) * 1
-
-
-@orca.column("households")
-def min_age(persons):
-    df = persons.to_frame(columns=["relate", "age", "household_id"])
-    df = df[df["relate"] < 2]
-    return df.groupby("household_id").agg({"age": "min"})
-
-
-@orca.column("households")
-def min_agebin1(households):
-    df = households.to_frame(columns=["min_age"])["min_age"]
-    return df.between(16, 22, inclusive="both") * 1
-
-
-@orca.column("households")
-def min_agebin2(households):
-    df = households.to_frame(columns=["min_age"])["min_age"]
-    return df.between(22, 35, inclusive="right") * 1
-
-
-@orca.column("households")
-def min_agebin3(households):
-    df = households.to_frame(columns=["min_age"])["min_age"]
-    return df.between(35, 60, inclusive="right") * 1
-
-
-@orca.column("households")
-def min_agebin4(households):
-    df = households.to_frame(columns=["min_age"])
-    return df.gt(60) * 1
-
-
-@orca.column("households")
-def kidsn0(households):
-    df = households.to_frame(columns=["children"])
-    return df.eq(0) * 1
-
-
-@orca.column("households")
-def kidsn1(households):
-    df = households.to_frame(columns=["children"])
-    return df.eq(1) * 1
-
-
-@orca.column("households")
-def kidsn2(households):
-    df = households.to_frame(columns=["children"])
-    return df.eq(2) * 1
-
-
-@orca.column("households")
-def kidsn3(households):
-    df = households.to_frame(columns=["children"])
-    return df.gt(2) * 1
-
-
-@orca.column("households")
-def hd_race_wht(persons):
-    df = persons.to_frame(columns=["relate", "race_wht", "household_id"])
-    df = df[df["relate"] == 0]
-    df.sort_values("household_id", inplace=True)
-    return df.set_index("household_id")["race_wht"]
-    # # TODO: This is hiding an error that needs to be fixed!
-    # return df.groupby("household_id").first()["race_wht"]
-
-
-@orca.column("households")
-def hd_agebin1(households):
-    df = households.to_frame(columns=["age_of_head"])["age_of_head"]
-    return df.between(16, 22, inclusive="right") * 1
-
-
-@orca.column("households")
-def hd_agebin2(households):
-    df = households.to_frame(columns=["age_of_head"])["age_of_head"]
-    return df.between(22, 35, inclusive="right") * 1
-
-
-@orca.column("households")
-def hd_agebin3(households):
-    df = households.to_frame(columns=["age_of_head"])["age_of_head"]
-    return df.between(35, 60, inclusive="right") * 1
-
-
-@orca.column("households")
-def hd_agebin4(households):
-    df = households.to_frame(columns=["age_of_head"])["age_of_head"]
-    return df.gt(60) * 1
-
-
-@orca.column("households")
-def husband_works(households, persons):
-    df = persons.to_frame(columns=["relate", "household_id", "worker", "sex"])
-    households = households.to_frame(columns=["cars"])
-    df = df[(df["relate"] < 2) & (df["sex"] == 1)]
-    households["husband_works"] = df.groupby("household_id").agg({"worker": "first"})
-    households["husband_works"] = households["husband_works"].fillna(0).astype(int)
-    return households["husband_works"]
-
-
-@orca.column("households")
-def sex_of_head(persons):
-    df = persons.to_frame(columns=["relate", "household_id", "sex"])
-    df.sort_values("relate", inplace=True)
-    return df.groupby("household_id").agg({"sex": "first"})
-
-
-@orca.column("households")
-def fes(households):
-    df = households.to_frame(
-        columns=[
-            "fam_work1",
-            "fam_work2",
-            "have_spouse",
-            "husband_works",
-            "sex_of_head",
-            "fam_work0",
-        ]
-    )
-    df["fes"] = 0
-    df.loc[(df.fam_work2 == 1), "fes"] = 1
-    df.loc[
-        (df.have_spouse == 1) & (df.fam_work1 == 1) & (df.husband_works == 1), "fes"
-    ] = 2
-    df.loc[
-        (df.have_spouse == 1) & (df.fam_work1 == 1) & (df.husband_works == 0), "fes"
-    ] = 3
-    df.loc[(df.have_spouse == 1) & (df.fam_work0 == 1), "fes"] = 4
-    df.loc[
-        (df.have_spouse == 0) & (df.fam_work0 == 1) & (df.sex_of_head == 1), "fes"
-    ] = 6
-    df.loc[
-        (df.have_spouse == 0) & (df.fam_work0 == 1) & (df.sex_of_head == 2), "fes"
-    ] = 8
-    df.loc[
-        (df.have_spouse == 0) & (df.fam_work1 == 1) & (df.sex_of_head == 1), "fes"
-    ] = 5
-    df.loc[
-        (df.have_spouse == 0) & (df.fam_work1 == 1) & (df.sex_of_head == 2), "fes"
-    ] = 7
-    return df["fes"]
 
 
 # -----------------------------------------------------------------------------------------
@@ -1321,15 +517,15 @@ def density_hh(blocks):
 
 @orca.column("blocks", cache=True, cache_scope="step")
 def hh_size_1(blocks, households):
-    hh = households.to_frame(["persons", "block_id"])
-    hh_size_1 = hh[hh["persons"] == 1].groupby("block_id").size()
+    hh = households.to_frame(["hh_n_persons", "block_id"])
+    hh_size_1 = hh[hh["hh_n_persons"] == 1].groupby("block_id").size()
     return pd.Series(index=blocks.index, data=hh_size_1).fillna(0)
 
 
 @orca.column("blocks", cache=True, cache_scope="step")
 def hh_size_5plus(blocks, households):
-    hh = households.to_frame(["persons", "block_id"])
-    hh_size_5plus = hh[hh["persons"] >= 5].groupby("block_id").size()
+    hh = households.to_frame(["hh_n_persons", "block_id"])
+    hh_size_5plus = hh[hh["hh_n_persons"] >= 5].groupby("block_id").size()
     return pd.Series(index=blocks.index, data=hh_size_5plus).fillna(0)
 
 
@@ -1357,9 +553,9 @@ def mean_income(blocks, households):
 
 @orca.column("blocks", cache=True)
 def mean_hh_size(blocks, households):
-    size = households.to_frame(["persons", "block_id"]).groupby("block_id").mean()
+    size = households.to_frame(["hh_n_persons", "block_id"]).groupby("block_id").mean()
     blocks = blocks.local.join(size)
-    return blocks["persons"].fillna(blocks["persons"].median())
+    return blocks["hh_n_persons"].fillna(blocks["hh_n_persons"].median())
 
 
 @orca.column("blocks", cache=True, cache_scope="step")
@@ -1386,52 +582,20 @@ def hh_rent(blocks, households):
 
 @orca.column("blocks", cache=True, cache_scope="step")
 def total_persons(blocks, households):
-    persons = households.to_frame(["persons", "block_id"]).groupby("block_id").sum()
+    persons = (
+        households.to_frame(["hh_n_persons", "block_id"]).groupby("block_id").sum()
+    )
     blocks = blocks.local.join(persons).fillna(0)
-    return blocks["persons"]
+    return blocks["hh_n_persons"]
 
 
 @orca.column("blocks", cache=True, cache_scope="step")
 def children(blocks, households):
-    children = households.to_frame(["children", "block_id"]).groupby("block_id").sum()
+    children = (
+        households.to_frame(["hh_n_children", "block_id"]).groupby("block_id").sum()
+    )
     blocks = blocks.local.join(children).fillna(0)
-    return blocks["children"]
-
-
-@orca.column("blocks", cache=True, cache_scope="step")
-def persons_65plus(blocks, households):
-    persons_65plus = (
-        households.to_frame(["persons_65plus", "block_id"]).groupby("block_id").sum()
-    )
-    blocks = blocks.local.join(persons_65plus).fillna(0)
-    return blocks["persons_65plus"]
-
-
-@orca.column("blocks", cache=True, cache_scope="step")
-def persons_black(blocks, households):
-    persons = (
-        households.to_frame(["persons_black", "block_id"]).groupby("block_id").sum()
-    )
-    blocks = blocks.local.join(persons).fillna(0)
-    return blocks["persons_black"]
-
-
-@orca.column("blocks", cache=True, cache_scope="step")
-def persons_hispanic(blocks, households):
-    persons = (
-        households.to_frame(["persons_hispanic", "block_id"]).groupby("block_id").sum()
-    )
-    blocks = blocks.local.join(persons).fillna(0)
-    return blocks["persons_hispanic"]
-
-
-@orca.column("blocks", cache=True, cache_scope="step")
-def persons_asian(blocks, households):
-    persons = (
-        households.to_frame(["persons_asian", "block_id"]).groupby("block_id").sum()
-    )
-    blocks = blocks.local.join(persons).fillna(0)
-    return blocks["persons_asian"]
+    return blocks["hh_n_children"]
 
 
 @orca.column("blocks", cache=True, cache_scope="step")

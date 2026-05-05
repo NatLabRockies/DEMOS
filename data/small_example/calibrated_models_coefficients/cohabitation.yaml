@@ -26,15 +26,15 @@ saved_object:
     - 0.752726
   spec_names:
   - intercept
-  - avg_agebin2
-  - avg_agebin3
-  - avg_agebin4
-  - top_edu_bin3
-  - hd_race_wht
-  - income_bin1
-  - income_bin2
-  - income_bin4
-  - income_bin5
+  - hh_age_avg_bin2
+  - hh_age_avg_bin3
+  - hh_age_avg_bin4
+  - hh_edu_top_bin3
+  - hh_head_race_white
+  - hh_income_bin1
+  - hh_income_bin2
+  - hh_income_bin4
+  - hh_income_bin5
   name: cohabitation
   tables: households
   out_tables: households

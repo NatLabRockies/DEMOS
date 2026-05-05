@@ -15,8 +15,8 @@ saved_object:
   - -1.769
   - 0.637
   - -0.297
-  model_expression: stop ~ agebin2 + agebin3 + agebin4 + employbin2 + employbin3 +
-    marital1 + marital34 + marital2 + edubin2 + edubin3 + 1
+  model_expression: stop ~ age_23_35 + age_36_60 + age_60plus + emp_idle_under60 + emp_idle_over60 +
+    mar_married + mar_div_or_sep + mar_widowed + edu_hs_ged + edu_college_plus + 1
   name: education
   out_column: stop
   out_filters:

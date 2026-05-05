@@ -193,3 +193,38 @@ def run_and_calibrate_mortality_model(persons):
     if calibration_procedure is not None:
         return calibration_procedure.calibrate_and_run_model(model, model_data)
     return model.predict(model_data)
+
+
+# -----------------------------------------------------------------------------------------
+# MORTALITY MODEL AGE BIN COLUMNS (moved from variables.py)
+# -----------------------------------------------------------------------------------------
+
+
+@orca.column("persons")
+def age_mort_21_40(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(21, 40, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_mort_41_50(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(41, 50, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_mort_51_70(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(51, 70, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_mort_71_90(persons):
+    p = persons.to_frame(columns=["age"])["age"]
+    return p.between(71, 90, inclusive="both") * 1
+
+
+@orca.column("persons")
+def age_mort_90plus(persons):
+    p = persons.to_frame(columns=["age"])
+    return p.gt(90) * 1
