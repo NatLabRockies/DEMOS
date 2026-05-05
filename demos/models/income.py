@@ -32,9 +32,9 @@ def run_and_calibrate_income_model(households):
 
     # Calibrate if needed
     if income_config.calibration_procedure is not None:
-        predicted = income_config.calibration_procedure.calibrate_and_run_model(
+        predicted = np.exp(income_config.calibration_procedure.calibrate_and_run_model(
             model, model_data
-        )
+        ))
     else:
         predicted = np.exp(model.predict(model_data))
 
