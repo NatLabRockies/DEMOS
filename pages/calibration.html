@@ -202,7 +202,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../api/birth_module.html">Birth Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/education_module.html">Education Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../api/rebalancing_module.html">Household Rebalancing Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../api/income_module.html">Income Adjustment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/income_module.html">Income Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../api/income_adjustment_module.html">Income Adjustment Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
@@ -308,6 +309,11 @@
 <td><p><code class="docutils literal notranslate"><span class="pre">birth_module_config</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">birth</span></code></p></td>
 <td><p>Total births per year</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Income</strong> (<code class="docutils literal notranslate"><span class="pre">income</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">income_module_config</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">income_nworkers</span></code></p></td>
+<td><p>Aggregate household income per year</p></td>
 </tr>
 </tbody>
 </table>
@@ -724,6 +730,105 @@
 <li><p>For <strong>simultaneous calibration</strong>, the tolerance represents the absolute difference in person counts. Values of 100–5,000 are typical depending on the size of the synthetic population.</p></li>
 </ul>
 <p>If calibration is not converging even after increasing <code class="docutils literal notranslate"><span class="pre">max_iter</span></code>, consider increasing the <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code> slightly. If the algorithm oscillates (error fluctuates without declining), try increasing <code class="docutils literal notranslate"><span class="pre">momentum_weight</span></code> toward 0.5–0.7 or decreasing <code class="docutils literal notranslate"><span class="pre">learning_rate</span></code>.</p>
+<hr class="docutils" />
+</section>
+<section id="income-module-inflation-adjustment">
+<span id="income-inflation-adjustment"></span><h2>Income Module: Inflation Adjustment<a class="headerlink" href="#income-module-inflation-adjustment" title="Link to this heading">¶</a></h2>
+<p>The income model estimates household income in <strong>nominal dollars for the year
+the model was originally estimated</strong> (the <em>reference year</em>). When running a
+multi-year simulation, predictions must be scaled to reflect price levels in
+each simulation year. DEMOS handles this through an <strong>inflation adjustment</strong>
+step that multiplies the predicted income by a cumulative CPI-based factor
+derived from a user-supplied table.</p>
+<section id="how-it-works">
+<h3>How it works<a class="headerlink" href="#how-it-works" title="Link to this heading">¶</a></h3>
+<p>At each simulation year <span class="math notranslate nohighlight">\(t\)</span>, DEMOS computes the cumulative inflation factor as:</p>
+<div class="math-wrapper docutils container">
+<div class="math notranslate nohighlight">
+\[\text{factor}(t) = \prod_{y=r+1}^{t} \big(1 + a_y\big)\]</div>
+</div>
+<p>where <span class="math notranslate nohighlight">\(r\)</span> is <code class="docutils literal notranslate"><span class="pre">inflation_reference_year</span></code> and <span class="math notranslate nohighlight">\(a_y\)</span> is the annual adjustment
+rate for year <span class="math notranslate nohighlight">\(y\)</span> from the inflation adjustment table.  If <span class="math notranslate nohighlight">\(t &lt; r\)</span> the
+factor is inverted (backward adjustment).  If <span class="math notranslate nohighlight">\(t = r\)</span> the factor is 1 and
+income is left unchanged.</p>
+</section>
+<section id="inflation-adjustment-table-format">
+<h3>Inflation adjustment table format<a class="headerlink" href="#inflation-adjustment-table-format" title="Link to this heading">¶</a></h3>
+<p>The file must be a CSV indexed by <code class="docutils literal notranslate"><span class="pre">year</span></code> and must contain an <code class="docutils literal notranslate"><span class="pre">adjustment</span></code>
+column with decimal annual inflation rates:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">year</span><span class="p">,</span><span class="n">adjustment</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mf">0.030</span>
+<span class="mi">2012</span><span class="p">,</span><span class="mf">0.021</span>
+<span class="mi">2013</span><span class="p">,</span><span class="mf">0.015</span>
+<span class="mi">2014</span><span class="p">,</span><span class="mf">0.016</span>
+<span class="mi">2015</span><span class="p">,</span><span class="mf">0.001</span>
+<span class="mi">2016</span><span class="p">,</span><span class="mf">0.013</span>
+<span class="mi">2017</span><span class="p">,</span><span class="mf">0.021</span>
+<span class="mi">2018</span><span class="p">,</span><span class="mf">0.024</span>
+<span class="mi">2019</span><span class="p">,</span><span class="mf">0.018</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">year</span></code>: Integer calendar year.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">adjustment</span></code>: Decimal inflation rate for that year (e.g., <code class="docutils literal notranslate"><span class="pre">0.030</span></code> = 3.0 %).<br />
+Use U.S. Bureau of Labor Statistics CPI-U data or any equivalent price index.</p></li>
+</ul>
+<p>The table must contain a row for <strong>every year</strong> in the interval
+<code class="docutils literal notranslate"><span class="pre">(inflation_reference_year,</span> <span class="pre">forecast_year]</span></code>. Missing years will cause a
+<code class="docutils literal notranslate"><span class="pre">KeyError</span></code> at runtime.</p>
+</section>
+<section id="loading-the-table">
+<h3>Loading the table<a class="headerlink" href="#loading-the-table" title="Link to this heading">¶</a></h3>
+<p>Add the table to the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section of your configuration file:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[[tables]]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;inflation_adjustment&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/inflation_adjustment.csv&quot;</span>
+<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+<span class="n">custom_dtype_casting</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="s2">&quot;year&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;int&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;adjustment&quot;</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s2">&quot;float&quot;</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="configuring-the-income-module">
+<h3>Configuring the income module<a class="headerlink" href="#configuring-the-income-module" title="Link to this heading">¶</a></h3>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[income_module_config]</span>
+<span class="n">inflation_reference_year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2010</span>
+<span class="n">inflation_adjustment_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;inflation_adjustment&quot;</span>
+</pre></div>
+</div>
+<p>Both fields must be set together; specifying only one will raise a validation
+error at startup.</p>
+<p>To <strong>disable</strong> inflation adjustment, comment out or remove both lines:</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="c1"># [income_module_config]</span>
+<span class="c1"># inflation_reference_year = 2010</span>
+<span class="c1"># inflation_adjustment_table = &quot;inflation_adjustment&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="combining-inflation-adjustment-with-calibration">
+<h3>Combining inflation adjustment with calibration<a class="headerlink" href="#combining-inflation-adjustment-with-calibration" title="Link to this heading">¶</a></h3>
+<p>Inflation adjustment and calibration can be used at the same time.
+Calibration runs <strong>before</strong> the inflation adjustment, so the calibration
+target (<code class="docutils literal notranslate"><span class="pre">count</span></code>) should represent aggregate income expressed in
+<strong>reference-year nominal dollars</strong> (i.e., the same price level as the
+estimated model output).</p>
+<div class="highlight-toml notranslate"><div class="highlight"><pre><span></span><span class="k">[income_module_config]</span>
+<span class="n">inflation_reference_year</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2010</span>
+<span class="n">inflation_adjustment_table</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;inflation_adjustment&quot;</span>
+
+<span class="k">[income_module_config.calibration_procedure]</span>
+<span class="n">procedure_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;rmse_error&quot;</span>
+<span class="n">tolerance_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;absolute&quot;</span>
+<span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5000</span>
+<span class="n">max_iter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">500</span>
+<span class="k">[income_module_config.calibration_procedure.observed_values_table]</span>
+<span class="n">file_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;csv&quot;</span>
+<span class="n">table_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;observed_income_data&quot;</span>
+<span class="n">filepath</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;../data/my_region/observed_calibration_values/income_over_time_obs.csv&quot;</span>
+<span class="n">index_col</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;year&quot;</span>
+</pre></div>
+</div>
+</section>
 </section>
 </section>
 
@@ -822,6 +927,14 @@
 </ul>
 </li>
 <li><a class="reference internal" href="#choosing-good-tolerance-values">Choosing Good Tolerance Values</a></li>
+<li><a class="reference internal" href="#income-module-inflation-adjustment">Income Module: Inflation Adjustment</a><ul>
+<li><a class="reference internal" href="#how-it-works">How it works</a></li>
+<li><a class="reference internal" href="#inflation-adjustment-table-format">Inflation adjustment table format</a></li>
+<li><a class="reference internal" href="#loading-the-table">Loading the table</a></li>
+<li><a class="reference internal" href="#configuring-the-income-module">Configuring the income module</a></li>
+<li><a class="reference internal" href="#combining-inflation-adjustment-with-calibration">Combining inflation adjustment with calibration</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>

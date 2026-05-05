@@ -3,10 +3,10 @@
   <head><meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="color-scheme" content="light dark"><meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="Birth Module" href="birth_module.html"><link rel="prev" title="Kids Moving Module" href="kids_move_module.html">
+<link rel="index" title="Index" href="../genindex.html"><link rel="search" title="Search" href="../search.html"><link rel="next" title="DEMOS Configuration" href="../pages/configuration.html"><link rel="prev" title="Income Module" href="income_module.html">
 
     <!-- Generated with Sphinx 8.1.3 and Furo 2025.12.19 -->
-        <title>Fatality Module - demos documentation</title>
+        <title>Income Adjustment Module - demos documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=d111a655" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?v=7bdb33bb" />
     <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?v=8dab3a3b" />
@@ -198,12 +198,12 @@
 <li class="toctree-l2"><a class="reference internal" href="employment_module.html">Employment Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hh_reorg_module.html">Household Reorganization Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="kids_move_module.html">Kids Moving Module</a></li>
-<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Fatality Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="mortality_module.html">Fatality Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="birth_module.html">Birth Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="education_module.html">Education Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rebalancing_module.html">Household Rebalancing Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="income_module.html">Income Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="income_adjustment_module.html">Income Adjustment Module</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">Income Adjustment Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -235,7 +235,7 @@
         </a>
         <div class="content-icon-container">
           <div class="view-this-page">
-  <a class="muted-link" href="../_sources/api/mortality_module.rst.txt" title="View this page">
+  <a class="muted-link" href="../_sources/api/income_adjustment_module.rst.txt" title="View this page">
     <svg><use href="#svg-eye"></use></svg>
     <span class="visually-hidden">View this page</span>
   </a>
@@ -253,46 +253,54 @@
           </label>
         </div>
         <article role="main" id="furo-main-content">
-          <section id="fatality-module">
-<h1>Fatality Module<a class="headerlink" href="#fatality-module" title="Link to this heading">¶</a></h1>
-<p>This module simulates mortality events in the synthetic population using an estimated model.
-It updates the persons and households tables to reflect deaths, reassigns household heads as needed,
-and ensures relational consistency using a mapping table. Deceased individuals are moved to a graveyard table.</p>
+          <section id="income-adjustment-module">
+<h1>Income Adjustment Module<a class="headerlink" href="#income-adjustment-module" title="Link to this heading">¶</a></h1>
+<p>This module updates <strong>person-level earnings</strong> based on county-specific annual
+income growth rates.  It runs after the income prediction step and applies a
+multiplicative adjustment to every person’s <code class="docutils literal notranslate"><span class="pre">earning</span></code> attribute, keeping
+geographic variation in wage growth over the simulation period.</p>
+<p>Unlike the <a class="reference internal" href="income_module.html"><span class="doc">Income Module</span></a>, this module does not use an estimated
+regression model: it reads pre-computed annual rate data from the
+<code class="docutils literal notranslate"><span class="pre">income_rates</span></code> table and directly scales existing earnings.</p>
 <p>Key features:</p>
 <ul class="simple">
-<li><p>Applies a logit model to determine which persons die in the current year.</p></li>
-<li><p>Removes deceased persons from the persons table and adds them to the graveyard.</p></li>
-<li><p>Updates marital status: surviving spouses/partners become widowed.</p></li>
-<li><p>Reassigns household heads if the current head dies, using partners or the oldest remaining member.</p></li>
-<li><p>Updates the <cite>relate</cite> column for all household members using the relational adjustment mapping.</p></li>
-<li><p>Cleans up households and persons to maintain simulation invariants.</p></li>
+<li><p>Applies county-specific income growth rates to person-level earnings each
+simulation year.</p></li>
+<li><p>Updates earnings multiplicatively: a rate of <code class="docutils literal notranslate"><span class="pre">0.05</span></code> means a 5% increase.</p></li>
+<li><p>Maintains geographic variation in income growth patterns across counties.</p></li>
 </ul>
 <p>Caveats:</p>
 <ul class="simple">
-<li><p>The module assumes the presence of a <cite>relational_adjustment_mapping</cite> table to update relationships.</p></li>
-<li><p>If a household head dies and no partner remains, the oldest person becomes the new head.</p></li>
-<li><p>Some errors or inconsistencies (e.g., multiple spouses per household) are handled silently.</p></li>
-<li><p>The logic for updating relationships may need to be revisited if the mapping table changes structure.</p></li>
-<li><p>Designed for use as-is; users should not override orca columns or internal logic.</p></li>
+<li><p>Requires an <code class="docutils literal notranslate"><span class="pre">income_rates</span></code> table with columns <code class="docutils literal notranslate"><span class="pre">year</span></code>, <code class="docutils literal notranslate"><span class="pre">lcm_county_id</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">rate</span></code> (loaded via the <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code> section of the configuration).</p></li>
+<li><p>Assumes the households table has a <code class="docutils literal notranslate"><span class="pre">lcm_county_id</span></code> column for geographic
+mapping.</p></li>
+<li><p>All persons in the same county receive the same proportional adjustment.</p></li>
+<li><p>No validation of rate values is performed; extreme rates could produce
+unrealistic results.</p></li>
 </ul>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="income_module.html"><span class="doc">Income Module</span></a> for the companion module that predicts household income
+from a regression model and optionally applies CPI-based inflation scaling.</p>
+</div>
 <section id="module-function">
 <h2>Module function<a class="headerlink" href="#module-function" title="Link to this heading">¶</a></h2>
-<p>This module does not have configuration options</p>
+<p>This module does not have dedicated configuration options.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="demos.models.fatality.fatality">
-<span class="sig-prename descclassname"><span class="pre">demos.models.fatality.</span></span><span class="sig-name descname"><span class="pre">fatality</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">relational_adjustment_mapping</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graveyard</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/fatality.html#fatality"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.fatality.fatality" title="Link to this definition">¶</a></dt>
-<dd><p>Simulate mortality events and update the persons and households tables.</p>
-<p>This step applies the <cite>mortality</cite> estimated model to determine which persons die in the current year.
-It removes deceased persons from the persons table, updates marital status and household relationships,
-and moves the deceased to the graveyard table. The <cite>relate</cite> column is updated using the relational
-adjustment mapping to ensure consistency.</p>
+<dt class="sig sig-object py" id="demos.models.income_adjustment.income_adjustment">
+<span class="sig-prename descclassname"><span class="pre">demos.models.income_adjustment.</span></span><span class="sig-name descname"><span class="pre">income_adjustment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">persons</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">households</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">income_rates</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">year</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/models/income_adjustment.html#income_adjustment"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.models.income_adjustment.income_adjustment" title="Link to this definition">¶</a></dt>
+<dd><p>Update person-level earnings based on county-specific income growth rates.</p>
+<p>This step applies multiplicative adjustments to person earnings using annual
+growth rates that vary by county. It maintains geographic variation in income
+trajectories while updating the entire population simultaneously.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing individual-level attributes.</p></li>
-<li><p><strong>households</strong> (<em>orca.Table</em>) – The households table containing household-level attributes.</p></li>
-<li><p><strong>relational_adjustment_mapping</strong> (<em>orca.Table</em>) – Table mapping old relationship codes to new ones after a head of household dies.</p></li>
-<li><p><strong>graveyard</strong> (<em>orca.Table</em>) – Table for storing records of deceased individuals.</p></li>
+<li><p><strong>persons</strong> (<em>orca.Table</em>) – The persons table containing individual-level attributes including earnings.</p></li>
+<li><p><strong>households</strong> (<em>orca.Table</em>) – The households table containing household-level attributes including county ID.</p></li>
+<li><p><strong>income_rates</strong> (<em>orca.Table</em>) – Table with annual income growth rates by county.</p></li>
+<li><p><strong>year</strong> (<em>int</em>) – The current simulation year.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
@@ -301,12 +309,10 @@ adjustment mapping to ensure consistency.</p>
 </dl>
 <p class="rubric">Notes</p>
 <ul class="simple">
-<li><p>Modifies <cite>persons.MAR</cite>, <cite>persons.relate</cite>, and removes rows from <cite>persons</cite> and <cite>households</cite> tables.</p></li>
-<li><p>Adds rows to the <cite>graveyard</cite> table for deceased individuals.</p></li>
-<li><p>Updates marital status: surviving spouses/partners become widowed.</p></li>
-<li><p>If a household head dies, a partner or the oldest remaining member becomes the new head.</p></li>
-<li><p>The <cite>relate</cite> column for all household members is updated using the mapping table.</p></li>
-<li><p>Some errors (e.g., multiple spouses per household) are handled silently.</p></li>
+<li><p>Modifies <cite>persons.earning</cite> in place using multiplicative adjustment.</p></li>
+<li><p>Requires <cite>income_rates</cite> table with columns: year, lcm_county_id, rate.</p></li>
+<li><p>All persons in the same county receive the same proportional adjustment.</p></li>
+<li><p>Rate of 0.05 means 5% growth (earnings multiplied by 1.05).</p></li>
 </ul>
 </dd></dl>
 
@@ -318,23 +324,23 @@ adjustment mapping to ensure consistency.</p>
       <footer>
         
         <div class="related-pages">
-          <a class="next-page" href="birth_module.html">
+          <a class="next-page" href="../pages/configuration.html">
               <div class="page-info">
                 <div class="context">
                   <span>Next</span>
                 </div>
-                <div class="title">Birth Module</div>
+                <div class="title">DEMOS Configuration</div>
               </div>
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
             </a>
-          <a class="prev-page" href="kids_move_module.html">
+          <a class="prev-page" href="income_module.html">
               <svg class="furo-related-icon"><use href="#svg-arrow-right"></use></svg>
               <div class="page-info">
                 <div class="context">
                   <span>Previous</span>
                 </div>
                 
-                <div class="title">Kids Moving Module</div>
+                <div class="title">Income Module</div>
                 
               </div>
             </a>
@@ -368,9 +374,9 @@ adjustment mapping to ensure consistency.</p>
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Fatality Module</a><ul>
+<li><a class="reference internal" href="#">Income Adjustment Module</a><ul>
 <li><a class="reference internal" href="#module-function">Module function</a><ul>
-<li><a class="reference internal" href="#demos.models.fatality.fatality"><code class="docutils literal notranslate"><span class="pre">fatality()</span></code></a></li>
+<li><a class="reference internal" href="#demos.models.income_adjustment.income_adjustment"><code class="docutils literal notranslate"><span class="pre">income_adjustment()</span></code></a></li>
 </ul>
 </li>
 </ul>

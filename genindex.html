@@ -200,7 +200,8 @@
 <li class="toctree-l2"><a class="reference internal" href="api/birth_module.html">Birth Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/education_module.html">Education Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api/rebalancing_module.html">Household Rebalancing Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api/income_module.html">Income Adjustment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/income_module.html">Income Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/income_adjustment_module.html">Income Adjustment Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 has-children"><a class="reference internal" href="pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul>
@@ -300,6 +301,8 @@
         <li><a href="api/configuration_module.html#demos.config.BirthModuleConfig.calibration_procedure">calibration_procedure (demos.config.BirthModuleConfig attribute)</a>
 
         <ul>
+          <li><a href="api/configuration_module.html#demos.config.IncomeModuleConfig.calibration_procedure">(demos.config.IncomeModuleConfig attribute)</a>, <a href="api/income_module.html#demos.config.IncomeModuleConfig.calibration_procedure">[1]</a>
+</li>
           <li><a href="api/configuration_module.html#demos.config.MortalityModuleConfig.calibration_procedure">(demos.config.MortalityModuleConfig attribute)</a>
 </li>
         </ul></li>
@@ -519,15 +522,23 @@
   <h2>I</h2>
   <table style="width: 100%" class="indextable genindextable"><tr>
     <td style="width: 33%; vertical-align: top;"><ul>
-        <li><a href="api/income_module.html#demos.models.income_adjustment.income_adjustment">income_adjustment() (in module demos.models.income_adjustment)</a>
+        <li><a href="api/income_module.html#demos.models.income.income">income() (in module demos.models.income)</a>
+</li>
+        <li><a href="api/income_adjustment_module.html#demos.models.income_adjustment.income_adjustment">income_adjustment() (in module demos.models.income_adjustment)</a>
 </li>
         <li><a href="api/employment_module.html#demos.models.employment.income_dist">income_dist() (in module demos.models.employment)</a>
+</li>
+        <li><a href="api/configuration_module.html#demos.config.IncomeModuleConfig">IncomeModuleConfig (class in demos.config)</a>, <a href="api/income_module.html#demos.config.IncomeModuleConfig">[1]</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.inconsistent_persons_table_behavior">inconsistent_persons_table_behavior (demos.config.DEMOSConfig attribute)</a>
 </li>
     </ul></td>
     <td style="width: 33%; vertical-align: top;"><ul>
         <li><a href="pages/datasources.html#demos.datasources.CSVTableSource.index_col">index_col (demos.datasources.CSVTableSource attribute)</a>
+</li>
+        <li><a href="api/configuration_module.html#demos.config.IncomeModuleConfig.inflation_adjustment_table">inflation_adjustment_table (demos.config.IncomeModuleConfig attribute)</a>, <a href="api/income_module.html#demos.config.IncomeModuleConfig.inflation_adjustment_table">[1]</a>
+</li>
+        <li><a href="api/configuration_module.html#demos.config.IncomeModuleConfig.inflation_reference_year">inflation_reference_year (demos.config.IncomeModuleConfig attribute)</a>, <a href="api/income_module.html#demos.config.IncomeModuleConfig.inflation_reference_year">[1]</a>
 </li>
         <li><a href="api/configuration_module.html#demos.config.DEMOSConfig.initialize_empty_tables">initialize_empty_tables (demos.config.DEMOSConfig attribute)</a>
 </li>

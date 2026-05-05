@@ -202,7 +202,8 @@
 <li class="toctree-l2"><a class="reference internal" href="birth_module.html">Birth Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="education_module.html">Education Module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="rebalancing_module.html">Household Rebalancing Module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="income_module.html">Income Adjustment Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="income_module.html">Income Module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="income_adjustment_module.html">Income Adjustment Module</a></li>
 </ul>
 </li>
 <li class="toctree-l1 current has-children"><a class="reference internal" href="../pages/configuration.html">DEMOS Configuration</a><input aria-label="Toggle navigation of DEMOS Configuration" checked="" class="toctree-checkbox" id="toctree-checkbox-2" name="toctree-checkbox-2" role="switch" type="checkbox"/><label for="toctree-checkbox-2"><span class="icon"><svg><use href="#svg-arrow-right"></use></svg></span></label><ul class="current">
@@ -457,6 +458,62 @@
 
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="demos.config.IncomeModuleConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">demos.config.</span></span><span class="sig-name descname"><span class="pre">IncomeModuleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/demos/config.html#IncomeModuleConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#demos.config.IncomeModuleConfig" title="Link to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Configuration for the Income module.</p>
+<p>The income model predicts household income as nominal dollars for the year
+in which it was estimated (<em>inflation_reference_year</em>).  When
+<em>inflation_reference_year</em> and <em>inflation_adjustment_table</em> are both
+provided, predictions are automatically scaled to the current simulation
+year using cumulative annual CPI adjustment factors read from that table.</p>
+<p>Optionally, a calibration procedure can be configured to nudge aggregate
+income predictions toward observed values (same mechanics as the mortality
+and birth modules).</p>
+<p><strong>Inflation adjustment table format</strong> (<code class="docutils literal notranslate"><span class="pre">index_col</span> <span class="pre">=</span> <span class="pre">&quot;year&quot;</span></code>):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">year</span><span class="p">,</span><span class="n">adjustment</span>
+<span class="mi">2011</span><span class="p">,</span><span class="mf">0.030</span>
+<span class="mi">2012</span><span class="p">,</span><span class="mf">0.021</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">adjustment</span></code> column must contain decimal annual inflation rates
+(e.g. <code class="docutils literal notranslate"><span class="pre">0.030</span></code> represents 3.0 %).  The table must cover every year from
+<em>inflation_reference_year</em> (exclusive) through the last simulation year
+(inclusive).  If the current simulation year equals
+<em>inflation_reference_year</em>, no adjustment is applied.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.IncomeModuleConfig.calibration_procedure">
+<span class="sig-name descname"><span class="pre">calibration_procedure</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">CalibrationConfig</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.IncomeModuleConfig.calibration_procedure" title="Link to this definition">¶</a></dt>
+<dd><p>Optional calibration procedure to align aggregate predicted income with
+observed aggregate values.  Uses the same RMSE-based mechanics as the
+mortality and birth calibration procedures.  Omit (or comment out)
+this block to skip calibration.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.IncomeModuleConfig.inflation_adjustment_table">
+<span class="sig-name descname"><span class="pre">inflation_adjustment_table</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.IncomeModuleConfig.inflation_adjustment_table" title="Link to this definition">¶</a></dt>
+<dd><p>Name of the orca table containing annual CPI inflation adjustment
+factors, or an inline DataSource definition (like a <code class="docutils literal notranslate"><span class="pre">[[tables]]</span></code>
+entry) that will be loaded automatically.  The table must be indexed
+by <code class="docutils literal notranslate"><span class="pre">year</span></code> and include an <code class="docutils literal notranslate"><span class="pre">adjustment</span></code> column with decimal annual
+inflation rates.  Must be set together with <em>inflation_reference_year</em>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="demos.config.IncomeModuleConfig.inflation_reference_year">
+<span class="sig-name descname"><span class="pre">inflation_reference_year</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code><span class="pre">[</span><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code><span class="pre">]</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#demos.config.IncomeModuleConfig.inflation_reference_year" title="Link to this definition">¶</a></dt>
+<dd><p>The reference year of the income model estimation.  Predicted income
+values are expressed in nominal dollars for this year and will be
+scaled forward (or backward) to the current simulation year using the
+cumulative product of the annual adjustment factors.  Must be set
+together with <em>inflation_adjustment_table</em>.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 </section>
 
@@ -567,6 +624,12 @@
 </li>
 <li><a class="reference internal" href="#demos.config.AgingModuleConfig"><code class="docutils literal notranslate"><span class="pre">AgingModuleConfig</span></code></a><ul>
 <li><a class="reference internal" href="#demos.config.AgingModuleConfig.senior_age"><code class="docutils literal notranslate"><span class="pre">AgingModuleConfig.senior_age</span></code></a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#demos.config.IncomeModuleConfig"><code class="docutils literal notranslate"><span class="pre">IncomeModuleConfig</span></code></a><ul>
+<li><a class="reference internal" href="#demos.config.IncomeModuleConfig.calibration_procedure"><code class="docutils literal notranslate"><span class="pre">IncomeModuleConfig.calibration_procedure</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.IncomeModuleConfig.inflation_adjustment_table"><code class="docutils literal notranslate"><span class="pre">IncomeModuleConfig.inflation_adjustment_table</span></code></a></li>
+<li><a class="reference internal" href="#demos.config.IncomeModuleConfig.inflation_reference_year"><code class="docutils literal notranslate"><span class="pre">IncomeModuleConfig.inflation_reference_year</span></code></a></li>
 </ul>
 </li>
 </ul>

@@ -41,6 +41,7 @@ The following modules support calibration via the standard `calibration_procedur
 |---|---|---|---|
 | **Mortality** (`fatality`) | `mortality_module_config` | `mortality` | Total deaths per year |
 | **Birth** (`birth`) | `birth_module_config` | `birth` | Total births per year |
+| **Income** (`income`) | `income_module_config` | `income_nworkers` | Aggregate household income per year |
 
 The following modules have a **different calibration interface** (see [below](#modules-with-simultaneous-calibration-employment-and-household-reorganization)):
 
@@ -346,3 +347,110 @@ A practical starting point:
 - For **simultaneous calibration**, the tolerance represents the absolute difference in person counts. Values of 100–5,000 are typical depending on the size of the synthetic population.
 
 If calibration is not converging even after increasing `max_iter`, consider increasing the `learning_rate` slightly. If the algorithm oscillates (error fluctuates without declining), try increasing `momentum_weight` toward 0.5–0.7 or decreasing `learning_rate`.
+
+---
+
+(income-inflation-adjustment)=
+## Income Module: Inflation Adjustment
+
+The income model estimates household income in **nominal dollars for the year
+the model was originally estimated** (the *reference year*). When running a
+multi-year simulation, predictions must be scaled to reflect price levels in
+each simulation year. DEMOS handles this through an **inflation adjustment**
+step that multiplies the predicted income by a cumulative CPI-based factor
+derived from a user-supplied table.
+
+### How it works
+
+At each simulation year $t$, DEMOS computes the cumulative inflation factor as:
+
+$$\text{factor}(t) = \prod_{y=r+1}^{t} \big(1 + a_y\big)$$
+
+where $r$ is `inflation_reference_year` and $a_y$ is the annual adjustment
+rate for year $y$ from the inflation adjustment table.  If $t < r$ the
+factor is inverted (backward adjustment).  If $t = r$ the factor is 1 and
+income is left unchanged.
+
+### Inflation adjustment table format
+
+The file must be a CSV indexed by `year` and must contain an `adjustment`
+column with decimal annual inflation rates:
+
+```
+year,adjustment
+2011,0.030
+2012,0.021
+2013,0.015
+2014,0.016
+2015,0.001
+2016,0.013
+2017,0.021
+2018,0.024
+2019,0.018
+```
+
+- `year`: Integer calendar year.
+- `adjustment`: Decimal inflation rate for that year (e.g., `0.030` = 3.0 %).  
+  Use U.S. Bureau of Labor Statistics CPI-U data or any equivalent price index.
+
+The table must contain a row for **every year** in the interval
+`(inflation_reference_year, forecast_year]`. Missing years will cause a
+`KeyError` at runtime.
+
+### Loading the table
+
+Add the table to the `[[tables]]` section of your configuration file:
+
+```toml
+[[tables]]
+file_type = "csv"
+table_name = "inflation_adjustment"
+filepath = "../data/my_region/observed_calibration_values/inflation_adjustment.csv"
+index_col = "year"
+custom_dtype_casting = {"year" = "int", "adjustment" = "float"}
+```
+
+### Configuring the income module
+
+```toml
+[income_module_config]
+inflation_reference_year = 2010
+inflation_adjustment_table = "inflation_adjustment"
+```
+
+Both fields must be set together; specifying only one will raise a validation
+error at startup.
+
+To **disable** inflation adjustment, comment out or remove both lines:
+
+```toml
+# [income_module_config]
+# inflation_reference_year = 2010
+# inflation_adjustment_table = "inflation_adjustment"
+```
+
+### Combining inflation adjustment with calibration
+
+Inflation adjustment and calibration can be used at the same time.
+Calibration runs **before** the inflation adjustment, so the calibration
+target (`count`) should represent aggregate income expressed in
+**reference-year nominal dollars** (i.e., the same price level as the
+estimated model output).
+
+```toml
+[income_module_config]
+inflation_reference_year = 2010
+inflation_adjustment_table = "inflation_adjustment"
+
+[income_module_config.calibration_procedure]
+procedure_type = "rmse_error"
+tolerance_type = "absolute"
+tolerance = 5000
+max_iter = 500
+[income_module_config.calibration_procedure.observed_values_table]
+file_type = "csv"
+table_name = "observed_income_data"
+filepath = "../data/my_region/observed_calibration_values/income_over_time_obs.csv"
+index_col = "year"
+```
+
