@@ -57,6 +57,13 @@ filepath = "../data/sf_bay_example/observed_calibration_values/hsize_ct_06197001
 index_col = "year"
 custom_dtype_casting = {"lcm_county_id" = "object", "year" = "int", "hh_size" = "object", "total_number_of_households" = "int"}
 
+[[tables]]
+file_type = "csv"
+table_name = "inflation_adjustment"
+filepath = "../data/sf_bay_example/observed_calibration_values/inflation_adjustment.csv"
+index_col = "year"
+custom_dtype_casting = {"year" = "int", "adjustment" = "float"}
+
 ## Simultaneous Calibration data
 ### For simultaneous calibration, tables need 
 ### to be manually included here
@@ -126,4 +133,26 @@ geoid_col = "lcm_county_id"
 calibration_target_share = 0.12
 calibration_tolerance = 0.001
 
+## Income
+# The income model was estimated for the base year (2010), so income predictions
+# are in 2010 nominal dollars.  The two fields below tell DEMOS to scale those
+# predictions forward to the current simulation year using the annual inflation
+# rates stored in the `inflation_adjustment` table (loaded above in [[tables]]).
+#
+# To disable inflation adjustment, comment out both fields.
+[income_module_config]
+inflation_reference_year = 2010
+inflation_adjustment_table = "inflation_adjustment"
 
+# Optional: calibrate aggregate predicted income to observed values.
+# Uncomment and fill in the block below to enable calibration.
+# [income_module_config.calibration_procedure]
+# procedure_type = "rmse_error"
+# tolerance_type = "absolute"
+# tolerance = 5000
+# max_iter = 500
+# [income_module_config.calibration_procedure.observed_values_table]
+# file_type = "csv"
+# table_name = "observed_income_data"
+# filepath = "../data/sf_bay_example/observed_calibration_values/income_over_time_obs.csv"
+# index_col = "year"

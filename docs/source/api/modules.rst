@@ -14,3 +14,4 @@ DEMOS Modules
    education_module
    rebalancing_module
    income_module
+   income_adjustment_module

@@ -2,11 +2,14 @@ import os
 import toml
 import orca
 import pandas as pd
-from pydantic import BaseModel, model_validator, Field
+from pydantic import BaseModel, model_validator, Field, TypeAdapter, field_validator
 from typing import Literal, Optional
 from loguru import logger
 from templates.calibration import CalibrationConfig, SimultaneousCalibrationConfig
 from datasources import DataSourceModel
+
+# Adapter used to coerce inline DataSourceModel dicts in module config fields
+_file_adapter = TypeAdapter(DataSourceModel)
 
 CONFIG = None
 
@@ -65,6 +68,77 @@ class AgingModuleConfig(BaseModel):
     senior_age: int = 65
 
 
+class IncomeModuleConfig(BaseModel):
+    """
+    Configuration for the Income module.
+
+    The income model predicts household income as nominal dollars for the year
+    in which it was estimated (*inflation_reference_year*).  When
+    *inflation_reference_year* and *inflation_adjustment_table* are both
+    provided, predictions are automatically scaled to the current simulation
+    year using cumulative annual CPI adjustment factors read from that table.
+
+    Optionally, a calibration procedure can be configured to nudge aggregate
+    income predictions toward observed values (same mechanics as the mortality
+    and birth modules).
+
+    **Inflation adjustment table format** (``index_col = "year"``)::
+
+        year,adjustment
+        2011,0.030
+        2012,0.021
+        ...
+
+    The ``adjustment`` column must contain decimal annual inflation rates
+    (e.g. ``0.030`` represents 3.0 %).  The table must cover every year from
+    *inflation_reference_year* (exclusive) through the last simulation year
+    (inclusive).  If the current simulation year equals
+    *inflation_reference_year*, no adjustment is applied.
+    """
+
+    #: Optional calibration procedure to align aggregate predicted income with
+    #: observed aggregate values.  Uses the same RMSE-based mechanics as the
+    #: mortality and birth calibration procedures.  Omit (or comment out)
+    #: this block to skip calibration.
+    calibration_procedure: Optional[CalibrationConfig] = None
+
+    #: Name of the orca table containing annual CPI inflation adjustment
+    #: factors, or an inline DataSource definition (like a ``[[tables]]``
+    #: entry) that will be loaded automatically.  The table must be indexed
+    #: by ``year`` and include an ``adjustment`` column with decimal annual
+    #: inflation rates.  Must be set together with *inflation_reference_year*.
+    inflation_adjustment_table: Optional[str] = None
+
+    #: The reference year of the income model estimation.  Predicted income
+    #: values are expressed in nominal dollars for this year and will be
+    #: scaled forward (or backward) to the current simulation year using the
+    #: cumulative product of the annual adjustment factors.  Must be set
+    #: together with *inflation_adjustment_table*.
+    inflation_reference_year: Optional[int] = None
+
+    @field_validator("inflation_adjustment_table", mode="before")
+    @classmethod
+    def _coerce_inflation_table(cls, v):
+        """Accept either an inline DataSourceModel dict or a plain table name."""
+        if isinstance(v, dict):
+            v = _file_adapter.validate_python(v)
+        if isinstance(v, BaseModel):
+            v.load_into_orca()
+            return v.table_name
+        return v
+
+    @model_validator(mode="after")
+    def _check_inflation_config_consistency(self):
+        has_table = self.inflation_adjustment_table is not None
+        has_year = self.inflation_reference_year is not None
+        if has_table != has_year:
+            raise ValueError(
+                "'inflation_adjustment_table' and 'inflation_reference_year' must "
+                "both be set together, or both omitted."
+            )
+        return self
+
+
 class DEMOSConfig(BaseModel):
     """
     Global configuration for DEMOS. Individual fields in this class control the configuration of each module.
@@ -111,6 +185,9 @@ class DEMOSConfig(BaseModel):
     )
     kids_moving_module_config: KidsMovingModuleConfig = Field(
         default_factory=KidsMovingModuleConfig
+    )
+    income_module_config: IncomeModuleConfig = Field(
+        default_factory=IncomeModuleConfig
     )
 
     def model_post_init(self, __context) -> None:

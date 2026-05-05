@@ -23,8 +23,7 @@ def income(households):
 def run_and_calibrate_income_model(households):
     # Load calibration config
     demos_config: DEMOSConfig = get_config()
-    # calibration_procedure = demos_config.income_module_config.calibration_procedure
-    calibration_procedure = None
+    income_config = demos_config.income_module_config
 
     # Get model data
     model = mm.get_step("income_nworkers")
@@ -32,9 +31,89 @@ def run_and_calibrate_income_model(households):
     model_data = households.to_frame(model_variables)
 
     # Calibrate if needed
-    if calibration_procedure is not None:
-        return calibration_procedure.calibrate_and_run_model(model, model_data)
-    return np.exp(model.predict(model_data))
+    if income_config.calibration_procedure is not None:
+        predicted = income_config.calibration_procedure.calibrate_and_run_model(
+            model, model_data
+        )
+    else:
+        predicted = np.exp(model.predict(model_data))
+
+    # Inflation adjustment: scale from reference year to current simulation year
+    if (
+        income_config.inflation_adjustment_table is not None
+        and income_config.inflation_reference_year is not None
+    ):
+        predicted = _apply_inflation_adjustment(
+            predicted,
+            reference_year=income_config.inflation_reference_year,
+            current_year=orca.get_injectable("year"),
+            table_name=income_config.inflation_adjustment_table,
+        )
+
+    return predicted
+
+
+def _apply_inflation_adjustment(
+    income: "pd.Series",
+    reference_year: int,
+    current_year: int,
+    table_name: str,
+) -> "pd.Series":
+    """
+    Scale *income* from *reference_year* nominal dollars to *current_year*
+    nominal dollars using annual CPI adjustment factors stored in an orca
+    table.
+
+    The adjustment table must be indexed by ``year`` and contain an
+    ``adjustment`` column with decimal annual inflation rates (e.g. ``0.030``
+    for 3.0 %).  The cumulative factor is computed as the product of
+    ``(1 + adjustment)`` for every year in the half-open interval
+    ``(reference_year, current_year]`` when projecting forward, or its
+    reciprocal when projecting backward.
+
+    Parameters
+    ----------
+    income:
+        Series of predicted household income values (in reference-year
+        nominal dollars).
+    reference_year:
+        The year for which the income model was estimated.
+    current_year:
+        The current simulation year.
+    table_name:
+        Name of the orca table containing the adjustment factors.
+
+    Returns
+    -------
+    pandas.Series
+        Income values scaled to *current_year* nominal dollars.
+    """
+    if reference_year == current_year:
+        return income
+
+    adj_table = orca.get_table(table_name).to_frame()
+
+    if current_year > reference_year:
+        years = range(reference_year + 1, current_year + 1)
+        forward = True
+    else:
+        years = range(current_year + 1, reference_year + 1)
+        forward = False
+
+    missing = [y for y in years if y not in adj_table.index]
+    if missing:
+        raise KeyError(
+            f"Inflation adjustment table '{table_name}' is missing rows for "
+            f"years: {missing}.  Ensure the table covers all simulation years."
+        )
+
+    cumulative_factor = float(
+        (1 + adj_table.loc[list(years), "adjustment"]).prod()
+    )
+    if not forward:
+        cumulative_factor = 1.0 / cumulative_factor
+
+    return income * cumulative_factor
 
 
 ###################
@@ -65,9 +144,9 @@ def true_hh_workers(persons):
     return persons.worker.groupby(persons.household_id).sum()
 
 
-@orca.column("households")
-def not_met_area(households):
-    return pd.Series(np.ones(households.local.shape[0]), index=households.local.index)
+# @orca.column("households")
+# def not_met_area(households):
+#     return pd.Series(np.ones(households.local.shape[0]), index=households.local.index)
 
 
 # Education variables
