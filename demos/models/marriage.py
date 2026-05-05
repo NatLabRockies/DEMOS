@@ -310,7 +310,9 @@ def update_divorce(persons, households, divorce_list, get_new_households):
         households.local.loc[new_households, module_config.geoid_col] = geoid_assignment
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
     households.local.loc[new_households, "lcm_county_id"] = county_assignment
-    not_met_area_assignment = households.local.loc[old_household_id, "not_met_area"].values
+    not_met_area_assignment = households.local.loc[
+        old_household_id, "not_met_area"
+    ].values
     households.local.loc[new_households, "not_met_area"] = not_met_area_assignment
 
     ## Updates for people staying

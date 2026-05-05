@@ -126,7 +126,9 @@ def update_households_after_kids(persons, households, kids_moving, get_new_house
     ].values
     county_assignment = households.local.loc[old_household_id, "lcm_county_id"].values
 
-    not_met_area_assignment = households.local.loc[old_household_id, "not_met_area"].values
+    not_met_area_assignment = households.local.loc[
+        old_household_id, "not_met_area"
+    ].values
 
     new_households = get_new_households(kids_moving_index.sum())
     persons.local.loc[kids_moving_index, "household_id"] = new_households

@@ -32,9 +32,11 @@ def run_and_calibrate_income_model(households):
 
     # Calibrate if needed
     if income_config.calibration_procedure is not None:
-        predicted = np.exp(income_config.calibration_procedure.calibrate_and_run_model(
-            model, model_data
-        ))
+        predicted = np.exp(
+            income_config.calibration_procedure.calibrate_and_run_model(
+                model, model_data
+            )
+        )
     else:
         predicted = np.exp(model.predict(model_data))
 
@@ -107,9 +109,7 @@ def _apply_inflation_adjustment(
             f"years: {missing}.  Ensure the table covers all simulation years."
         )
 
-    cumulative_factor = float(
-        (1 + adj_table.loc[list(years), "adjustment"]).prod()
-    )
+    cumulative_factor = float((1 + adj_table.loc[list(years), "adjustment"]).prod())
     if not forward:
         cumulative_factor = 1.0 / cumulative_factor
 

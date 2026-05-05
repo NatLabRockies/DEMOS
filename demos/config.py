@@ -186,9 +186,7 @@ class DEMOSConfig(BaseModel):
     kids_moving_module_config: KidsMovingModuleConfig = Field(
         default_factory=KidsMovingModuleConfig
     )
-    income_module_config: IncomeModuleConfig = Field(
-        default_factory=IncomeModuleConfig
-    )
+    income_module_config: IncomeModuleConfig = Field(default_factory=IncomeModuleConfig)
 
     def model_post_init(self, __context) -> None:
         if self.output_fname is None:
