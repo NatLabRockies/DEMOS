@@ -378,11 +378,16 @@
     <span class="p">]</span><span class="o">.</span><span class="n">values</span>
     <span class="n">county_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">old_household_id</span><span class="p">,</span> <span class="s2">&quot;lcm_county_id&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
 
+    <span class="n">not_met_area_assignment</span> <span class="o">=</span> <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+        <span class="n">old_household_id</span><span class="p">,</span> <span class="s2">&quot;not_met_area&quot;</span>
+    <span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
     <span class="n">new_households</span> <span class="o">=</span> <span class="n">get_new_households</span><span class="p">(</span><span class="n">kids_moving_index</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;household_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">new_households</span>
     <span class="n">persons</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">kids_moving_index</span><span class="p">,</span> <span class="s2">&quot;relate&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="n">module_config</span><span class="o">.</span><span class="n">geoid_col</span><span class="p">]</span> <span class="o">=</span> <span class="n">geoid_assignment</span>
     <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="s2">&quot;lcm_county_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">county_assignment</span>
+    <span class="n">households</span><span class="o">.</span><span class="n">local</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">new_households</span><span class="p">,</span> <span class="s2">&quot;not_met_area&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">not_met_area_assignment</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">run_and_calibrate_model</span><span class="p">(</span><span class="n">persons</span><span class="p">):</span>

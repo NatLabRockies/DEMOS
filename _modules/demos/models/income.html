@@ -284,8 +284,10 @@
 
     <span class="c1"># Calibrate if needed</span>
     <span class="k">if</span> <span class="n">income_config</span><span class="o">.</span><span class="n">calibration_procedure</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">predicted</span> <span class="o">=</span> <span class="n">income_config</span><span class="o">.</span><span class="n">calibration_procedure</span><span class="o">.</span><span class="n">calibrate_and_run_model</span><span class="p">(</span>
-            <span class="n">model</span><span class="p">,</span> <span class="n">model_data</span>
+        <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span>
+            <span class="n">income_config</span><span class="o">.</span><span class="n">calibration_procedure</span><span class="o">.</span><span class="n">calibrate_and_run_model</span><span class="p">(</span>
+                <span class="n">model</span><span class="p">,</span> <span class="n">model_data</span>
+            <span class="p">)</span>
         <span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">model_data</span><span class="p">))</span>
@@ -359,9 +361,7 @@
             <span class="sa">f</span><span class="s2">&quot;years: </span><span class="si">{</span><span class="n">missing</span><span class="si">}</span><span class="s2">.  Ensure the table covers all simulation years.&quot;</span>
         <span class="p">)</span>
 
-    <span class="n">cumulative_factor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span>
-        <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">adj_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">years</span><span class="p">),</span> <span class="s2">&quot;adjustment&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">()</span>
-    <span class="p">)</span>
+    <span class="n">cumulative_factor</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">adj_table</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">years</span><span class="p">),</span> <span class="s2">&quot;adjustment&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">prod</span><span class="p">())</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">forward</span><span class="p">:</span>
         <span class="n">cumulative_factor</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">cumulative_factor</span>
 
