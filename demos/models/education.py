@@ -43,6 +43,8 @@ def education(
     -----
     - Modifies `persons.edu` and `persons.student` in place.
     - Only persons older than 15 and currently students are considered for dropout modeling.
+    - Students aged 15 and under are assumed to stay in school and move up one level.
+    - Each person moves at most one education level per year.
     - Proportions for transitions (e.g., GED vs. diploma) are maintained using observed data.
     - Some transitions use random assignment based on empirical proportions.
     """
@@ -57,33 +59,40 @@ def education(
 
     reindexed_stop_student = stop_student_list.reindex(persons.local.index).fillna(-99)
 
-    # Update education years
-    ## Kids
-    persons.local.loc[persons["age"] == 3, "edu"] = 2
-    persons.local.loc[persons["age"].isin([4, 5]), "edu"] = 4
+    # Education before this year's update. All transitions below are selected
+    # from this snapshot, so each person moves at most one level per year.
+    edu = persons["edu"].copy()
+    age = persons["age"]
 
     ## Dropping out
     persons.local.loc[reindexed_stop_student == 1, "student"] = 0
 
-    ## Update those that stayed in school
-    stayed_index = reindexed_stop_student == 0
+    ## Update those that stayed in school: students 16+ predicted to stay, and
+    ## all students aged 15 and under (K-12 students are assumed to stay in school)
+    stayed_index = (reindexed_stop_student == 0) | (
+        (age <= 15) & (persons["student"] == 1)
+    )
 
-    ### Between 4 and 13, increase by one - Students go all the way to grade 10
-    tenth_grade_or_below_index = persons["edu"].between(4, 13, inclusive="both")
-    persons.local.loc[stayed_index & tenth_grade_or_below_index, "edu"] += 1
+    ## Children turning 3 move from N/A (0, under 3) to no schooling completed (1)
+    persons.local.loc[(age == 3) & (edu == 0), "edu"] = 1
 
-    # NOTE: We perform the following operations in reverse order to avoid skipping years
+    ### Between 1 and 13, increase by one - No schooling all the way to grade 10
+    tenth_grade_or_below_index = stayed_index & edu.between(1, 13, inclusive="both")
+    persons.local.loc[tenth_grade_or_below_index, "edu"] = (
+        edu[tenth_grade_or_below_index] + 1
+    )
+
     ### Students with one year of college move to the next
-    college_index = persons["edu"] == 18
+    college_index = edu == 18
     persons.local.loc[stayed_index & college_index, "edu"] = 19
 
     ### Students with GED or HS Degree move to college
-    ged_or_hs_index = persons["edu"].isin([16, 17])
+    ged_or_hs_index = edu.isin([16, 17])
     persons.local.loc[stayed_index & ged_or_hs_index, "edu"] = 18
 
     ### Students in grade 12 move to either 16 or 17 based on weights
     ### Proportion of no diploma to GED students is roughly maintained
-    twelveth_grade_index = persons["edu"] == 15
+    twelveth_grade_index = edu == 15
     twelveth_grade_transition = np.random.choice(
         [16, 17],
         size=(stayed_index & twelveth_grade_index).sum(),
@@ -95,7 +104,7 @@ def education(
 
     ### Students in grade 11 move to either 15 or 16 based on weights
     ### Proportion of 12th grade students to diploma highschool students is roughly maintained
-    eleventh_grade_index = persons["edu"] == 14
+    eleventh_grade_index = edu == 14
     eleventh_grade_transition = np.random.choice(
         [15, 16],
         size=(stayed_index & eleventh_grade_index).sum(),
