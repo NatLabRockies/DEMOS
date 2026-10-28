@@ -76,8 +76,13 @@ def education(
     ## Children turning 3 move from N/A (0, under 3) to no schooling completed (1)
     persons.local.loc[(age == 3) & (edu == 0), "edu"] = 1
 
-    ### Between 1 and 13, increase by one - No schooling all the way to grade 10
-    tenth_grade_or_below_index = stayed_index & edu.between(1, 13, inclusive="both")
+    ### Between 1 and 13, increase by one - No schooling all the way to grade 10.
+    ### Preschool usually lasts more than one year, so children below kindergarten
+    ### advance only when old enough (nursery from age 4, kindergarten from age 5)
+    too_young_for_next_level = (edu < 3) & (edu + 1 > age - 2)
+    tenth_grade_or_below_index = (
+        stayed_index & edu.between(1, 13, inclusive="both") & ~too_young_for_next_level
+    )
     persons.local.loc[tenth_grade_or_below_index, "edu"] = (
         edu[tenth_grade_or_below_index] + 1
     )
